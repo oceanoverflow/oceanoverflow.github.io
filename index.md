@@ -6,5 +6,6 @@
 - [x] Fanin [Fan-in](Fanin.md)
 - [x] 事件处理引擎 [EventProcessEngine](EventProcessEngine.md)
 - [] p2p Discoverer
-- [] gRPC & Protobuf
+- [] gRPC
+- [x] 使用Protocol Buffer自定义消息类型 [Protobuf](Protobuf.md)
 
