@@ -8,7 +8,7 @@
 - [] p2p Discoverer
 - [] gRPC
 - [x] 使用Protocol Buffer自定义消息类型 [Protobuf](Protobuf.md)
-- [] Leaky Buffer
+- [] Leaky Buffer [LeakyBuffer](LeakyBuffer.md)
 - [] 密码学基础
 - [] TCP/IP
 - [] 实现一个简单的Shadowsocks
