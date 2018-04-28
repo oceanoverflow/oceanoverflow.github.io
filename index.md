@@ -1,4 +1,5 @@
 - [] Golang 设计模式
+- [x] 工厂模式 [FactoryPattern](FactoryPattern.md)
 - [x] PKCS7 Padding [PKCS7_Padding](PKCS7_Padding.md)
 - [] PBFT 共识算法
 - [] Paxos & Raft
