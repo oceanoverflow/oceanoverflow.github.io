@@ -19,6 +19,8 @@
 - [] Bloom Filter [BloomFilter](BloomFilter.md)
 - [] Merkle Tree [MerkleTree](MerkleTree.md)
 - [] goLevelDB
-- [] 零知识证明
+- [] 零知识证明ZKP
+- [] 工作量证明POW
+- [] Skip List
 
 
