@@ -10,14 +10,14 @@
 - [] p2p Discoverer
 - [x] 使用Protocol Buffer自定义消息类型 [Protobuf](Protobuf.md)
 - [] 使用gRPC来进行节点之间的通信
-- [] Leaky Buffer [LeakyBuffer](LeakyBuffer.md)
+- [x] Leaky Buffer [LeakyBuffer](LeakyBuffer.md)
 - [] 密码学基础
 - [] TCP/IP
 - [] 实现一个简单的Shadowsocks
 - [] 使用 Viper & Cobra 快速构建一个命令行工具
 - [] Docker & Golang 一对好基友
-- [] Bloom Filter [BloomFilter](BloomFilter.md)
-- [] Merkle Tree [MerkleTree](MerkleTree.md)
+- [x] Bloom Filter [BloomFilter](BloomFilter.md)
+- [x] Merkle Tree [MerkleTree](MerkleTree.md)
 - [] goLevelDB
 - [] 零知识证明ZKP
 - [] 工作量证明POW
