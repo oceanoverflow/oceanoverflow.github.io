@@ -23,5 +23,6 @@
 - [] 工作量证明POW
 - [] Skip List
 - [] 分布式哈希表DHT
+- [x] 让任务定时执行 [crontab](Crontab.md)
 
 
