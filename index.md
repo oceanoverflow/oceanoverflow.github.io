@@ -27,7 +27,7 @@
 - [x] 让任务定时执行 [crontab](Crontab.md)
 - [x] 一致性哈希 [ConsistentHashing](ConsistentHashing.md)
 - [x] 使用 etcd 来进行服务注册与发现 [etcd](etcd.md)
-- [x] 使用 etcd 来实现负载均衡
+- [x] 使用 etcd 来实现负载均衡 [LoadBalancing](LoadBalancing.md)
 - [x] iobridge [iobridge](iobridge.md)
 - [x] 使用Golang获取手机屏幕截图 [Screenshot](Screenshot.md)
 - [x] port 0, WTF? [Port_0](Port_0.md)
