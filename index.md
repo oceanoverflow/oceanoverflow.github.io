@@ -34,3 +34,4 @@
 - [] Makefile
 - [] EDC, my Every Day Carry
 - [] Architecture of Open Source Project
+- [] git 不常用但实用命令整理 [git](git.md)
