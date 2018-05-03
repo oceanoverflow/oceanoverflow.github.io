@@ -30,7 +30,7 @@
 - [x] 使用 etcd 来实现负载均衡
 - [x] iobridge [iobridge](iobridge.md)
 - [x] 使用Golang获取手机屏幕截图 [Screenshot](Screenshot.md)
-- [] port 0, WTF?
+- [x] port 0, WTF? [Port_0](Port_0.md)
 - [] Makefile
 - [] EDC, my Every Day Carry
 - [] Architecture of Open Source Project
