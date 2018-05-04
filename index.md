@@ -1,8 +1,9 @@
 - [] Golang 设计模式
 - [x] 工厂模式 [FactoryPattern](FactoryPattern.md)
 - [x] PKCS7 Padding [PKCS7_Padding](PKCS7_Padding.md)
-- [] PBFT 共识算法
-- [] Paxos & Raft
+- [] PBFT共识算法
+- [] Paxos共识算法
+- [] Raft共识算法
 - [x] 有限状态机FSM [FSM](FSM.md)
 - [x] Fanin [Fan-in](Fanin.md)
 - [x] 事件处理引擎 [EventProcessEngine](EventProcessEngine.md)
@@ -36,3 +37,6 @@
 - [] EDC, my Every Day Carry
 - [] Architecture of Open Source Project
 - [] git 不常用但实用命令整理 [git](git.md)
+- [] dep，golang的依赖管理工具
+- [] 高并发爬虫
+- [] gossip协议
