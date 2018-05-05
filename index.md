@@ -38,6 +38,6 @@
 - [] EDC, my Every Day Carry
 - [] Architecture of Open Source Project
 - [] [git](git.md)
-- [] dep，golang的依赖管理工具
+- [x] [dep](dep.md)
 - [x] [Crawler](Crawler.md)
 - [] gossip协议
