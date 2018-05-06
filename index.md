@@ -1,6 +1,7 @@
 - [] [AboutMe](AboutMe.md)
 - [] Golang 设计模式
 - [x] [FactoryPattern](FactoryPattern.md)
+- [x] [Pub/Sub](PubSub.md)
 - [x] [PKCS7_Padding](PKCS7_Padding.md)
 - [] PBFT共识算法
 - [] Paxos共识算法
