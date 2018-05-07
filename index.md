@@ -43,3 +43,4 @@
 - [x] [dep](dep.md)
 - [x] [Crawler](Crawler.md)
 - [] gossip协议
+- [x] [MagnetLink](MagnetLink.md)
