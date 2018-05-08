@@ -33,6 +33,7 @@
 - [x] [ConsistentHashing](ConsistentHashing.md)
 - [x] [etcd](etcd.md)
 - [x] [LoadBalancing](LoadBalancing.md)
+- [x] [SmoothWeightedRoundRobin](SmoothWeightedRoundRobin.md)
 - [x] [iobridge](iobridge.md)
 - [x] [Screenshot](Screenshot.md)
 - [x] [Port_0](Port_0.md)
