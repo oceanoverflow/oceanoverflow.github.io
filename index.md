@@ -1,5 +1,6 @@
 - [] [AboutMe](AboutMe.md)
 - [] Golang 设计模式
+- [x] [CircuitBreaker](CircuitBreaker.md)
 - [x] [FactoryPattern](FactoryPattern.md)
 - [x] [Pub/Sub](PubSub.md)
 - [x] [PKCS7_Padding](PKCS7_Padding.md)
