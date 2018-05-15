@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Protocol Buffer | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Protocol BufferProtobuf是一种用于信息交换的数据格式，你们可能会问我可以用JSON，再不济XML也可以用啊，为什么要接触这个完全没有用过的玩意儿呢？答案只有两个字：高效。使用XML不仅会占用更多的存储空间，而且会降低整个系统的性能。 搞过分布式系统的朋友一定知道，消息在分布式系统中起着至关重要的作用，例如两个节点之间相互交换自己的状态信息，一个网络中节点之间的交流就需要负载在">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Protocol Buffer">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/25/Protobuf/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Protocol BufferProtobuf是一种用于信息交换的数据格式，你们可能会问我可以用JSON，再不济XML也可以用啊，为什么要接触这个完全没有用过的玩意儿呢？答案只有两个字：高效。使用XML不仅会占用更多的存储空间，而且会降低整个系统的性能。 搞过分布式系统的朋友一定知道，消息在分布式系统中起着至关重要的作用，例如两个节点之间相互交换自己的状态信息，一个网络中节点之间的交流就需要负载在">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:55:26.822Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Protocol Buffer">
+<meta name="twitter:description" content="Protocol BufferProtobuf是一种用于信息交换的数据格式，你们可能会问我可以用JSON，再不济XML也可以用啊，为什么要接触这个完全没有用过的玩意儿呢？答案只有两个字：高效。使用XML不仅会占用更多的存储空间，而且会降低整个系统的性能。 搞过分布式系统的朋友一定知道，消息在分布式系统中起着至关重要的作用，例如两个节点之间相互交换自己的状态信息，一个网络中节点之间的交流就需要负载在">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Protobuf"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Protocol Buffer
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-25T08:03:24.000Z" itemprop="datePublished">
+        Apr 25, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Protocol-Buffer"><a href="#Protocol-Buffer" class="headerlink" title="Protocol Buffer"></a>Protocol Buffer</h1><p>Protobuf是一种用于信息交换的数据格式，你们可能会问我可以用JSON，再不济XML也可以用啊，为什么要接触这个完全没有用过的玩意儿呢？答案只有两个字：高效。使用XML不仅会占用更多的存储空间，而且会降低整个系统的性能。</p>
+<p>搞过分布式系统的朋友一定知道，消息在分布式系统中起着至关重要的作用，例如两个节点之间相互交换自己的状态信息，一个网络中节点之间的交流就需要负载在消息之上，与人类一样，只有节点之间有一套共用的语言，分布式系统才能正常工作下去。而且protobuf可以让我们非常方便的定义消息的类型，它还提供了供我们序列化和反序列化的API，下面我们就来看看该如何使用它。</p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>首先需要安装protobuf，使用macOS的用户可以考虑使用brew进行安装，安装完了之后还需要安装Go语言的protobuf插件—proto-gen-go，这个插件会被安装在 <code>$GOPATH/bin</code> 目录下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ brew install protobuf</span><br><span class="line">$ go get -u github.com/golang/protobuf/protoc-gen-go</span><br></pre></td></tr></table></figure>
+<h2 id="定义我们自己的消息格式"><a href="#定义我们自己的消息格式" class="headerlink" title="定义我们自己的消息格式"></a>定义我们自己的消息格式</h2><p>使用protobuf，我们只需要定义一个以 <code>.proto</code> 结尾的文件，这里我们以PBFT算法中的几个消息类型为例子进行讲解，首先注意到”=1”， “=2”这样的标记，这些标记是为了二进制编码用的。其次，如果一个消息中有多个类似的成员，也就是一个数组，我们可以使用 <code>repeated</code> 这个关键字来表示。</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">syntax = &quot;proto3&quot;;</span><br><span class="line"></span><br><span class="line">import &quot;google/protobuf/timestamp.proto&quot;;</span><br><span class="line"></span><br><span class="line">package pbft;</span><br><span class="line"></span><br><span class="line">message request &#123;</span><br><span class="line">    google.protobuf.Timestamp timestamp = 1;</span><br><span class="line">    bytes payload = 2;</span><br><span class="line">    uint64 replica_id = 3;</span><br><span class="line">    bytes signature = 4;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message request_batch &#123;</span><br><span class="line">    repeated request batch = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message pre_prepare &#123;</span><br><span class="line">    uint64 view = 1;</span><br><span class="line">    uint64 sequence_number = 2;</span><br><span class="line">    string batch_digest = 3;</span><br><span class="line">    request_batch request_batch = 4;</span><br><span class="line">    uint64 replica_id = 5;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message prepare &#123;</span><br><span class="line">    uint64 view = 1;</span><br><span class="line">    uint64 sequence_number = 2;</span><br><span class="line">    string batch_digest = 3;</span><br><span class="line">    uint64 replica_id = 4;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message commit &#123;</span><br><span class="line">    uint64 view = 1;</span><br><span class="line">    uint64 sequence_number = 2;</span><br><span class="line">    string batch_digest = 3;</span><br><span class="line">    uint64 replica_id = 4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用protoc编译器编译我们的消息"><a href="#使用protoc编译器编译我们的消息" class="headerlink" title="使用protoc编译器编译我们的消息"></a>使用protoc编译器编译我们的消息</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -I=$SRC_DIR --go_out=$DST_DIR $SRC_DIR/messages.proto</span><br></pre></td></tr></table></figure>
+<p>在命令行中运行上述命令，<code>-I</code> 表示你的源文件所在的目录，<code>--go_out</code>  表示你指定的生成目标文件（messages.pb.go）的目录，一般来说与源文件所在的目录相同，最后就是我们需要编译的源文件的路径。</p>
+<h2 id="使用protobuf提供的API对消息进行写操作"><a href="#使用protobuf提供的API对消息进行写操作" class="headerlink" title="使用protobuf提供的API对消息进行写操作"></a>使用protobuf提供的API对消息进行写操作</h2><p>我们可以使用 <code>proto.Marshal()</code> 对数据进行序列化。序列化之后得到的是一个字节数组（ []byte ）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">prep := &amp;pb.Prepare&#123;</span><br><span class="line">    view: <span class="number">1</span>,</span><br><span class="line">    SequenceNumber: <span class="number">2</span>,</span><br><span class="line">    BatchDigest: <span class="string">"aaaaa"</span>,</span><br><span class="line">    ReplicaId: <span class="number">11</span>,    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">out, err := proto.Marshal(prep)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Error marshalling prepare: %s"</span>, err) </span><br><span class="line">    <span class="keyword">return</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err := ioutil.WriteFile(fname, out, <span class="number">0644</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Error writing file: %s"</span>, err) </span><br><span class="line">    <span class="keyword">return</span>    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用protobuf提供的API对消息进行读操作"><a href="#使用protobuf提供的API对消息进行读操作" class="headerlink" title="使用protobuf提供的API对消息进行读操作"></a>使用protobuf提供的API对消息进行读操作</h2><p>对编码过的数据调用 <code>proto.Unmarshal</code> 就可以进行反序列化操作得到原来的信息。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">in, err := ioutil.ReadFile(fname)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Error reading file: %s"</span>, err) </span><br><span class="line">    <span class="keyword">return</span>    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">prep := &amp;pb.Prepare&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err := proto.Unmarshal(in, prep); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Error unmarshalling prepare: %s"</span>, err)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然了，上面两个例子是将序列化的数据存储到文件中，同样的，我们可以将序列化后的数据直接在网上传播，因为序列化后的数据已经是 <code>wire format</code> 了。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

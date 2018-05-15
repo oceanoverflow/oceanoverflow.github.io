@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>PubSub | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="PubSub消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PubSub">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/06/PubSub/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="PubSub消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://docs.oracle.com/cd/E19575-01/819-3669/images/jms-publishSubscribe.gif">
+<meta property="og:updated_time" content="2018-05-15T11:57:24.617Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PubSub">
+<meta name="twitter:description" content="PubSub消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（">
+<meta name="twitter:image" content="https://docs.oracle.com/cd/E19575-01/819-3669/images/jms-publishSubscribe.gif">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-PubSub"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      PubSub
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-06T11:08:04.000Z" itemprop="datePublished">
+        May 6, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="PubSub"><a href="#PubSub" class="headerlink" title="PubSub"></a>PubSub</h1><p>消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ <code>Subscriber</code> ）会订阅某个自己感兴趣的 <code>topic</code> ，一旦发布者（ <code>Publisher</code> ）向这个 <code>topic</code> 发布消息，消息的订阅者就能收到该消息。</p>
+<p>这种设计模式的灵感其实就来自于现实生活之中，我们（ <code>Subscriber</code> ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（算一个 <code>subscription</code> ）就会被杂志社（ <code>Publisher</code> ）记录下来，一旦杂志可以上市发行了，杂志社就会主动向我们推送（ <code>Publish</code> ）杂志消息。</p>
+<p><img src="https://docs.oracle.com/cd/E19575-01/819-3669/images/jms-publishSubscribe.gif" alt="PubSub"></p>
+<p>下面我们来实现一个简单的发布者订阅者模型吧。</p>
+<p>由于这个模型的核心就在于很多 <code>subscriber</code> 会向某一个 <code>topic</code> 订阅消息，所以需要一个结构体来记录特定的 <code>topic</code> 对应的所有 <code>subscriber</code> ，这里 <code>subscriber</code> 用一个集合（ <code>Set</code> ）来表示。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> PubSub <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.RWMutex</span><br><span class="line">    subscriptions <span class="keyword">map</span>[<span class="keyword">string</span>]*Set</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Set <span class="keyword">struct</span> &#123;</span><br><span class="line">    items <span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;]<span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    lock *sync.RWMutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewPubSub</span><span class="params">()</span> *<span class="title">PubSub</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;PubSub&#123;</span><br><span class="line">        subscriptions: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]*Set),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Subscription</code> 应该具有监听行为，通过 <code>Listen</code> 来获取 <code>Publisher</code> 发布的消息。而结构体 <code>subscription</code> 则相当于一个订阅的注册信息。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Subscription <span class="keyword">interface</span> &#123;</span><br><span class="line">    Listen() (<span class="keyword">interface</span>&#123;&#125;, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> subscription <span class="keyword">struct</span> &#123;</span><br><span class="line">    topic <span class="keyword">string</span></span><br><span class="line">    ttl   time.Duration</span><br><span class="line">    c     <span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> (s *subscription) Listen() (<span class="keyword">interface</span>&#123;&#125;, error) &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> &lt;-time.After(s.ttl):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"timed out"</span>)</span><br><span class="line">    <span class="keyword">case</span> iterm := &lt;-s.c:</span><br><span class="line">        <span class="keyword">return</span> item, <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实订阅和取消订阅的本质就是将自己从订阅名单（ <code>subscriptions map[string]*Set</code> ）里面进行增加或删除的操作，因为我们向杂志社订阅了某本杂志，那么关于我们的订阅信息一定会在杂志出版商那里存在。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ps *PubSub)</span> <span class="title">Subscribe</span><span class="params">(topic <span class="keyword">string</span>, ttl time.Duration)</span> <span class="title">Subscription</span></span> &#123;</span><br><span class="line">    sub := &amp;subscription&#123;</span><br><span class="line">        topic: topic.</span><br><span class="line">        ttl:   ttl,</span><br><span class="line">        c:     <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;, subscriptionBuffSize),</span><br><span class="line">    &#125;</span><br><span class="line">    ps.Lock()</span><br><span class="line">    s, exists := ps.subscriptions[topic]</span><br><span class="line">    <span class="keyword">if</span> !exists &#123;</span><br><span class="line">        s = NewSet()</span><br><span class="line">        ps.subscriptions[topic] = s</span><br><span class="line">    &#125;</span><br><span class="line">    ps.Unlock()</span><br><span class="line"></span><br><span class="line">    s.Add(sub)</span><br><span class="line">    time.AfterFunc(ttl, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        ps.unSubscribe(sub)</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ps *PubSub)</span> <span class="title">unSubscribe</span><span class="params">(sub *subscription)</span></span> &#123;</span><br><span class="line">    ps.Lock()</span><br><span class="line">    <span class="keyword">defer</span> ps.Unlock()</span><br><span class="line">    ps.subscriptions[sub.topic].Remove(sub)</span><br><span class="line">    <span class="keyword">if</span> ps.subscriptions[sub.topic].Size() != <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">delete</span>(ps.subscriptions, sub.topic)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后我们订阅的杂志终于要发布了，杂志的出版社会根据自己手中的订阅名单，逐一向订阅该 <code>topic</code> 的订阅者发送杂志，当然只有订阅了的人才能收到。但是由于订阅者可能出去旅游了，也就是说他最近并没有调用 <code>Listen</code> 将收到的订阅消息拿出，而我们接受订阅消息的邮箱大小是有上限的（ <code>c: make(chan interface{}, subscriptionBuffSize)</code> ，我们设置了<code>subscriptionBuffSize</code> 来表示一个通道中最多可以存放的消息数量），如果该邮箱内已有的消息超出这个限制，则选择不将消息放入邮箱中，否则则将消息放入这个邮箱中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ps *PubSub)</span> <span class="title">Publish</span><span class="params">(topic <span class="keyword">string</span>, item <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    ps.RLock()</span><br><span class="line">    <span class="keyword">defer</span> ps.RUnlock()</span><br><span class="line">    s, subscribed := ps.subscriptions[topic]</span><br><span class="line">    <span class="keyword">if</span> !subscribed &#123;</span><br><span class="line">        <span class="keyword">return</span> errors.New(<span class="string">"no subscribers"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> _, sub := <span class="keyword">range</span> s.ToArray() &#123;</span><br><span class="line">        c := sub.(*subscription).c</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(c) == subscriptionBuffSize &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        c &lt;- item</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

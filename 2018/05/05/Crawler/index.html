@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Crawler | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Crawler爬虫算是练习并发编程的一个非常好的例子了，因为它既不枯燥，难度也不大，而且能在短时间内产出一个有趣的结果。爬虫一般通过某种搜索算法（深度优先搜索或者广度优先搜索）在互联网这个海量数据库中去寻找我们感兴趣的东西，如果使用得当的话，爬虫可以极大地提高我们的工作效率。 那么接下去我们从一个单线程的爬虫程序出发，然后慢慢将它改造成一个并发的爬虫程序。在这里，我们并不关心究竟如何去匹配我们感兴">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Crawler">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/05/Crawler/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Crawler爬虫算是练习并发编程的一个非常好的例子了，因为它既不枯燥，难度也不大，而且能在短时间内产出一个有趣的结果。爬虫一般通过某种搜索算法（深度优先搜索或者广度优先搜索）在互联网这个海量数据库中去寻找我们感兴趣的东西，如果使用得当的话，爬虫可以极大地提高我们的工作效率。 那么接下去我们从一个单线程的爬虫程序出发，然后慢慢将它改造成一个并发的爬虫程序。在这里，我们并不关心究竟如何去匹配我们感兴">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:38:13.649Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Crawler">
+<meta name="twitter:description" content="Crawler爬虫算是练习并发编程的一个非常好的例子了，因为它既不枯燥，难度也不大，而且能在短时间内产出一个有趣的结果。爬虫一般通过某种搜索算法（深度优先搜索或者广度优先搜索）在互联网这个海量数据库中去寻找我们感兴趣的东西，如果使用得当的话，爬虫可以极大地提高我们的工作效率。 那么接下去我们从一个单线程的爬虫程序出发，然后慢慢将它改造成一个并发的爬虫程序。在这里，我们并不关心究竟如何去匹配我们感兴">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Crawler"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Crawler
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-05T02:05:24.000Z" itemprop="datePublished">
+        May 5, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Crawler"><a href="#Crawler" class="headerlink" title="Crawler"></a>Crawler</h1><p>爬虫算是练习并发编程的一个非常好的例子了，因为它既不枯燥，难度也不大，而且能在短时间内产出一个有趣的结果。爬虫一般通过某种搜索算法（深度优先搜索或者广度优先搜索）在互联网这个海量数据库中去寻找我们感兴趣的东西，如果使用得当的话，爬虫可以极大地提高我们的工作效率。</p>
+<p>那么接下去我们从一个单线程的爬虫程序出发，然后慢慢将它改造成一个并发的爬虫程序。在这里，我们并不关心究竟如何去匹配我们感兴趣的元素(例如使用CSS进行元素匹配)，而是给出一个爬虫的基本思路。</p>
+<p>首先，爬虫中非常重要的一个步骤就是匹配当前搜索的网页中的元素，并将符合我们要求的东西下载或保存起来，并且还会记录当前网页中的超链接地址，以便于我们继续进行深度优先搜索或者广度优先搜索。一般来说，我们感兴趣的东西都是符合特定规则的，而具体的规则我们可以在单个网页上进行正则匹配来获取，但是，由于不同网页的匹配规则并不相同，所以我们定义一个interface来抽象该行为。在这之后无论我们想要爬豆瓣还是新浪微博亦或是其他自己感兴趣的网站，只要重新定义一个结构体实现该方法就可以。</p>
+<p><code>Fetcher</code> 这个 <code>interface</code> 定义了如下行为，从一个特定的url去取我们感兴趣的内容以及这个网页上的所有的url链接。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Fetcher <span class="keyword">interface</span> &#123;</span><br><span class="line">    Fetch(url <span class="keyword">string</span>) (body <span class="keyword">string</span>, urls []<span class="keyword">string</span>, err error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例如我们要爬豆瓣网上的东西，我们只要定义好一个结构体，并且实现上述<code>Fetch</code> 方法就可以了。所以无论以后你决定改爬别的网站了，再定义如下的结构体并实现相应的方法就可以了，这就是为什么上面我们定义了一个 <code>Fetcher</code> interface 来抽象这个行为的原因了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Result <span class="keyword">struct</span> &#123;</span><br><span class="line">    body <span class="keyword">string</span></span><br><span class="line">    urls []<span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> doubanFetcher <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="keyword">map</span>[<span class="keyword">string</span>]*Result</span><br><span class="line">    sync.RWMutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *doubanFetcher)</span> <span class="title">Fetch</span><span class="params">(url <span class="keyword">string</span>)</span> <span class="params">(body <span class="keyword">string</span>, urls []<span class="keyword">string</span>, err error)</span></span> &#123;</span><br><span class="line">     <span class="comment">// 这里写具体的匹配逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>爬虫还有一个重点就是搜索的策略，应该是广度优先还是深度优先，但是所有的链接形成为拓扑图并不一定是一个有向无环图，所以我们的爬虫在爬取的过程中可能会遇到相同的链接，但是注意这个逻辑同样应在在 <code>Fetch</code> 函数中实现。</p>
+<h2 id="单线程版本实现"><a href="#单线程版本实现" class="headerlink" title="单线程版本实现"></a>单线程版本实现</h2><p>下面我们来看一下单线程深度优先的爬虫应该怎么写。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Crawl</span><span class="params">(url <span class="keyword">string</span>, depth <span class="keyword">int</span>, fetcher Fetcher)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> depth &lt;= <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    body, urls, err := fetcher.Fetch(url)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(<span class="string">"Founf: %s %q\n"</span>, url, body)</span><br><span class="line">    <span class="keyword">for</span> _, u := <span class="keyword">range</span> urls &#123;</span><br><span class="line">        Crawl(u, depth<span class="number">-1</span>, fetcher)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于是深度优先搜索，所以我们用递归的策略来进行搜索，递归最重要的一点就是递归条件的出口条件，如果递归函数没有出口，那么就是死循环了。这里我们在函数的参数中引入一个深度的变量来控制是否应该继续进行递归，如果当前深度小于等于0，则退出。然后用 <code>fether</code>  来 <code>Fetch</code> 对应的 <code>url</code>上的内容，由于使用了接口，所以让我们这个函数的实现变得非常的灵活，而不是局限于哪个具体的实现，这就是接口的好处。然后根据当前网页中的链接进行深度优先搜索，<code>Crawl(u, depth-1, fetcher)</code> ，每搜索一层，深度减一，直到条件不再满足就可以退出了。</p>
+<p>不过上述的爬虫还是单线程的，单线程的效率肯定不高，因为程序大部分时间都是在等待 <code>I/O</code>，<code>CPU</code> 大部分时间都是空闲的，所以，为了提高 <code>CPU</code>的占用率，我们应该考虑使用并发。</p>
+<h2 id="并发版本实现"><a href="#并发版本实现" class="headerlink" title="并发版本实现"></a>并发版本实现</h2><p>在 <code>golang</code> 里面写并发程序是相对比较简单的，但是也没有那么简单，下面的实现就是比较tricky的。这里为什么叫它并发而不是多线程呢，是因为<code>golang</code> 中的 <code>go</code> 机制并不是以线程作为基本单位的。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Crawl</span><span class="params">(url <span class="keyword">string</span>, depth <span class="keyword">int</span>, fetcher Fetcher, ret <span class="keyword">chan</span> <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> <span class="built_in">close</span>(ret)</span><br><span class="line">    <span class="keyword">if</span> depth &lt;= <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    body, urls, err := fetcher.Fetch(url) </span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        ret &lt;- err.Error()</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    ret &lt;- fmt.Sprintf(<span class="string">"Found: %s %q"</span>, url, body)</span><br><span class="line"></span><br><span class="line">    result := <span class="built_in">make</span>([]<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="built_in">len</span>(urls))</span><br><span class="line">    <span class="keyword">for</span> i, u := <span class="keyword">range</span> urls &#123;</span><br><span class="line">        result := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">        <span class="keyword">go</span> Crawl(u, depth<span class="number">-1</span>, fetcher, result)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="keyword">range</span> result &#123;</span><br><span class="line">        <span class="keyword">for</span> s := <span class="keyword">range</span> result[i] &#123;</span><br><span class="line">            ret &lt;- s</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>并发版本和单线程版本的基本框架是一样的，有下面几个区别。</p>
+<p>首先我们定义个一个 <code>chan string</code> 也就是一个通道，一般来说，<code>go</code> 和<code>chan</code> 都是手拉手用在一起的。这个通道用于接受我们爬虫的结果。</p>
+<p>这个通道在整个函数返回时会关闭，也就是函数最初用的 <code>defer close(ret)</code> 。</p>
+<p>当 <code>fetch.Fetch(url)</code> 方法返回时，也就是这个网页中的内容已经检索完毕了，我们将结果放到刚才的通道中等待其他地方的程序读取该通道中的内容。</p>
+<p>下面就是函数的精髓了，由于上面通过 <code>fetch.Fetch(url)</code> 获得了一个<code>urls</code> 数组，因为要进行深度优先搜索，我们为这个 <code>urls</code> 中的 <code>url</code> 也准备一个 <code>chan string</code> 用于存储它们抓取的内容，然后调用 <code>go Crawl(u, depth-1, fetcher, result)</code> 来并发爬取。</p>
+<p>也就是说下面这段函数很快就返回了，但是它们并不一定都已经拿到相应的内容了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i, u := <span class="keyword">range</span> urls &#123;</span><br><span class="line">    result := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">    <span class="keyword">go</span> Crawl(u, depth<span class="number">-1</span>, fetcher, result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以，我们要等待它们拿回内容，下面代码的意思就是子任务完成后，将它拿到的内容传给上一层的通道中。这个就好比在一个公司中，<code>CEO</code> 将任务分别分配给下面各个部门的 <code>Manager</code> ，然后各个部门的 <code>Manager</code> 又细分任务后将任务分给部门下面的各个 <code>Worker</code> ，<code>Worker</code> 完成自己的任务后，将任务结果传给负责自己的 <code>Manager</code> ，然后由 <code>Manager</code> 再汇报给 <code>CEO</code> 。<code>CEO</code> 是总任务的分配者同时也是所有结果的收集者。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="keyword">range</span> result &#123;</span><br><span class="line">    <span class="keyword">for</span> s := <span class="keyword">range</span> result[i] &#123;</span><br><span class="line">        ret &lt;- s</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>并发程序能充分利用现在 <code>CPU</code> 的所有核心，它利用单线程程序运行中部分代码段会因为等待 <code>I/O</code>（例如发送http请求和等待http答复）而占用 <code>CPU</code> 时间的特点，同时启动多个 <code>goroutine</code> 来最大程度上占用 <code>CPU</code> 时间，从而提高程序的运行效率。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

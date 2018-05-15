@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Magnet Link | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Magnet Link相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Magnet Link">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/07/MagnetLink/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Magnet Link相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:50:46.216Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Magnet Link">
+<meta name="twitter:description" content="Magnet Link相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-MagnetLink"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Magnet Link
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-07T07:15:24.000Z" itemprop="datePublished">
+        May 7, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Magnet-Link"><a href="#Magnet-Link" class="headerlink" title="Magnet Link"></a>Magnet Link</h1><p>相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。</p>
+<p>其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 <code>magnet</code> 我们把它称为 <code>scheme</code> 或者说是协议名，就像一般的 <code>http</code> 地址一样，<code>http</code> 也算是一种协议名，紧接着 <code>magnet:?</code> 后面就是几对键值对了，一般键值对之间以 <code>&amp;</code> 符号划分，常见的键有：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">magnet:?xt=urn:btih:0FF55426B9713084FF5229A16D21712B1E6C1625&amp;dn=%e5%8d%97%e5%be%81%e5%8c%97%e6%88%98%20-%206415&amp;tr=http%3a%2f%2ftracker.nexushd.org%2fannounce.php%3fpasskey%3d346ae8170f8427b078512150f3683285</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>xt</code> ：eXact Topic 的缩写，其实本质上就是一个文件的哈希值，用于唯一标示这个文件而存在的，这是整个磁力链接中不可或缺的一部分，少了它，基本上链接地址就无法解析了。</li>
+<li><code>dn</code> ：Display Name 的缩写，这个是用于向用户展示的文件的名称，这一项可以没有。</li>
+<li><code>tr</code> ： Tracker 的缩写，表示Tracker服务器的地址，取决于使用的技术，这一项也是选填的。</li>
+<li><code>ws</code> ： Web Seed 的缩写，表示网络种子，选填。</li>
+<li><code>urn</code> ：Uniform Resource Name 的缩写，也就是统一资源名称。</li>
+<li><code>btih</code> ： BitTorrent Info Hash 的缩写，表示种子的散列函数。</li>
+</ul>
+<p>知道了磁力链接地址中的关键信息，也就基本可以看懂链接地址中的各个部分分别代表什么含义了，但是由于其中一些信息还是经过特殊编码的，人类读起来还是比较费劲<br>的，所以我们还是实现代码来解析它吧。</p>
+<p>首先，来定义一个结构体来定义一下磁力链接中的组成部分，这里只选了几个重要的，<code>InfoHash</code> 代表的就是 <code>&quot;urn:btih:&quot;</code> 后面那一部分玩意儿，<code>Trackers</code> 数组代表的就是 <code>Tracker</code> 服务器的地址，<code>DisplayName</code> 就对应磁力链接中的 <code>dn</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Magnet <span class="keyword">struct</span> &#123;</span><br><span class="line">    InfoHash Hash</span><br><span class="line">    Trackers []<span class="keyword">string</span></span><br><span class="line">    DisplayName <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> xtPrefix = <span class="string">"urn:btih:"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m Magnet)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    ret : = <span class="string">"magnet:?xt="</span></span><br><span class="line">    ret += xtPrefix + hex.EncodeToString(m.InfoHash[:])</span><br><span class="line">    <span class="keyword">if</span> m.DisplayName != <span class="string">""</span> &#123;</span><br><span class="line">        ret += <span class="string">"&amp;dn="</span> + url.QueryEscape(m.DisplayName)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> _, tr := <span class="keyword">range</span> m.Trackers &#123;</span><br><span class="line">        ret += <span class="string">"&amp;tr="</span> + url.QueryEscape(tr)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解析磁力链接的过程和解析一般的 <code>url</code> 的过程非常类似，关键的部分是哈希值部分的解析，由于 <code>BTIH</code> 这个部分的哈希值可能用 <code>Hex</code> 编码也可能用 <code>Base32</code> 编码，所以我们要根据其哈希长度选择解码的方式，这里定义了一个函数变量 <code>var decode func(dst, src []byte) (int, error)</code> 用于接受我们具体的解码函数。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ParseMagnetURI</span><span class="params">(uri <span class="keyword">string</span>)</span> <span class="params">(m Magnet, err eror)</span></span> &#123;</span><br><span class="line">    u, err := url.Parse(uri)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        err = fmt.Errorf(<span class="string">"error parsing uri : %s"</span>, err) </span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> u.Scheme != <span class="string">"magnet"</span> &#123;</span><br><span class="line">        err = fmt.Errorf(<span class="string">"unexpected scheme: %q"</span>, u.Scheme)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    xt := u.Query().Get(<span class="string">"xt"</span>)</span><br><span class="line">    <span class="keyword">if</span> !strings.HasPrefix(xtPrefix) &#123;</span><br><span class="line">        err = fmt.Errorf(<span class="string">"bad xt parameter"</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    infoHash := xt[<span class="built_in">len</span>(xtPrefix):]</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> decode <span class="function"><span class="keyword">func</span><span class="params">(dst, src []<span class="keyword">byte</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span></span><br><span class="line"><span class="function">    <span class="title">switch</span> <span class="title">len</span><span class="params">(infoHash)</span></span> &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">40</span>:</span><br><span class="line">        decode = hex.Decode</span><br><span class="line">    <span class="keyword">case</span> <span class="number">32</span>:</span><br><span class="line">        decode = base32.StdEncoding.Decode</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> decode == <span class="literal">nil</span> &#123;</span><br><span class="line">        err = fmt.Errorf(<span class="string">"unhandled xt parameter encoding: encoded lenght"</span>, <span class="built_in">len</span>(infoHash))</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    n, err := decode(m.InfoHash[:], []<span class="keyword">byte</span>(infoHash))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        err = fmt.Errorf(<span class="string">"error decoding xt: %s"</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> n != <span class="number">20</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(n)</span><br><span class="line">    &#125;</span><br><span class="line">    m.DisplayName = u.Query().Get(<span class="string">"dn"</span>)</span><br><span class="line">    m.Trackers = u.Query()[<span class="string">"tr"</span>]</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

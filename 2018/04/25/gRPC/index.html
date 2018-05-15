@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>gRPC | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="gRPC首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gRPC">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/25/gRPC/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="gRPC首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://camo.githubusercontent.com/e4deb67aa41f71d46774f192b05b75be5c3da112/68747470733a2f2f7261772e6769746875622e636f6d2f6875696368656e2f7a6572672f6d61737465722f646f632f7a6572672e706e67">
+<meta property="og:updated_time" content="2018-05-15T12:02:35.461Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gRPC">
+<meta name="twitter:description" content="gRPC首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/e4deb67aa41f71d46774f192b05b75be5c3da112/68747470733a2f2f7261772e6769746875622e636f6d2f6875696368656e2f7a6572672f6d61737465722f646f632f7a6572672e706e67">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-gRPC"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      gRPC
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-25T08:27:24.000Z" itemprop="datePublished">
+        Apr 25, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC"></a>gRPC</h1><p>首先，在了解 <code>gRPC</code> 之前，要搞清楚什么是 <code>RPC</code> ，<code>RPC</code> ， <code>Remote Procedure Call</code> ，即远程过程调度，它采用 <code>C/S</code>模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，<code>RPC</code> 是分布式系统中非常重要的一个组成部分。</p>
+<p><code>RPC</code> 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 <code>RPC</code> 呢，例如我们要写一个分布式爬虫的框架，因为自己的笔记本电脑处理能力有限，为了提高爬虫效率，我们租借了几台 <code>8C16G</code> 的高性能服务器帮我们完成任务，这样就可以由客户端发送爬虫指令，具体的粗活累活可以由服务器代替完成，如下面 <code>client</code> 向服务器发送一个 <code>crawl request</code> ，里面包含了我们要爬取的网站的具体信息，在服务器完成任务之后，向 <code>client</code> 返回一个 <code>crawl response</code> ，也就是爬虫的结果。</p>
+<p><img src="https://camo.githubusercontent.com/e4deb67aa41f71d46774f192b05b75be5c3da112/68747470733a2f2f7261772e6769746875622e636f6d2f6875696368656e2f7a6572672f6d61737465722f646f632f7a6572672e706e67" alt="grpc"></p>
+<p>关于 <code>RPC</code> ，不同的语言有不同的解决方案，例如在golang的标准库中就提供了 <code>net/rpc</code> 这个解决方案，虽然这个方法效率很高，但是它的缺点也是比较致命的，就是它仅能在golang程序中使用，而我们今天的主角，<code>gRPC</code> 就是一个跨语言平台的通用高性能 <code>RPC</code> 库，听着是不是很酷炫，下面就让我们来仔细学习一下吧。</p>
+<h2 id="利用gRPC定义我们的服务"><a href="#利用gRPC定义我们的服务" class="headerlink" title="利用gRPC定义我们的服务"></a>利用gRPC定义我们的服务</h2><p>在使用 <code>gRPC</code> 之前我们需要安装它，在命令行中输入以下命令。</p>
+<p><code>$ go get -u google.golang.org/grpc</code></p>
+<p><code>gRPC</code> 在定义服务时采用了 <code>protobuf</code> 的语法格式，我们需要定义 <code>gRPC</code> 中请求消息和答复消息的数据格式，这个我们应该已经非常熟悉了，就是定义两个 <code>message</code> （详情可以参考 <code>protobuf</code> 的官方文档），<code>CrawlRequest</code> 和 <code>CrawlResponse</code> ，除此之外我们还要定义一个 <code>service</code> ，说白了也就是我们要定义的 <code>RPC</code> 方法。也就是说我们向服务器发送一个 <code>CrawlRequest</code> 消息，服务器处理完成后会向我们返回一个 <code>CrawlResponse</code> 。</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">service Crawl &#123;</span><br><span class="line">    rpc Crawl (CrawlRequest) returns (CrawlResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message CrawlRequest &#123;</span><br><span class="line">    string url = 1;</span><br><span class="line">    int64 timeout = 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message CrawlResponse &#123;</span><br><span class="line">    string content = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 <code>gRPC</code> 的好处就在于它可以根据我们定义的服务自动生成相应的服务端和客户端的代码，也就是说我们只要关心具体调用服务的逻辑，剩下具体的实现由框架帮我们干就可以了。</p>
+<p>由于是 <code>protobuf</code> 文件，我们使用 <code>protoc</code> 来编译它就可以了。</p>
+<p><code>$ protoc --go_out=plugins=grpc:. *.proto</code></p>
+<h2 id="gRPC-原理"><a href="#gRPC-原理" class="headerlink" title="gRPC 原理"></a>gRPC 原理</h2><p><code>gRPC</code> 相当于给我们一个框架，具体的代码就在我们的 <code>crawl.proto</code> 这个文件经过 <code>protoc</code> 编译后的得到的 <code>crawl.pb.go</code> 这个文件中，下面的代码都是由 <code>protoc</code> 经过编译后自动生成的，编译后的文件都具有类似的格式，基本看一个例子就可以一通百通了。</p>
+<p>编译后得到的代码在客户端部分定义了一个大写的 <code>CrawlClient</code> 这个interface，而小写的 <code>crawlClient</code> 结构体则具体实现了它，注意到一个 <code>crawlClient</code> 中包含了一个<code>grpc.ClientConn</code> 结构体，与 <code>net.Conn</code> 类似，它是真正发送网络请求的结构体，<code>grpc.Invoke</code> 则才是具体发送网络请求的行为。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> CrawlClient <span class="keyword">interface</span> &#123;</span><br><span class="line">    Crawl(ctx context.Context, in *CrawlRequest, opts ...grpc.CallOption) (*CrawlResponse, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> crawlClient <span class="keyword">struct</span> &#123;</span><br><span class="line">    cc *grpc.ClientConn</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> NewCrawlClient(cc *grpc.ClientConn) CrawlClient &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;crawlClient&#123;cc&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *crawlClient)</span> <span class="title">Crawl</span><span class="params">(ctx context.Context, </span></span></span><br><span class="line"><span class="function"><span class="params">                            in *CrawlRequest, </span></span></span><br><span class="line"><span class="function"><span class="params">                            opts ...grpc.CallOption)</span> <span class="params">(*CrawlResponse, error)</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">new</span>(CrawlResponse)</span><br><span class="line">    err := grpc.Invoke(ctx, <span class="string">"/protos.Crawl/Crawl"</span>, in, out, c.cc, opts...)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> out, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>与 <code>CrawClient</code> 不同的是，并没有结构体直接实现 <code>CrawlServer</code> 这个接口，毕竟 <code>gRPC</code> 仅仅是一个框架，具体的逻辑代码还是需要我们自己去填充的。<code>RegisterCrawlServer</code> 方法则向 <code>gRPC</code> 注册该服务，注册的过程也需要我们自己在代码中调用。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> CrawlServer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Crawl(context.Context, *CrawlRequest) (*CrawlResponse, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RegisterCrawlServer</span><span class="params">(s *grpc.Server, srv CrawlServer)</span></span> &#123;</span><br><span class="line">    s.RegisterService(&amp;_Crawl_serviceDesc, srv)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> _<span class="title">Crawl_Crawl_Handler</span><span class="params">(srv <span class="keyword">interface</span>&#123;&#125;, </span></span></span><br><span class="line"><span class="function"><span class="params">                          ctx context.Context, </span></span></span><br><span class="line"><span class="function"><span class="params">                          dec <span class="keyword">func</span>(<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span>, </span></span><br><span class="line"><span class="function">                          <span class="title">interceptor</span> <span class="title">grpc</span>.<span class="title">UnaryServerInterceptor</span>) <span class="params">(<span class="keyword">interface</span>&#123;&#125;, error)</span></span> &#123;</span><br><span class="line">    in := <span class="built_in">new</span>(CrawlRequest)</span><br><span class="line">    <span class="keyword">if</span> err := dec(in); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> interceptor == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> srv.(CrawlServer).Crawl(ctx, in)</span><br><span class="line">    &#125;</span><br><span class="line">    info := &amp;grpc.UnaryServerInfo&#123;</span><br><span class="line">        Server:     srv,</span><br><span class="line">        FullMethod: <span class="string">"/protos.Crawl/Crawl"</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    handler := <span class="function"><span class="keyword">func</span><span class="params">(ctx context.Context, req <span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">(<span class="keyword">interface</span>&#123;&#125;, error)</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> srv.(CrawlServer).Crawl(ctx, req.(*CrawlRequest))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> interceptor(ctx, in, info, handler)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _Crawl_serviceDesc = grpc.ServiceDesc&#123;</span><br><span class="line">    ServiceName: <span class="string">"protos.Crawl"</span>,</span><br><span class="line">    HandlerType: (*CrawlServer)(<span class="literal">nil</span>),</span><br><span class="line">    Methods: []grpc.MethodDesc&#123;</span><br><span class="line">        &#123;</span><br><span class="line">            MethodName: <span class="string">"Crawl"</span>,</span><br><span class="line">            Handler:    _Crawl_Crawl_Handler,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    Streams:  []grpc.StreamDesc&#123;&#125;,</span><br><span class="line">    Metadata: <span class="string">"crawl.proto"</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p>下面需要我们自己实现具体的业务逻辑（这里就是爬虫的业务逻辑），毕竟 <code>gRPC</code> 可不能猜到我们究竟要干什么事情，我们先定义一个包含 <code>http.Client</code> 的结构体 <code>crawlServer</code> ，当然了，<code>crawlServer</code> 究竟要包含什么要看具体的业务场景了，这里因为是爬虫所以要包含 <code>http.Client</code> 用于发送http请求。</p>
+<p>所以我们在 <code>Crawl</code> 方法中实现具体的爬虫逻辑。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> crawlServer <span class="keyword">struct</span>&#123;</span><br><span class="line">    client *http.Client</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *crawlServer)</span> <span class="title">Crawl</span><span class="params">(ctx context.Context, in *pb.CrawlRequest)</span> <span class="params">(*pb.CrawlResponse, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> s.internalCrawl(in)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *crawlServer)</span> <span class="title">internalCrawl</span><span class="params">(in *pb.CrawlRequest)</span> <span class="params">(*pb.CrawlResponse, error)</span></span> &#123;</span><br><span class="line">    <span class="comment">// .... 具体的爬虫逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>与普通的 <code>tcp</code> 网络编程类似的，我们需要监听特定的端口，当这个端口监听到来自客户端的连接请求时，<code>gRPC</code> 会接受该连接请求，并且新起一个 <code>goroutine</code> 去处理该请求，然后读取该请求的消息类型，<code>gRPC</code> 内部会去检查这个消息的类型，最后决定调用哪个 handler（也就是之前Register过的）去处理该请求，具体处理后向客户端返回答复。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">listener, err := net.Listen(<span class="string">"tcp"</span>, *address)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatal(err)</span><br><span class="line">&#125;</span><br><span class="line">s:= grpc.NewServer()</span><br><span class="line">pb.RegisterCrawlServer(s, &amp;crawlServer&#123;&#125;)</span><br><span class="line">s.Serve(listener)</span><br></pre></td></tr></table></figure>
+<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p>在客户端这里，我们需要一个类似 <code>net.Conn</code> 这样的结构体用于发送和接受消息，在 <code>gRPC</code> 中，我们可以通过类似 <code>net.Dial</code> 的方法 <code>grpc.Dial</code> 来返回一个 <code>grpc.ClientConn</code> 结构体，然后通过该结构体新建一个客户端 <code>pb.NewCrawlClient</code> ，最后用这个客户端发送我们的请求就可以了，在很多地方，客户端也被叫做 <code>stub</code>， 因为它仅仅有方法调用的接口，而真正实现业务逻辑的方法还是在服务端上面。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">conn, err := grpc.Dial(*address, grpc.WithInsecure())</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatal(err)</span><br><span class="line">&#125;</span><br><span class="line">client := pb.NewCrawlClient(conn)</span><br><span class="line"></span><br><span class="line">request := pb.CrawlRequest&#123;</span><br><span class="line">    Url:     *url,</span><br><span class="line">    Timeout: <span class="number">10000</span>,</span><br><span class="line">&#125;</span><br><span class="line">response, err := client.Crawl(context.Background(), &amp;request)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatal(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在使用 <code>gRPC</code> 时，我们需要明确自己的责任与分工，什么事情应该我们自己干，而什么事情又是框架帮我们干好而我们不需要重复去做的。其实说到底，我们使用<code>RPC</code> 的目的就是让任务在远程执行后返回处理结果，具体的任务该怎么执行 <code>gRPC</code> 肯定是不知道的，所以相关的业务逻辑应该在服务端进行定义，毕竟活是服务端干的（如上面结构体 <code>crawlServer</code> 实现的 <code>Crawl</code> 方法），我们只需要定义相关的 <code>Request</code> 和 <code>Response</code> 消息，再定义一个 <code>service</code> 服务，用 <code>protoc</code> 编译生成相应的代码，最后再定义服务端上面的处理逻辑就可以了。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

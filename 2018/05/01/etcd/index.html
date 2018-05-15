@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>etcd | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用 etcd 来提供服务注册与发现功能etcd 是一个用于存储分布式系统中重要数据结构的存储引擎，而其本身就是一个分布式的键值数据库，例如在微服务架构中的服务注册和发现机制，就可以利用 etcd 作为我们的注册中心进行服务，用于存储服务注册信息。 但是，什么又是服务注册和发现呢，其实这和现在盛行的微服务架构有着密切的联系，在以前那种非微服务时代，应用运行在物理机上面，服务实例对应的网络地址也是相">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="etcd">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/01/etcd/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="使用 etcd 来提供服务注册与发现功能etcd 是一个用于存储分布式系统中重要数据结构的存储引擎，而其本身就是一个分布式的键值数据库，例如在微服务架构中的服务注册和发现机制，就可以利用 etcd 作为我们的注册中心进行服务，用于存储服务注册信息。 但是，什么又是服务注册和发现呢，其实这和现在盛行的微服务架构有着密切的联系，在以前那种非微服务时代，应用运行在物理机上面，服务实例对应的网络地址也是相">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-architecture.png">
+<meta property="og:updated_time" content="2018-05-15T11:45:20.340Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="etcd">
+<meta name="twitter:description" content="使用 etcd 来提供服务注册与发现功能etcd 是一个用于存储分布式系统中重要数据结构的存储引擎，而其本身就是一个分布式的键值数据库，例如在微服务架构中的服务注册和发现机制，就可以利用 etcd 作为我们的注册中心进行服务，用于存储服务注册信息。 但是，什么又是服务注册和发现呢，其实这和现在盛行的微服务架构有着密切的联系，在以前那种非微服务时代，应用运行在物理机上面，服务实例对应的网络地址也是相">
+<meta name="twitter:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-architecture.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-etcd"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      etcd
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-01T04:28:24.000Z" itemprop="datePublished">
+        May 1, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="使用-etcd-来提供服务注册与发现功能"><a href="#使用-etcd-来提供服务注册与发现功能" class="headerlink" title="使用 etcd 来提供服务注册与发现功能"></a>使用 etcd 来提供服务注册与发现功能</h1><p><code>etcd</code> 是一个用于存储分布式系统中重要数据结构的存储引擎，而其本身就是一个分布式的键值数据库，例如在微服务架构中的服务注册和发现机制，就可以利用 <code>etcd</code> 作为我们的注册中心进行服务，用于存储服务注册信息。</p>
+<p>但是，什么又是服务注册和发现呢，其实这和现在盛行的微服务架构有着密切的联系，在以前那种非微服务时代，应用运行在物理机上面，服务实例对应的网络地址也是相对固定不变的，而到了微服务时代，很多服务实例的网络地址则是动态分配的，而且服务实例也经常面临着失败或者更新的情况，所以这些服务实例对应的网络地址也经常会变化，这对应用的开发者和使用者都是非常不利的，所以引入服务注册和发现这种机制，来适应微服务的这种问题。</p>
+<p><img src="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-architecture.png" alt="alt text"></p>
+<p>我们以 <code>Dubbo</code> 中的服务注册与发现为例，深入理解一下到底什么是服务注册与发现，这里有几个角色需要注意一下，<code>Registry</code> 用于服务信息的登记和提供，<code>Provider</code> 是服务的提供商，它会将自己提供的服务信息注册到<code>Registry</code> 上，而 <code>Consumer</code> 则是相应服务的消费者，它会从 <code>Registry</code> 那里获取服务的信息（一般来说就是接口的地址），再调用 <code>Provider</code> 上提供的真实服务，<code>Monitor</code> 这里仅仅作为记录一些调用次数之类的元信息。注意到这里 <code>Registry</code> 通知 <code>Consumer</code> 服务信息是一个异步的过程，而 <code>Consumer</code> 调用 <code>Provider</code> 的服务则是同步的。</p>
+<p><code>etcd</code> 底层使用 <code>raft</code> 协议来维持集群中服务器间数据的一致性，这在之后的博客中会详细探讨。而 <code>etcd</code> 也提供了非常简单的客户端接口供我们使用，今天我们的目标就是写一个 <code>etcd</code> 的客户端供我们进行服务注册和发现等相关方面的使用。</p>
+<p><code>etcd</code> 无论作为什么用途，其本质都是一个kv存储引擎，而我们要实现的客户端必须提供以下接口的服务。例如向 <code>etcd</code> 写入键值对，获取相应键对应的值，还有获取相应键最新值的机制（通过watch机制）等等。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Store <span class="keyword">interface</span> &#123;</span><br><span class="line">    Put(key <span class="keyword">string</span>, value []<span class="keyword">byte</span>, options *WriteOptions) error</span><br><span class="line">    Get(key <span class="keyword">string</span>) (*KVPair, error)</span><br><span class="line">    Delete(key <span class="keyword">string</span>) error</span><br><span class="line">    Exists(key <span class="keyword">string</span>) (<span class="keyword">bool</span>, error)</span><br><span class="line">    Watch(key <span class="keyword">string</span>, stopCh &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;) (&lt;-<span class="keyword">chan</span> *KVPair, error)</span><br><span class="line">    WatchTree(directory <span class="keyword">string</span>, stopCh &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;) (&lt;-<span class="keyword">chan</span> []*KVPair, error)</span><br><span class="line">    NewLock(key <span class="keyword">string</span>, options *LockOptions) (Locker, error)</span><br><span class="line">    List(directory <span class="keyword">string</span>) ([]*KVPair, error)</span><br><span class="line">    DeleteTree(directory <span class="keyword">string</span>) error</span><br><span class="line">    AtomicPut(key <span class="keyword">string</span>, value []<span class="keyword">byte</span>, previous *KVPair, options *WriteOptions) (<span class="keyword">bool</span>, *KVPair, error)</span><br><span class="line">    AtomicDelete(key <span class="keyword">string</span>, previous *KVPair) (<span class="keyword">bool</span>, error)</span><br><span class="line">    Close() </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> KVPair <span class="keyword">struct</span> &#123;</span><br><span class="line">    Key       <span class="keyword">string</span></span><br><span class="line">    Value     []<span class="keyword">byte</span></span><br><span class="line">    LastIndex <span class="keyword">uint64</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> WriteOptions <span class="keyword">struct</span> &#123;</span><br><span class="line">    IsDir <span class="keyword">bool</span></span><br><span class="line">    TTL   time.Duration</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LockOptions <span class="keyword">struct</span> &#123;</span><br><span class="line">    Value     []<span class="keyword">byte</span></span><br><span class="line">    TTL       time.Duration</span><br><span class="line">    RenewLock <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>etcd</code> 官方已经给我们提供了一个client接口了（ github.com/coreos/etcd/client），我们只要在文件头导入它就行了。</p>
+<p><code>import etcd &quot;github.com/coreos/etcd/client</code></p>
+<p>我们对该服务进行一层封装以便实现我们的 <code>Store</code> 接口。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Etcd <span class="keyword">struct</span> &#123;</span><br><span class="line">    client etcd.KeysAPI</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(addrs []<span class="keyword">string</span>, options *Config)</span> <span class="params">(Store, error)</span></span> &#123;</span><br><span class="line">    s := &amp;Etcd&#123;&#125;</span><br><span class="line"></span><br><span class="line">    cfg := &amp;etcd.Config&#123;</span><br><span class="line">        Endpoints:               entries,</span><br><span class="line">        Transport:               etcd.DefaultTransport,</span><br><span class="line">        HeaderTimeoutPerRequest: <span class="number">3</span> * time.Second,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Set options</span></span><br><span class="line">    <span class="keyword">if</span> options != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> options.TLS != <span class="literal">nil</span> &#123;</span><br><span class="line">            setTLS(cfg, options.TLS, addrs)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> options.ConnectionTimeout != <span class="number">0</span> &#123;</span><br><span class="line">            setTimeout(cfg, options.ConnectionTimeout)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> options.Username != <span class="string">""</span> &#123;</span><br><span class="line">            setCredentials(cfg, options.Username, options.Password)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    c, err := etcd.New(*cfg)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    s.client = etcd.NewKeysAPI(c)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Periodic Cluster Sync</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> err := c.AutoSync(context.Background(), periodicSync); err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> s, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然，客户端与 <code>etcd</code> 服务器的通信一般都不是明文传输的，所以还需要定义用于传输加密相关的结构体。一般在通信过程中会使用TLS加密，所以安全性问题我们就可以不用担心了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Config <span class="keyword">struct</span> &#123;</span><br><span class="line">    ClientTLS         *ClientTLSConfig</span><br><span class="line">    TLS               *tls.Config</span><br><span class="line">    ConnectionTimeout time.Duration</span><br><span class="line">    Bucket            <span class="keyword">string</span></span><br><span class="line">    PersistConnection <span class="keyword">bool</span></span><br><span class="line">    UserName          <span class="keyword">string</span></span><br><span class="line">    Password          <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ClientTLSConfig <span class="keyword">struct</span> &#123;</span><br><span class="line">    CertFile   <span class="keyword">string</span></span><br><span class="line">    KeyFile    <span class="keyword">string</span></span><br><span class="line">    CACertFile <span class="keyword">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面我们来重点看一下三个接口的实现，分别是 <code>Put</code> ，<code>Get</code> 和 <code>Watch</code> ，分别应对现实生活中，<code>Provider</code> 向 <code>etcd</code> 写入可以提供的服务信息，<code>Consumer</code> 在 <code>etcd</code> 中读取服务信息，还有就是在 <code>etcd</code> 上注册的服务信息改变时，<code>Consumer</code> 可以及时获得改变后的值。</p>
+<p><code>Get</code> 操作获取当前 <code>etcd</code> 已经注册的服务信息，也就是服务发现的过程。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Etcd)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="params">(pair *KVPair, err error)</span></span> &#123;</span><br><span class="line">    getOpts := &amp;etcd.GetOptions&#123;</span><br><span class="line">        Quorum: <span class="literal">true</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    result, err := s.client.Get(context.Background(), s.normalize(key), getOpts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pair = &amp;KVPair&#123;</span><br><span class="line">        Key:       key,</span><br><span class="line">        Value:     []<span class="keyword">byte</span>(result.Node.Value)</span><br><span class="line">        LastIndex: result.Node.ModifieIndex,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> pair, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Put</code> 操作可以向 <code>etcd</code> 注册相应的服务信息，简单的说就是服务注册。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Etcd)</span> <span class="title">Put</span><span class="params">(key <span class="keyword">string</span>, value []<span class="keyword">byte</span>, opts *WriteOptions)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    setOpts := &amp;etcd.SetOptions&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> opts != <span class="literal">nil</span> &#123;</span><br><span class="line">        setOpts.Dir = opts.IsDir</span><br><span class="line">        setOpts.TTL = opts.TTL</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _, err := s.client.Set(context.Background(), s.normalize(key), <span class="keyword">string</span>(value), setOpts)</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们关心的某一项键值（对应服务）发生变化时候，我们需要及时获取最新的值以免我们的服务出现过期不可用的情况，例如我们我们提供服务的服务端的一个实例挂掉了，某些编排系统如 <code>k8s</code> 会自动重启这些实例，但是重启后的实例的服务地址可能会出现改变，我们使用这些服务的客户端肯定需要知道更新过后的值，通过 <code>watch</code> 机制就可以及时获取更新后的键值对。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Etcd)</span> <span class="title">Watch</span><span class="params">(key <span class="keyword">string</span>, stopCh &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span> <span class="params">(&lt;-<span class="keyword">chan</span> *KVPair, error)</span></span> &#123;</span><br><span class="line">    opts := &amp;etcd.WatcherOptions&#123;Recursive: <span class="literal">false</span>&#125;</span><br><span class="line">    watcher := s.client.Watcher(s.normalize(key), opts)</span><br><span class="line">    watchCh := <span class="built_in">make</span>(<span class="keyword">chan</span> *KVPair)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(watchCh)</span><br><span class="line"></span><br><span class="line">        pair, err := s.Get(key)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        watchCh &lt;- pair</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> &lt;-stopCh:</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">            &#125;</span><br><span class="line">           </span><br><span class="line">            result, err := watcher.Next(context.Background())</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            watchCh &lt;- KVPair&#123;</span><br><span class="line">                Key:       key,</span><br><span class="line">                Value:     []<span class="keyword">byte</span>(result.Node.Value),</span><br><span class="line">                LastIndex: result.Node.ModifiedIndex,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    retrun watchCh, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>主要是笔者最近要参加阿里的第四届中间件大赛，所以对服务注册和发现做了一些调研工作。在像阿里这种大公司就会提供各种各样的服务端口，而且由于分布式的特性，服务间通讯就变得尤为重要，通常服务提供者暴露服务，服务消费者调用服务，而它们之间的中介服务通常就由<code>etcd</code>，<code>consul</code> 或者 <code>zookeeper</code> 这样的高性能键值数据库来提供。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

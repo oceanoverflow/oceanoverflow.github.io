@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Load Balancing Using etcd | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用 etcd 进行负载均衡当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Load Balancing Using etcd">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/LoadBalancing/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="使用 etcd 进行负载均衡当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png">
+<meta property="og:updated_time" content="2018-05-15T11:50:10.770Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Load Balancing Using etcd">
+<meta name="twitter:description" content="使用 etcd 进行负载均衡当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，">
+<meta name="twitter:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-LoadBalancing"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Load Balancing Using etcd
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-02T10:12:24.000Z" itemprop="datePublished">
+        May 2, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="使用-etcd-进行负载均衡"><a href="#使用-etcd-进行负载均衡" class="headerlink" title="使用 etcd 进行负载均衡"></a>使用 etcd 进行负载均衡</h1><p>当服务提供者（Service Provider）将服务注册到 <code>etcd</code> 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。</p>
+<p>下图中，<code>Service Consumer</code> 即服务的消费者，它通过向 <code>Provider</code> 源源不断地发送服务请求，负载均衡问题要解决的问题就是如何将请求合理地分配给不同的 <code>Service Provider</code> 处理，例如，我们下图中有三台服务提供者，假如服务提供者的服务都是比较消耗时间的（例如计算哈希值），为了增加整个系统的吞吐量，我们要考虑合适的任务分配策略，这就是负载均衡的核心所在，要是只将请求发送给其中一台 <code>Service Provider</code>，那么其它两台都会空闲着不执行任务，这样的话整个系统的吞吐量肯定就上不来了，毕竟没有充分的利用所有的资源，所以，我们要把任务平均地分配给每个执行单元去处理。</p>
+<p><img src="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png" alt="loadbalancing"></p>
+<p>下面我们来实现一个负载均衡的例子，实现的思路非常简单，定义一个 <code>LoadBalancingService</code> 结构体，其中的 <code>etcdClient</code> 用于与 <code>etcd</code> 进行沟通交流以获取相应的注册信息，<code>nodes</code>，<code>nodeMap</code>，<code>nodeCount</code> 用于记录已经注册在 <code>etcd</code> 的服务提供者的信息。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> LoadBalancingService <span class="keyword">struct</span> &#123;</span><br><span class="line">    etcdClient client.Client</span><br><span class="line">    connected  <span class="keyword">bool</span></span><br><span class="line">    nodes      []<span class="keyword">string</span></span><br><span class="line">    nodeMap    <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line">    nodeCount  <span class="keyword">int</span></span><br><span class="line">    sync.RWMutex</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *LoadBalancingService)</span> <span class="title">watch</span><span class="params">(watcher client.Watcher)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        resp, err := watcher.Next(context.Background())</span><br><span class="line">        <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> resp.Action == <span class="string">"set"</span> &#123;</span><br><span class="line">                n := resp.Node.Value</span><br><span class="line">                s.addNode(n)</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> resp.Action == <span class="string">"delete"</span> &#123;</span><br><span class="line">                n := resp.PrevNode.Value</span><br><span class="line">                s.removeNode(n)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的核心就是 <code>Watcher</code> 机制，在新事件到来之前，<code>Watcher</code> 的<code>Next</code> 方法会一直阻塞，直到事件返回为止，一般来说都是在 <code>for</code> 循环中调用 <code>Next</code> 以期达到轮询（polling）的效果。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Watcher <span class="keyword">interface</span> &#123;</span><br><span class="line">    Next(context.Context) (*Response, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Connect</code> 函数就是用于客户端与 <code>etcd</code> 连接并根据 <code>serviceName</code> 读取当前已经注册过的服务，并通过 <code>watch</code> 机制不断地更新当前可用的服务。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span>  <span class="params">(s *LoadBalancingService)</span> <span class="title">Connect</span><span class="params">(serviceName <span class="keyword">string</span>, endPoints []<span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> s.connected &#123;</span><br><span class="line">        log.Println(<span class="string">"Can't connect twice"</span>)</span><br><span class="line">        <span class="keyword">return</span> errors.New(<span class="string">"Already connected"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    s.nodeMap = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span><br><span class="line">    s.nodeCount = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    cfg := client.Config&#123;</span><br><span class="line">        Endpoints:   endpoints,</span><br><span class="line">        Transport:   client.DefaultTransport,</span><br><span class="line">        HeaderTimeoutPerRequest: time.Second,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line">    s.etcdClient, err = client.New(cfg)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    kapi := client.NewKeysAPI(s.etcdClient)</span><br><span class="line"></span><br><span class="line">    resp, err := kapi.Get(context.Background(), serviceName, <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> resp.Node.Dir &#123;</span><br><span class="line">            <span class="keyword">for</span> _, peer := resp.Node.Nodes &#123;</span><br><span class="line">                n := peer.Value</span><br><span class="line">                s.addNode(n)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    watcher := kapi.Watcher(serviceName, &amp;client.WatcherOptions&#123;Recursive: <span class="literal">true</span>&#125;)</span><br><span class="line">    <span class="keyword">go</span> s.watch(watcher)</span><br><span class="line">    service.connected = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>GetNode</code> 采用了随机算法获取当前节点群中的随机节点进行处理我们的任务，这里是负载均衡算法的核心，说白了中随机挑选一个进行发送服务请求让服务提供者进行处理。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *LoadBalancingService)</span> <span class="title">GetNode</span><span class="params">()</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> !s.connected &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, errors.New(<span class="string">"Must call connect first"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    s.RLock()</span><br><span class="line">    <span class="keyword">defer</span> s.RUnlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> s.nodeCount == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, ErrEmptyService </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> s.nodes[rand.Intn(s.nodeCount)], <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>addNode</code> 和 <code>removeNode</code> 分别对应远程服务提供者数量增加或者减少时的情况，并更新 <code>LoadBalancingService</code> 结构体中相应的数据结构。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *LoadBalancingService)</span> <span class="title">addNode</span><span class="params">(key <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    s.Lock()</span><br><span class="line">    <span class="keyword">defer</span> s.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> _, ok := s.nodeMap[key]; ok &#123;</span><br><span class="line">        <span class="keyword">if</span> s.nodeCount &gt;= <span class="built_in">len</span>(s.nodes) &#123;</span><br><span class="line">            s.nodes = <span class="built_in">append</span>(s.nodes, key)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            s.nodes[s.nodeCount] = key</span><br><span class="line">        &#125;</span><br><span class="line">        s.nodeMap[key] = s.nodeCount</span><br><span class="line">        s.nodeCount++</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *LoadBalancingService)</span> <span class="title">removeNode</span><span class="params">(key <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    s.Lock()</span><br><span class="line">    <span class="keyword">defer</span> s.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> index, ok := s.nodeMap[key]; ok &#123;</span><br><span class="line">        <span class="keyword">for</span> i := index; i &lt; <span class="built_in">len</span>(s.nodes)<span class="number">-1</span>; i++ &#123;</span><br><span class="line">            s.nodes[i] = s.nodes[i+<span class="number">1</span>]</span><br><span class="line">        &#125;</span><br><span class="line">        s.nodeCount--</span><br><span class="line">        <span class="built_in">delete</span>(s.nodeMap, key)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="负载均衡算法的改良"><a href="#负载均衡算法的改良" class="headerlink" title="负载均衡算法的改良"></a>负载均衡算法的改良</h2><p>在上面的例子中，我们采用的是随机算法，这种是基于每台处理任务的 <code>Service Provider</code> 性能差不多的情况下作出的抉择，但是现实生活中情况并不总是如此，每台服务器的性能，网络带宽都存在着或多或少的差异，所以，我们需要根据实际情况，对负载均衡的分配方法作相应的改进。</p>
+<p>假设我们的服务提供者的平均综合性能比值为1:2:3，那么每台服务提供者任务分配的比例也应该是1:2:3，所谓能者多劳就是这个意思了。在其他情况下我们也可以根据流量比例分配任务，反正还是要具体问题具体分析。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

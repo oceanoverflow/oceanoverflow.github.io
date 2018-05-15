@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Leaky Buffer | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Leaky Buffer在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leaky Buffer">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/26/LeakyBuffer/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Leaky Buffer在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:49:11.775Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Leaky Buffer">
+<meta name="twitter:description" content="Leaky Buffer在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-LeakyBuffer"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Leaky Buffer
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-26T06:21:24.000Z" itemprop="datePublished">
+        Apr 26, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Leaky-Buffer"><a href="#Leaky-Buffer" class="headerlink" title="Leaky Buffer"></a>Leaky Buffer</h1><p>在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 <code>LeakyBuffer</code> 这种编程模型，<code>LeakyBuffer</code> 通常也被叫做 <code>LeakyBucket</code> ，或者说是漏桶模型。<code>LeakyBuffer</code> 维护了固定个数个字节数组（free list），如果我们的程序需要使用内存， 那么它会从 <code>LeakyBuffer</code> 维护的 <code>freelist</code> 去拿，如果 <code>freelist</code> 中没有了，则再重新make一个，当程序使用完了这段内存，不像通常那么被golang的runtime进行垃圾回收操作，我们把它重新放回 <code>LeakyBuffer</code> 维护的 <code>freelist</code> 中。</p>
+<p>下面我们来看一下 <code>Leaky Buffer</code> 的实现吧。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> leakyBufferSize = <span class="number">4096</span></span><br><span class="line"><span class="keyword">const</span> maxNum = <span class="number">2048</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LeakyBuffer <span class="keyword">struct</span> &#123;</span><br><span class="line">    bufferSize  <span class="keyword">int</span></span><br><span class="line">    freeList <span class="keyword">chan</span> []<span class="keyword">byte</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>LeakyBuffer</code> 的实现非常简单，它主要维护了两个变量，一就是每个 <code>buffer</code>  的大小，而就是一个 <code>freelist</code> ，真正用于维护我们的内存。</p>
+<p>在上面的代码中我们定义每个 <code>buffer</code> 的大小是4096，这里的单位是字节，<code>freelist</code> 的长度是2048，所以我们这个 <code>LeakyBuffer</code> 总共可以使用的内存大小就是 4096 * 2048 B 也就是 8MB ，这对于一般的网络应用已经足够了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> leakyBuf = NewLeakyBuffer(maxNum, leakyBufferSize)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewLeakyBuffer</span><span class="params">(n, bufSize <span class="keyword">int</span>)</span> *<span class="title">LeakyBuffer</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;LeakyBuffer&#123;</span><br><span class="line">        bufferSize: bufSize,</span><br><span class="line">        freeList: <span class="built_in">make</span>(<span class="keyword">chan</span> []<span class="keyword">byte</span>, n)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>NewLeakyBuffer</code> 返回一个 <code>LeakyBuffer</code> 指针，它维护的 <code>freelist</code>  就是一个容量为n的通道。</p>
+<p>下面我们来看看如何使用 <code>LeakyBuffer</code> ，<code>LeakyBuffer</code> 只定义了两种操作，存和取。</p>
+<h2 id="取操作"><a href="#取操作" class="headerlink" title="取操作"></a>取操作</h2><p><code>Get</code> 操作从 <code>LeakyBuffer</code> 所维护的 <code>freelist</code> 的通道中取出一个字节数组，如果 <code>freelist</code> 为空，则说明没有多余的空闲字节数组，则自己make一个字节数组然后返回。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lb *LeakyBuffer)</span> <span class="title">Get</span><span class="params">()</span> <span class="params">(b []<span class="keyword">byte</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> b := &lt;- lb.freeList:</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        b := <span class="built_in">make</span>([]<span class="keyword">byte</span>, lb.bufferSize)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="存操作"><a href="#存操作" class="headerlink" title="存操作"></a>存操作</h2><p>当程序使用完了这段内存空间后，我们将它重新放回 <code>LeakyBuffer</code> 中进行回收而不是用 <code>golang runtime</code> 进行垃圾回收，注意一种特殊情况，就是当 <code>freelist</code> 已经满了，这时我们会执行default case， 也就是什么事情也不干，然后这个无家可归的字节数组就会自动被系统进行垃圾回收，这就是 <code>LeakyBuffer</code> 这个名字中 Leaky 的由来，也就是有可能会泄漏出去。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lb *LeakyBuffer)</span> <span class="title">Put</span><span class="params">(b []<span class="keyword">byte</span>)</span></span> &#123;</span><br><span class="line">     <span class="keyword">if</span> lb.bufferSize != <span class="built_in">len</span>(b) &#123;</span><br><span class="line">         <span class="built_in">panic</span>(<span class="string">"invalid buffer size that's put into leaky buffer"</span>)</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">select</span> &#123;</span><br><span class="line">     <span class="keyword">case</span> lb.freeList &lt;- b:</span><br><span class="line">     <span class="keyword">default</span>:</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述就是 <code>LeakyBuffer</code> 的实现了，如果下次你遇到需要重复分配很多相同大小的内存空间时，不妨可以使用一下这个编程模型。</p>
+<h2 id="Golang-标准库的实现"><a href="#Golang-标准库的实现" class="headerlink" title="Golang 标准库的实现"></a>Golang 标准库的实现</h2><p>在 golang 标准库中也实现了类似于 <code>LeakyBuffer</code> 的接口，<code>sync.Pool</code> ，有兴趣的读者不妨阅读一下它的源码，这里就不再重复介绍了。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Token Bucket | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Token Bucket学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Token Bucket">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/11/TokenBucket/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Token Bucket学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://community.cambiumnetworks.com/bstrc49894/attachments/bstrc49894/forums_pmp_450/5991/1/TokenBucket.JPG">
+<meta property="og:updated_time" content="2018-05-15T11:42:28.889Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Token Bucket">
+<meta name="twitter:description" content="Token Bucket学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个">
+<meta name="twitter:image" content="https://community.cambiumnetworks.com/bstrc49894/attachments/bstrc49894/forums_pmp_450/5991/1/TokenBucket.JPG">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-TokenBucket"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Token Bucket
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-11T14:05:04.000Z" itemprop="datePublished">
+        May 11, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Token-Bucket"><a href="#Token-Bucket" class="headerlink" title="Token Bucket"></a>Token Bucket</h1><p>学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ <code>Token Bucket</code> ）这个算法就可以实现速率限制这个功能。</p>
+<p>那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个数就不会再增加了。接下来是重点，如果你要进行某个需要控制速率的操作，在执行这个操作之前，必须先从桶中拿到这个操作对应的令牌个数，比如规定了操作A需要5个令牌，操作B需要10个令牌，那么如果要执行操作A，则需要从桶中拿出5个令牌，如果桶中的令牌数目不够，就需要等到令牌数量足够时才能进行A操作。由于桶中令牌产生的速率是固定的，而在进行相关操作之前，又必须获得足够数量的令牌，这样就到达了速率限制（ <code>Rate Limiting</code> ）的目的。</p>
+<p>除了速率限制之外，令牌桶算法还具有流量整形（ <code>Traffic Shaping</code> ）的功能，因为令牌桶中的令牌是以恒定的速率产生的，所以一段时间内产生的令牌数量是固定的，如果在某一段时间消耗的令牌数量较多，也就是对应操作的数量很多，那么之后的一段时间的操作数量必定会收到限制，从整体上来看，操作的速率会比较均匀，也就是说流量是以比较均衡的速率向外发送的。</p>
+<p><img src="https://community.cambiumnetworks.com/bstrc49894/attachments/bstrc49894/forums_pmp_450/5991/1/TokenBucket.JPG" alt="Token Bucket"></p>
+<p>下面我们来看一下令牌桶算法的实现，由于令牌桶中非常重要的两个属性就是令牌桶的容量和令牌产生的速率，分别用 <code>capacity</code> 和 <code>rate</code> 来表示，我们使用一个通道来存储令牌，因为我们并不关心令牌的内容，所以我们使用 <code>tokens chan struct{}</code> 来表示这个桶。</p>
+<p>在初始化令牌桶的时候，直接起一个 <code>goroutine</code> 来定时向我们的桶中放入令牌，通过 <code>time.NewTicker</code> 用于定时生产令牌，如果令牌桶满了，则<code>b.tokens &lt;- struct{}{}</code> 操作也会被阻塞。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Bucket <span class="keyword">struct</span> &#123;</span><br><span class="line">    capacity <span class="keyword">int64</span></span><br><span class="line">    tokens <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    rate time.Duration</span><br><span class="line">    sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBucket</span><span class="params">(rate time.Duration, capacity <span class="keyword">int64</span>)</span> *<span class="title">Bucket</span></span> &#123;</span><br><span class="line">    tokens := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, capacity)</span><br><span class="line">    b := &amp;Bucket&#123;</span><br><span class="line">        capacity: capacity,</span><br><span class="line">        tokens: tokens,</span><br><span class="line">        rate: rate,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(b *Bucket)</span></span> &#123;</span><br><span class="line">        ticker := time.NewTicker(rate)</span><br><span class="line">        <span class="keyword">for</span> _ := <span class="keyword">range</span> ticker.C &#123;</span><br><span class="line">            b.tokens &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;(b)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面给出了设置时间间隔（等效为速率）的方法，时间间隔越短，对应的平均速率就越快，二者成反比关系。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bucket)</span> <span class="title">GetRate</span><span class="params">()</span> <span class="title">time</span>.<span class="title">Duration</span></span> &#123;</span><br><span class="line">    b.Lock()</span><br><span class="line">    tmp := b.rate</span><br><span class="line">    b.Unlock()</span><br><span class="line">    <span class="keyword">return</span> tmp</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bucket)</span> <span class="title">SetRate</span><span class="params">(rate time.Duration)</span></span> &#123;</span><br><span class="line">    b.Lock()</span><br><span class="line">    b.rate = rate</span><br><span class="line">    b.Unlock()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于在进行特定操作之前需要取出固定数量的令牌，可以形象的把令牌想象为存在银行里的钱，把令牌桶想象成银行，如果你想要买一台电脑，你就需要从银行拿出足够的钱，如果银行中没有足够的钱，你只能等到你积累了足够的钱才可以买你想要的电脑。也就是说在执行相应操作之前需要有足够多的令牌才能顺利执行。注意到这个函数是阻塞的，只有在 <code>n</code> 次 <code>&lt;-b.tokens</code> 成功之后，该函数才会返回。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bucket)</span> <span class="title">withdrawTokens</span><span class="params">(n <span class="keyword">int64</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="keyword">int64</span>(<span class="number">0</span>); i &lt; n; i++ &#123;</span><br><span class="line">        &lt;-b.tokens</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>SpendToken</code> 函数会返回一个通道，其函数内部会起一个 <code>goroutine</code> ，在该 <code>goroutine</code> 里会执行上述 <code>withdrawTokens</code> 方法，由于该函数是阻塞的，所以只有它执行完，才能将返回值放入通道 <code>c</code> 中，然后利用 <code>close(c)</code> 操作将该通道关闭，这样以来别处调用该函数的地方就可以顺利返回了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bucket)</span> <span class="title">SpendToken</span><span class="params">(n <span class="keyword">uint64</span>)</span> &lt;-<span class="title">chan</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n &lt; <span class="number">0</span> &#123;</span><br><span class="line">        n = <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    c := <span class="built_in">make</span>(<span class="keyword">chan</span> error)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(b *Bucket, n <span class="keyword">uint64</span>, c <span class="keyword">chan</span> error)</span></span> &#123;</span><br><span class="line">        c &lt;- b.withdrawTokens(n)</span><br><span class="line">        <span class="built_in">close</span>(c)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;(b, n, c)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> c</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Drain</code> 方法将桶中的所有令牌一次性放光，具体该在哪里使用它要看具体需求。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bucket)</span> <span class="title">Drain</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> &lt;-b.tokens:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="令牌桶的使用"><a href="#令牌桶的使用" class="headerlink" title="令牌桶的使用"></a>令牌桶的使用</h2><p>使用令牌桶之前当然需要新建一个令牌桶，并指定令牌桶的容量及其平均速率。因为使用令牌桶的目的之一就是限制速率，在需要被限速的函数（ <code>RegulatedAction()</code> ）前使用 <code>&lt;-bucket.SpendToken(x)</code> ，该 <code>RegulatedAction</code> 只有等到攒满 <code>x</code> 个令牌才会执行，这样就可以达到限制速率的目的了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bucket := NewBucket(<span class="number">1</span> * time.Second, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">&lt;-bucket.SpendToken(<span class="number">10</span>)</span><br><span class="line">RegulatedAction()</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

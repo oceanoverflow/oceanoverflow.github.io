@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Morse Code | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="morse code电影无间道中，陈永仁用摩斯密码向自己老大发送消息那一段真的是精彩，印象非常深刻。其实摩斯密码的本质上就是一种消息编码格式，也就是通信双方用规定好的格式进行交流，由于该编码方式二义性小，所以接受方基本可以准确无误的解析出发送方经过编码的信息。 摩斯密码摩斯密码主要编码英文字母，数字和标点符号，摩斯密码与常用的二进制编码不同，它包含了五个元素， 点、划、点和划之间的停顿、每个词之间">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Morse Code">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/09/MorseCode/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="morse code电影无间道中，陈永仁用摩斯密码向自己老大发送消息那一段真的是精彩，印象非常深刻。其实摩斯密码的本质上就是一种消息编码格式，也就是通信双方用规定好的格式进行交流，由于该编码方式二义性小，所以接受方基本可以准确无误的解析出发送方经过编码的信息。 摩斯密码摩斯密码主要编码英文字母，数字和标点符号，摩斯密码与常用的二进制编码不同，它包含了五个元素， 点、划、点和划之间的停顿、每个词之间">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/443/1*2WrXJ9lDlC8Q0HCO7H3DBQ.png">
+<meta property="og:updated_time" content="2018-05-15T11:52:34.231Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Morse Code">
+<meta name="twitter:description" content="morse code电影无间道中，陈永仁用摩斯密码向自己老大发送消息那一段真的是精彩，印象非常深刻。其实摩斯密码的本质上就是一种消息编码格式，也就是通信双方用规定好的格式进行交流，由于该编码方式二义性小，所以接受方基本可以准确无误的解析出发送方经过编码的信息。 摩斯密码摩斯密码主要编码英文字母，数字和标点符号，摩斯密码与常用的二进制编码不同，它包含了五个元素， 点、划、点和划之间的停顿、每个词之间">
+<meta name="twitter:image" content="https://cdn-images-1.medium.com/max/443/1*2WrXJ9lDlC8Q0HCO7H3DBQ.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-MorseCode"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Morse Code
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-09T09:07:24.000Z" itemprop="datePublished">
+        May 9, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="morse-code"><a href="#morse-code" class="headerlink" title="morse code"></a>morse code</h1><p>电影无间道中，陈永仁用摩斯密码向自己老大发送消息那一段真的是精彩，印象非常深刻。其实摩斯密码的本质上就是一种消息编码格式，也就是通信双方用规定好的格式进行交流，由于该编码方式二义性小，所以接受方基本可以准确无误的解析出发送方经过编码的信息。</p>
+<h2 id="摩斯密码"><a href="#摩斯密码" class="headerlink" title="摩斯密码"></a>摩斯密码</h2><p>摩斯密码主要编码英文字母，数字和标点符号，摩斯密码与常用的二进制编码不同，它包含了五个元素， 点、划、点和划之间的停顿、每个词之间中等的停顿以及句子之间长的停顿。</p>
+<p><img src="https://cdn-images-1.medium.com/max/443/1*2WrXJ9lDlC8Q0HCO7H3DBQ.png" alt="Morse Code"></p>
+<p>因为摩斯密码的编码方法不止一种，但其基本原理都是相通的，所以这里我们使用国际电信联盟（International Telecommunication Union）制定的编码标准来书写代码。</p>
+<p>下面使用一个 <code>map</code> 作为字典使用，用于记录英文字母、数字和标点符号到摩斯密码的映射关系，因为文章篇幅原因，这里选择省略对应关系。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    morseITU = <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;</span><br><span class="line">        <span class="string">"a"</span>: <span class="string">".-"</span>,</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// ...    </span></span><br><span class="line"></span><br><span class="line">        <span class="string">"0"</span>:  <span class="string">"-----"</span>,   </span><br><span class="line"></span><br><span class="line">        <span class="string">"="</span>:  <span class="string">"-...-"</span>,</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><p>编码的过程就是利用字典将我们要映射的字符转为摩斯密码，并且注意每次转换都要附加一个 <code>letterSep</code> ，也就是字符间的分隔符，当遇到原本需要编码的字符串中的空格，则加上 <code>wordSep</code> ，即字分隔符。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">EncodeITU</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> Encode(s, morseITU, <span class="string">" "</span>, <span class="string">"/"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(s <span class="keyword">string</span>, alphabet <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>, letterSep <span class="keyword">string</span>, wordSep <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    res := <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> _, part := <span class="keyword">range</span> s &#123;</span><br><span class="line">        p := <span class="keyword">string</span>(part)</span><br><span class="line">        <span class="keyword">if</span> p == <span class="string">" "</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> wordSep != <span class="string">""</span> &#123;</span><br><span class="line">                res += wordSep + letterSep</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> morseITU[p] != <span class="string">""</span> &#123;</span><br><span class="line">            res += morseITU[p] + letterSep</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> strings.TrimSpace(res)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h2><p>解码是编码的逆过程，因为有字符分隔符（letterSep）的存在，所以我们先用 <code>strings.Split(s, letterSep)</code> 得到一组经过摩斯密码编码的字符数组，然后对于每个经过编码的摩斯密码，我们查询字典中是否有该编码存在，如果存在则与返回结果拼接，如果不存在则检查该元素是否为字分隔符，如果还不是的话则返回错误，最后全部成功返回解码后的结果。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DecodeITU</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> Decode(s, morseITU, <span class="string">" "</span>, <span class="string">"/"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Decode</span><span class="params">(s <span class="keyword">string</span>, alphabet <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>, letterSep <span class="keyword">string</span>, wordSep <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    res := <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> _, part := <span class="keyword">range</span> strings.Split(s, letterSep) &#123;</span><br><span class="line">        found := <span class="literal">false</span></span><br><span class="line">        <span class="keyword">for</span> key, val := <span class="keyword">range</span> alphabet &#123;</span><br><span class="line">            <span class="keyword">if</span> val == part &#123;</span><br><span class="line">                res += key</span><br><span class="line">                found = <span class="literal">true</span></span><br><span class="line">                <span class="keyword">break</span>    </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> part == wordSep &#123;</span><br><span class="line">            res += <span class="string">" "</span></span><br><span class="line">            found = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> found == <span class="literal">false</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> res, fmt.Errorf(<span class="string">"unknown character "</span> + part)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

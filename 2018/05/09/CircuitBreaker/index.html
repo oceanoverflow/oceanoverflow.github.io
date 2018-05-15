@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Circuit Breaker | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="CircuitBreaker我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Circuit Breaker">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/09/CircuitBreaker/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="CircuitBreaker我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://martinfowler.com/bliki/images/circuitBreaker/sketch.png">
+<meta property="og:updated_time" content="2018-05-15T11:35:05.096Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Circuit Breaker">
+<meta name="twitter:description" content="CircuitBreaker我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里">
+<meta name="twitter:image" content="https://martinfowler.com/bliki/images/circuitBreaker/sketch.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-CircuitBreaker"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Circuit Breaker
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-09T01:17:24.000Z" itemprop="datePublished">
+        May 9, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="CircuitBreaker"><a href="#CircuitBreaker" class="headerlink" title="CircuitBreaker"></a>CircuitBreaker</h1><p>我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 <code>RPC</code> 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 <code>RPC</code> 是阻塞的，客户端会像执行本地方法一样调用 <code>RPC</code> ，也就是说客户端会阻塞在这里无法执行 直到该方法本地超时，但由于为了得到正确的结果，客户端可能会反复多次调用该 <code>RPC</code> ，由于在这段时间内远程服务器都可能无法恢复正常，所以就会导致客户端一直调用该方法，但却无法得到结果，这样就会导致资源的浪费。</p>
+<p>为了避免上述情况的发生，我们可以在程序设计中借鉴断路开关的模式，也就是允许被保护的函数在规定上限内执行，如果一旦出现错误的次数超过上限，则下次函数再次调用时则直接不让其执行（也就是断路开关直接断开），从而避免系统资源的浪费。但是上述方法存在一个问题，就是一旦总的错误次数超过上限，是不是就说明即使现在远程服务器恢复正常，客户端也无法调用了呢。</p>
+<p>解决上述问题也很简单，通过模仿网络中很常见的 <code>Sliding Window</code> ，也就是移动窗口，允许在一定时间窗口内出现特定上限个错误，如果在该时间窗口内出现错误的次数超过上限，则不再允许该函数执行，直到下一个时间窗口的到来才允许它重新执行。</p>
+<p>下面来设计一个滑动窗口版本的断路开关，我们通过判断一个时间窗口 <code>window</code> 内出现的错误次数 <code>failures</code> 是否超过<code>failureThreshold</code> 来决定断路开关是否应该断开（也就是不让函数继续执行）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> CircuitBreaker <span class="keyword">struct</span> &#123;</span><br><span class="line">    lastFailureTime  time.Time</span><br><span class="line">    failures         <span class="keyword">uint64</span></span><br><span class="line">    failureThreshold <span class="keyword">uint64</span></span><br><span class="line">    window           time.Duration</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewCircuitBreaker</span><span class="params">(failureThreshold <span class="keyword">uint64</span>, window time.Duration)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;CircuitBreaker&#123;</span><br><span class="line">        failureThreshold: failureThreshold,</span><br><span class="line">        window:           window,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于是滑动窗口，我们需要观察在现在的窗口出现错误的次数是否超过我们规定的次数，如果超过，则表示该函数还没有 <code>ready</code> ，也就是还不能执行，如果该窗口已经过去，那么我们重置（ <code>reset</code> ）断路开关中记录的出错次数，以让函数可以重新执行。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cb *CircuitBreaker)</span> <span class="title">ready</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> time.Since(cb.lastFailureTIme) &gt; cb.window &#123;</span><br><span class="line">        cb.reset()</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    failures := atomic.LoadUint64(&amp;cb.failures)</span><br><span class="line">    <span class="keyword">return</span> failures &lt; cb.failureThreshold</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cb *CircuitBreaker)</span> <span class="title">success</span><span class="params">()</span></span> &#123;</span><br><span class="line">    cb.reset()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cb *CircuitBreaker)</span> <span class="title">fail</span><span class="params">()</span></span> &#123;</span><br><span class="line">    atomic.AddUint64(&amp;cb.failures, <span class="number">1</span>)</span><br><span class="line">    cb.lastFailureTime = time.Now()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cb *CircuitBreaker)</span> <span class="title">reset</span><span class="params">()</span></span> &#123;</span><br><span class="line">    atomic.StoreUint64(&amp;cb.failures, <span class="number">0</span>)</span><br><span class="line">    cb.lastFailureTime = time.Now()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也就是说，在 <code>CircuitBreaker</code> 保护下，客户端准备调用函数时，会预先检察其是否具备资格，也就是说过去一个时间窗口没有出现超过上限个错误，如果不具备，就报 <code>ErrBreakerOpen</code> 错误，也就是对应下图中的  <code>circuit open</code> ，因为断路开关断开了，自然没有办法继续执行。</p>
+<p>如果具备，则可以让受保护的函数继续执行，但是钥匙它在规定的时间内还没有返回结果，说明出现超时情况，则报<code>ErrBreakerTimeout</code> 错误，并增加错误次数直到其达到上限为止。</p>
+<p><img src="https://martinfowler.com/bliki/images/circuitBreaker/sketch.png" alt="Circuit Breaker"></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    ErrBreakerOpen = errors.New(<span class="string">"breaker open"</span>)</span><br><span class="line">    ErrBreakerTimeout = errors.New(<span class="string">"breaker time out"</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cb *CircuitBreaker)</span> <span class="title">Call</span><span class="params">(fn <span class="keyword">func</span>()</span> <span class="title">error</span>, <span class="title">d</span> <span class="title">time</span>.<span class="title">Duration</span>) <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line">    <span class="keyword">if</span> !cb.ready() &#123;</span><br><span class="line">        <span class="keyword">return</span> </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> d == <span class="number">0</span> &#123;</span><br><span class="line">        err = fn()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        c := <span class="built_in">make</span>(<span class="keyword">chan</span> error, <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            c &lt;- fn()</span><br><span class="line">            <span class="built_in">close</span>(c)</span><br><span class="line">        &#125;()</span><br><span class="line"></span><br><span class="line">        t := time.NewTicker(d)</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> e := &lt;-c:</span><br><span class="line">            err = e</span><br><span class="line">        <span class="keyword">case</span> &lt;-t.C:</span><br><span class="line">            err = ErrBreakerTimeout</span><br><span class="line">        &#125;</span><br><span class="line">        t.Stop()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">        cb.success()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        cb.fail()</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Event Process Engine | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="实现一个事件处理引擎在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChang">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Event Process Engine">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/26/EventProcessEngine/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="实现一个事件处理引擎在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChang">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:46:39.977Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Event Process Engine">
+<meta name="twitter:description" content="实现一个事件处理引擎在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChang">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-EventProcessEngine"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Event Process Engine
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-26T01:43:24.000Z" itemprop="datePublished">
+        Apr 26, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="实现一个事件处理引擎"><a href="#实现一个事件处理引擎" class="headerlink" title="实现一个事件处理引擎"></a>实现一个事件处理引擎</h1><p>在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。</p>
+<p>首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 <code>Preprepare</code> ， <code>Prepare</code> ， <code>Commit</code> ， <code>ViewChange</code> 等等，具体的消息类型的定义我们可以使用protobuf来，而无论是什么事件，我们在Golang中我们都可以把它们抽象成一个 <code>interface{}</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Event <span class="keyword">interface</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们定义的 <code>Event</code> 是我们以后围绕着处理的中心，我们继续看。定义完了 <code>Event</code> ，我们还要定义一个 <code>Event</code> 的接受者（Receiver），也就是事物处理的核心。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Receiver <span class="keyword">interface</span> &#123;</span><br><span class="line">    ProcessEvent(e Event) Event</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里我们注意到这是一个 <code>interface</code> ，只要你定义的对象实现了 <code>ProcessEvent</code> 这个方法，那么它就是一个 <code>Receiver</code> ，当然，你自己定义的 <code>ProcessEvent</code> 里面才是真正的业务逻辑，这里仅仅提供一个框架而已。</p>
+<p>定义完了事件的接受者，<code>Receiver</code>，我们来看下更高层次的管理者 <code>Manager</code> ，如果把 <code>Manager</code> 想象成公司里的领导，那么他负责的事情就是调度，并且指派任务给专门的个体也就是我们的 <code>Receiver</code> 去处理。 <code>Receiver</code> 是具体干活的，而 <code>Manager</code> 则是分配任务的。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Manager <span class="keyword">interface</span> &#123;</span><br><span class="line">    Inject(Event)</span><br><span class="line">    Queue() &lt;-<span class="keyword">chan</span> Event</span><br><span class="line">    SetReceiver(Receiver)</span><br><span class="line">    Start()</span><br><span class="line">    Halt()</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> managerImpl &#123;</span><br><span class="line">    threaded </span><br><span class="line">    receiver Receiver</span><br><span class="line">    events <span class="keyword">chan</span> Event</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> threaded <span class="keyword">struct</span> &#123;</span><br><span class="line">    exit <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一个Manager的职能具体有两大点，一就是管理事件的队列（events这个通道），二就是取出队列中的事件，指派接受者（SetReceiver(Receiver)）进行处理（Start）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(em *managerImpl)</span> <span class="title">Queue</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> em.events</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(em *managerImpl)</span> <span class="title">SetReceiver</span><span class="params">(receiver Receiver)</span></span> &#123;</span><br><span class="line">    em.receiver = receiver</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewManagerImpl</span><span class="params">()</span> <span class="title">Manager</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;managerImpl&#123;</span><br><span class="line">        events: <span class="built_in">make</span>(<span class="keyword">chan</span> Event),</span><br><span class="line">        threaded: threaded&#123;<span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(em *managerImpl)</span> <span class="title">Start</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">go</span> em.eventLoop()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Manager</code> 的启动就是就是开了一个goroutine对消息进行循环处理，下面来看一下 <code>eventLoop</code> 的实现。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(em *managerImpl)</span> <span class="title">eventLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> e := &lt;-em.events:</span><br><span class="line">            em.Inject(e)</span><br><span class="line">        <span class="keyword">case</span> &lt;-em.exit:</span><br><span class="line">            logger.Debug(<span class="string">"event told to exit"</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>eventLoop</code> 里面是咋一看是一个死循环，但它还是有出口的，它通过 <code>for select</code> 机制一直去轮询 <code>em.events</code> 和<code>em.exit</code>这两个通道，如果 <code>em.exit</code> 这个通道有值，则说明该事件处理循环要退出了，这就是程序的一个出口，但如果<code>em.events</code>有消息返回，我们则将它插入到我们 <code>manager</code> 的事件队列里等待被处理，也就是调用 <code>em.Inject(e)</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(em *managerImpl)</span> <span class="title">Inject</span><span class="params">(event Event)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> em.Receiver != <span class="literal">nil</span> &#123;</span><br><span class="line">        SendEvent(em.Receiver, event)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Inject</code> 行为的主体是 <code>manager</code> ， <code>manager</code> 把任务（event）分配给我们的 <code>receiver</code>。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SendEvent</span><span class="params">(receiver Receiver, event Event)</span></span> &#123;</span><br><span class="line">    next := Event</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        next  := receiver.ProcessEvent(next)</span><br><span class="line">        <span class="keyword">if</span> next == <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>SendEvent</code> 函数才是真正干活的主力，它主要就是调用 <code>Receiver</code> 实现定义好的 <code>ProcessEvent</code> 方法，因为处理一个事件后可能会返回另一件事件，所以循环处理它直到为空时候返回。看到这里，你可能会不理解处理意见事件会什么会返回另一件事件呢，其实现实中处理完A事件返回B事件的例子有很多，例如在PBFT中，处理完 <code>Preprepare</code> 事件，我们赶忙就要开始处理 <code>Prepare</code> 事件了。这种例子还有很多，以后有机会我们再详细介绍。</p>
+<p>上面就是我们整个事件处理的引擎了，不难，但是设计的非常精妙，下面我们来看如何使用它。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> aEvent Event</span><br><span class="line"><span class="keyword">type</span> bEvent Event</span><br><span class="line"><span class="keyword">type</span> cEvent Event</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Instance <span class="keyword">struct</span>&#123;</span><br><span class="line">    manager Manager</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(i *Instance)</span> <span class="title">ProcessEvent</span><span class="params">(e Event)</span> <span class="title">Event</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> et := e.(<span class="keyword">type</span>) &#123;</span><br><span class="line">    <span class="keyword">case</span> aEvent:</span><br><span class="line">        fmt.Println(<span class="string">"Received A Event, return B Event"</span>)</span><br><span class="line">        <span class="keyword">return</span> bEvent</span><br><span class="line">    <span class="keyword">case</span> bEvent:</span><br><span class="line">        fmt.Println(<span class="string">"Received B Event, return C Event"</span>)</span><br><span class="line">        <span class="keyword">return</span> cEvent</span><br><span class="line">    <span class="keyword">case</span> cEvent:</span><br><span class="line">        fmt.Println(<span class="string">"Received C Event, return nil"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        fmt.Println(<span class="string">"Received undefined message type"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i Instance</span><br><span class="line">    i.manager = NewManagerImpl()</span><br><span class="line">    i.manager.SetReceiver(i)</span><br><span class="line">    i.manager.Start()</span><br><span class="line"></span><br><span class="line">    i.manager.Queue() &lt;- aEvent</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们定义了三种事件类型，并且定义了一个包含manager的结构体，这个结构体实现了 <code>ProcessEvent</code> 方法，也就是说它实现了 <code>Receiver</code> 这个接口， <code>ProcessEvent</code> 方法里通过判断接收到的event的类型，来进行相应的处理，注意到处理完<code>aEvent</code>会返回<code>bEvent</code>，这就说我们说的处理完一件事件再返回一件事件的例子了。</p>
+<p>在 <code>main</code> 函数中，我们新起一个 <code>Instance</code> 实例，并初始化里面的 <code>manager</code> ，把 <code>manager</code> 的 <code>receiver</code> 设置为自己，因为是 <code>Instance</code> 实现了 <code>ProcessEvent</code> 方法，所以说谁实现了 <code>ProcessEvent</code> 方法， <code>SetReceiver</code> 就设置为谁，最后再用 <code>Start</code> 起一个goroutine不断地处理接收进行的事件。</p>
+<p>在我们向manager管理的事件队列中插入一个 <code>aEvent</code> 事件后， <code>eventLoop</code> 就会开始处理事件，命令行中应该会依次输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Received A Event, return B Event</span><br><span class="line">Received B Event, return C Event</span><br><span class="line">Received C Event, return nil</span><br></pre></td></tr></table></figure>
+<p>这个事件处理引擎的实现非常精妙，还是希望读者可以反复阅读几次。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

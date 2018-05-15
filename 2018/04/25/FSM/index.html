@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Finite State Machine | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="实现一个有限状态机在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和clo">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Finite State Machine">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/25/FSM/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="实现一个有限状态机在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和clo">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T12:03:07.879Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Finite State Machine">
+<meta name="twitter:description" content="实现一个有限状态机在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和clo">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-FSM"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Finite State Machine
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-25T01:58:24.000Z" itemprop="datePublished">
+        Apr 25, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="实现一个有限状态机"><a href="#实现一个有限状态机" class="headerlink" title="实现一个有限状态机"></a>实现一个有限状态机</h1><p>在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。</p>
+<p>以门的开启和关闭举例，一扇门拥有两种状态（state），open和closed，我们将门关上，那它的状态就由open转移到closed，这里我们将open称为初始状态，将closed称为目标状态，分别用src和dst表示。而导致状态转移的动作我们称它为事件（event），状态的转移都是由特定事件触发的。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> EventDesc <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span> </span><br><span class="line">    Src []<span class="keyword">string</span> </span><br><span class="line">    Dst <span class="keyword">string</span>  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Events []EventDesc</span><br></pre></td></tr></table></figure>
+<p>这里Name表示触发状态转移的事件名称，Src是状态转移过程中的初始状态，注意到它是一个数组，因为可以有多个不同的初始状态转移到同一个目标状态，而Dst是状态转移过程中的目标状态。上面的结构体就代表了有限状态机中触发状态转移的事件，可以把它理解成一个导火索，有了它，有限状态机才在不同的状态之间跳跃。</p>
+<p>下面我们再来定义有限状态机的结构体，一个有限状态机需要哪些信息呢，首先，肯定需要一个值来标定它现在处于什么状态，也就是有限个状态中它处于哪个阶段，还需要一个东西来表示各个状态之间如何转移，如在事件E发生的情况下状态A转移到状态B。还需要一个回调方法集合（callbacks），它可以用于在状态转移发生时需要分别调用什么方法。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> eKey <span class="keyword">struct</span> &#123;</span><br><span class="line">    event <span class="keyword">string</span></span><br><span class="line">    src <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> cKey <span class="keyword">struct</span> &#123;</span><br><span class="line">    target <span class="keyword">string</span></span><br><span class="line">    callbackType <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> FSM <span class="keyword">struct</span> &#123;</span><br><span class="line">    current <span class="keyword">string</span></span><br><span class="line">    transitions <span class="keyword">map</span>[eKey]<span class="keyword">string</span></span><br><span class="line">    callbacks <span class="keyword">map</span>[cKey]<span class="keyword">string</span></span><br><span class="line">    transition <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>还是拿开门关门举例子，当门刚开始的状态是open，那么current=open，我们用手关门，就会查看transitions这个map中open和关门这个动作所对应的目标状态是什么，发现是closed，然后在状态转移的过程中还会调用注册过的callback方法。以上就是基本的实现一个FSM的思路。</p>
+<p>下面我们来讨论一下回调方法（callback）的种类。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    callbackNone <span class="keyword">int</span> = <span class="literal">iota</span></span><br><span class="line">    callbackBeforeEvent</span><br><span class="line">    callbackLeaveState</span><br><span class="line">    callbackEnterState</span><br><span class="line">    callbackAfterState</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>触发一次状态的导火索是一个特定的事件Event，我们记为E，因为E的发生，状态A变成状态B，所以我们一共可以定义四种回调方法，分别是在事件发生之前和之后，也就是callbackBeforeEvent，callbackAfterEvent，还有就是离开初始状态和进入目标状态的回调函数，callbackLeaveState和callbackEnterState。</p>
+<p>而一个callback其实就是一个回调函数 <code>type Callback func(*Event)</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewFSM</span><span class="params">(initial <span class="keyword">string</span>, events []EventDesc, callbacks <span class="keyword">map</span>[<span class="keyword">string</span>]Callback)</span> *<span class="title">FSM</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> f FSM</span><br><span class="line">	f.current = initial</span><br><span class="line">	f.transitions = <span class="built_in">make</span>(<span class="keyword">map</span>[eKey]<span class="keyword">string</span>)</span><br><span class="line">	f.callbacks = <span class="built_in">make</span>(<span class="keyword">map</span>[cKey]Callback)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Build transition map and store sets of all events and states.</span></span><br><span class="line">	allEvents := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">bool</span>)</span><br><span class="line">	allStates := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">bool</span>)</span><br><span class="line">	<span class="keyword">for</span> _, e := <span class="keyword">range</span> events &#123;</span><br><span class="line">		<span class="keyword">for</span> _, src := <span class="keyword">range</span> e.Src &#123;</span><br><span class="line">			f.transitions[eKey&#123;e.Name, src&#125;] = e.Dst</span><br><span class="line">			allStates[src] = <span class="literal">true</span></span><br><span class="line">			allStates[e.Dst] = <span class="literal">true</span></span><br><span class="line">		&#125;</span><br><span class="line">		allEvents[e.Name] = <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Map all callbacks to events/states.</span></span><br><span class="line">	<span class="keyword">for</span> name, c := <span class="keyword">range</span> callbacks &#123;</span><br><span class="line">		<span class="keyword">var</span> target <span class="keyword">string</span></span><br><span class="line">		<span class="keyword">var</span> callbackType <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">switch</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> strings.HasPrefix(name, <span class="string">"before_"</span>):</span><br><span class="line">			target = strings.TrimPrefix(name, <span class="string">"before_"</span>)</span><br><span class="line">			<span class="keyword">if</span> target == <span class="string">"event"</span> &#123;</span><br><span class="line">				target = <span class="string">""</span></span><br><span class="line">				callbackType = callbackBeforeEvent</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> _, ok := allEvents[target]; ok &#123;</span><br><span class="line">				callbackType = callbackBeforeEvent</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">case</span> strings.HasPrefix(name, <span class="string">"leave_"</span>):</span><br><span class="line">			target = strings.TrimPrefix(name, <span class="string">"leave_"</span>)</span><br><span class="line">			<span class="keyword">if</span> target == <span class="string">"state"</span> &#123;</span><br><span class="line">				target = <span class="string">""</span></span><br><span class="line">				callbackType = callbackLeaveState</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> _, ok := allStates[target]; ok &#123;</span><br><span class="line">				callbackType = callbackLeaveState</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">case</span> strings.HasPrefix(name, <span class="string">"enter_"</span>):</span><br><span class="line">			target = strings.TrimPrefix(name, <span class="string">"enter_"</span>)</span><br><span class="line">			<span class="keyword">if</span> target == <span class="string">"state"</span> &#123;</span><br><span class="line">				target = <span class="string">""</span></span><br><span class="line">				callbackType = callbackEnterState</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> _, ok := allStates[target]; ok &#123;</span><br><span class="line">				callbackType = callbackEnterState</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">case</span> strings.HasPrefix(name, <span class="string">"after_"</span>):</span><br><span class="line">			target = strings.TrimPrefix(name, <span class="string">"after_"</span>)</span><br><span class="line">			<span class="keyword">if</span> target == <span class="string">"event"</span> &#123;</span><br><span class="line">				target = <span class="string">""</span></span><br><span class="line">				callbackType = callbackAfterEvent</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> _, ok := allEvents[target]; ok &#123;</span><br><span class="line">				callbackType = callbackAfterEvent</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			target = name</span><br><span class="line">			<span class="keyword">if</span> _, ok := allStates[target]; ok &#123;</span><br><span class="line">				callbackType = callbackEnterState</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> _, ok := allEvents[target]; ok &#123;</span><br><span class="line">				callbackType = callbackAfterEvent</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> callbackType != callbackNone &#123;</span><br><span class="line">			f.callbacks[cKey&#123;target, callbackType&#125;] = c</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;f</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>在new一个FSM的时候，我们先定义它的初始状态current，还有状态机中所有可能的状态迁移情况以及它的回调函数。</li>
+<li>这里我们建立所有可能的状态转移的情况。</li>
+<li>注册回调函数，也就是在事件发生前后，和改变状态的时候的回调函数。</li>
+</ol>
+<p>在初始化完一个FSM之后，也就是说规定了FSM该拥有的所有状态以及状态转移时候应该调用的函数之后，我们来看看如何让这个状态机动起来，我们之前已经知道，触发状态机变化的就是外部的特定的事件，所以我们需要灵活地去处理这些事件，来使得我们的状态机可以动起来。</p>
+<p>在上面我们定义了EventDesc这个结构体，注意到那个结构体是多对一的，也就是多个初始状态对应一个目标状态，我们现在定义一个真正的一对一的事件，这里的一对一指的是一个初始状态对应一个目标状态。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Event <span class="keyword">struct</span> &#123;</span><br><span class="line">    FSM *FSM</span><br><span class="line">    Event <span class="keyword">string</span></span><br><span class="line">    Src <span class="keyword">string</span></span><br><span class="line">    Dst <span class="keyword">string</span></span><br><span class="line">    Err error</span><br><span class="line">    Args []<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    canceled <span class="keyword">bool</span> </span><br><span class="line">    async <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以我们如何调用FSM并且进而使它的状态进行转化并且调用相应预先注册好的回调函数呢，我们通过向FSM实例传送一个event事件，FSM会先判断当前是否正在转移之中，也就是 f.transition 是否为nil，若不为nil则说明状态机正在状态转移之中，否则则说明不是，继而综合FSM当前的状态和此次遇到的事件决定目标状态，然后按顺序调用回调函数beforeEventCallbacks =&gt; leaveStateCallbacks =&gt; enterStateCallbacks =&gt; afterEventCallbacks。这样一次状态转移就算完成了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *FSM)</span> <span class="title">Event</span><span class="params">(event <span class="keyword">string</span>, args ...<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> f.transition != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> &amp;InTransitionError&#123;event&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	dst, ok := f.transitions[eKey&#123;event, f.current&#125;]</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		<span class="keyword">for</span> ekey := <span class="keyword">range</span> f.transitions &#123;</span><br><span class="line">			<span class="keyword">if</span> ekey.event == event &#123;</span><br><span class="line">				<span class="keyword">return</span> &amp;InvalidEventError&#123;event, f.current&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> &amp;UnknownEventError&#123;event&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	e := &amp;Event&#123;f, event, f.current, dst, <span class="literal">nil</span>, args, <span class="literal">false</span>, <span class="literal">false</span>&#125;</span><br><span class="line"></span><br><span class="line">	err := f.beforeEventCallbacks(e)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> f.current == dst &#123;</span><br><span class="line">		f.afterEventCallbacks(e)</span><br><span class="line">		<span class="keyword">return</span> &amp;NoTransitionError&#123;e.Err&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	f.transition = <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		f.current = dst</span><br><span class="line">		f.enterStateCallbacks(e)</span><br><span class="line">		f.afterEventCallbacks(e)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	err = f.leaveStateCallbacks(e)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	err = f.Transition()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> &amp;InternalError&#123;&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> e.Err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *FSM)</span> <span class="title">Transition</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	  <span class="keyword">if</span> f.transition == <span class="literal">nil</span> &#123;</span><br><span class="line">		  <span class="keyword">return</span> &amp;NotInTransitionError&#123;&#125;</span><br><span class="line">	  &#125;</span><br><span class="line">	  f.transition()</span><br><span class="line">	  f.transition = <span class="literal">nil</span></span><br><span class="line">	  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="有限状态机的简单实践"><a href="#有限状态机的简单实践" class="headerlink" title="有限状态机的简单实践"></a>有限状态机的简单实践</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"github.com/looplab/fsm"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fsm := fsm.NewFSM(</span><br><span class="line">        <span class="string">"closed"</span>,</span><br><span class="line">        fsm.Events&#123;</span><br><span class="line">            &#123;Name: <span class="string">"open"</span>, Src: []<span class="keyword">string</span>&#123;<span class="string">"closed"</span>&#125;, Dst: <span class="string">"open"</span>&#125;,</span><br><span class="line">            &#123;Name: <span class="string">"close"</span>, Src: []<span class="keyword">string</span>&#123;<span class="string">"open"</span>&#125;, Dst: <span class="string">"closed"</span>&#125;,</span><br><span class="line">        &#125;,</span><br><span class="line">        fsm.Callbacks&#123;&#125;,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    fmt.Println(fsm.Current())</span><br><span class="line"></span><br><span class="line">    err := fsm.Event(<span class="string">"open"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(fsm.Current())</span><br><span class="line"></span><br><span class="line">    err = fsm.Event(<span class="string">"close"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(fsm.Current())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述例子就定义了一个简单的开门和关门的状态机，这里我们门这个状态机的初始状态是closed，它可以利用open这个事件将状态从closed状态转移到open状态，也可以利用close这个事件将状态从open状态转移到closed状态。注意这里没有定义回调函数（fsm.Callbacks{}为空），所以这两件事件触发的时候什么事情也不会发生。</p>
+<p>而调用事件就是通过fsm.Event(“open”)或fsm.Event(“close”)来完成的。</p>
+<p>上述就是实现一个简单的有限状态机的代码啦，具体的实现可以参考<a href="http://github.com/looplab/fsm" target="_blank" rel="noopener">Finite State Machine</a>。</p>
+<p>简单总结一下，实现有限状态机需要下面几件事情。</p>
+<ol>
+<li>有限状态机的初始状态</li>
+<li>有限状态机各个状态之间迁移的各种情况，也就是状态拓扑图</li>
+<li>状态迁移时的回调方法</li>
+</ol>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

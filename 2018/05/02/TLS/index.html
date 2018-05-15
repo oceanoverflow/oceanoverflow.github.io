@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>TLS | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="TLS在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TLS">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/TLS/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="TLS在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:43:10.455Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TLS">
+<meta name="twitter:description" content="TLS在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-TLS"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      TLS
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-02T04:40:04.000Z" itemprop="datePublished">
+        May 2, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h1><p>在之前的博客中涉及到的 <code>TCP</code> 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 <code>TLS</code> 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。</p>
+<p><code>TLS</code> 即 <code>Transport Layer Security</code> ，就是为了保证传输层上的数据安全，服务器和客户端会在 <code>handshake</code> 阶段协商出只有两者知晓的一个对称密钥，然后之后的通信就利用这个对称密钥将数据进行加密后进行传输，很幸运的是，在我们使用 <code>TLS</code> 进行网络编程的时候，并不用去关注这些繁杂的细节，因为golang的标准库都已经帮我们封装好了（hooray！）。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>使用 <code>TLS</code> 进行网络编程的时候，我们需要在服务器上放一个证书，证书的话可以使用 <code>openssl</code> 工具来生成，这里作为例子就先生成一个自签名的证书吧。</p>
+<p>要生成一个证书，第一步当然就是生成一个私钥了，这里我们指定使用 <code>RSA</code> 算法生成一个 <code>2048bit</code> 的私钥。</p>
+<p><code>$ openssl genrsa -out server.key 2048</code></p>
+<p>计算私钥是比较耗时的一个过程，无论多好的电脑，都需要在毫秒级别才能生成一个RSA私钥，这里输出的 <code>server.key</code> 就是我们要的私钥，生成的私钥是经过 <code>pem</code> 格式编码的，也就是类似如下的格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN RSA PRIVATE KEY-----</span><br><span class="line">MIIEowIBAAKCAQEA1DYBcVnQFyFEW9AhHY+6+Shp7LIT5ZtjbFfu2ZQgg3aTsXVF..........</span><br><span class="line">-----END RSA PRIVATE KEY-----</span><br></pre></td></tr></table></figure>
+<p>当拥有了私钥之后，为了得到对应的证书，我们还需要有一个 <code>Certificate Signing Request</code> ，简称为 <code>CSR</code> ，也就是证书签名请求。</p>
+<p><code>$ openssl req -new -sha256 -key server.key -out server.csr</code></p>
+<p>这个命令会要求你输入相关的信息，填入相关信息后就会得到一个 <code>server.csr</code> 文件，这个文件也是用<code>pem</code> 格式编码的，类似如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN CERTIFICATE REQUEST-----</span><br><span class="line">MIIC0jCCAboCAQAwbjELMAkGA1UEBhMCQ04xETAPBgNVBAcMCEhhbmd6aG91MQww..........</span><br><span class="line">-----END CERTIFICATE REQUEST-----</span><br></pre></td></tr></table></figure>
+<p>最后一步就是利用上面步骤中得到的私钥和证书签名请求来最终获得一个自签名的证书。</p>
+<p><code>$ openssl x509 -req -days 3650 -in server.csr -signkey server.key -out server.crt</code></p>
+<p>最终获得的证书 <code>server.crt</code> 也是 <code>pem</code> 格式编码的，类似如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN CERTIFICATE-----</span><br><span class="line">MIIDWDCCAkACCQCFvy51fQRGMTANBgkqhkiG9w0BAQUFADBuMQswCQYDVQQGEwJD..........</span><br><span class="line">-----END CERTIFICATE-----</span><br></pre></td></tr></table></figure>
+<p>利用下面的命令我们可以查看我们刚刚生成的符合 <code>x509</code> 标准的证书的具体信息，里面包含了两个比较重要的信息就是公钥（public key）和签名（signature）。</p>
+<p><code>$ openssl x509 -in server.crt -noout -text</code></p>
+<p>上面这么多命令必须按顺序执行，也就是说第一步生成私钥，第二步生成证书签名请求，最后才能生成我们的证书。</p>
+<h2 id="TLS-server"><a href="#TLS-server" class="headerlink" title="TLS server"></a>TLS server</h2><p>在 <code>TLS</code> 编程中，服务器端需要得到私钥和证书的信息。我们使用 <code>tls.LoadX509KeyPair</code> 来获得我们之前生成证书和私钥信息，然后在监听时作为参数导入。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"crypto/tls"</span></span><br><span class="line">    <span class="string">"net"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"bufio"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    cert, err := tls.LoadX509KeyPair(<span class="string">"server.crt"</span>, <span class="string">"server.key"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    config := &amp;tls.Config&#123;Certificates: []tls.Certificate&#123;cert&#125;&#125;</span><br><span class="line">    listener, err := tls.Listen(<span class="string">"tcp"</span>, <span class="string">":443"</span>, config)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> listener.Close()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        conn, err := listener.Accept()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Println(err)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">go</span> handleConnection(conn)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handleConnection</span><span class="params">(conn net.Conn)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> conn.Close()</span><br><span class="line">    r := bufio.NewReader(conn)</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        msg, err := r.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Println(err)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        fmt.Println(msg)</span><br><span class="line"></span><br><span class="line">        n, err := conn.Write([]<span class="keyword">byte</span>(<span class="string">"world\n"</span>))</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Println(n, err)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="TLS-client"><a href="#TLS-client" class="headerlink" title="TLS client"></a>TLS client</h2><p>与一般的TCP网络编程类似，作为客户端我们调用 <code>tls.Dial</code> 而非 <code>net.Dial</code> 来与服务器建立连接，但与 <code>net.Dial</code> 不同的是，我们还需要多传递一个 <code>tls.Config</code> 参数，来指定 <code>TLS</code> 连接时的各种参数。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"crypto/tls"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    conf := &amp;tls.Config&#123;</span><br><span class="line">        InsecureSkipVerify: <span class="literal">true</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    conn, err := tls.Dial(<span class="string">"tcp"</span>, <span class="string">"127.0.0.1:443"</span>, conf)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> conn.Close()</span><br><span class="line"></span><br><span class="line">    n, err := conn.Write([]<span class="keyword">byte</span>(<span class="string">"hello\n"</span>))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">100</span>)</span><br><span class="line">    n , err := conn.Read(buf)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(n, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="keyword">string</span>(buf[:n]))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="抓取tcp包进行验证"><a href="#抓取tcp包进行验证" class="headerlink" title="抓取tcp包进行验证"></a>抓取tcp包进行验证</h2><p><code>$ tcpdump host 127.0.0.1 port 433</code></p>
+<p>当我们这时候使用类似 <code>tcpdump</code> 这样的抓包工具进行网络抓包时，我们不再能看到明文了，看到的只能是一堆乱七八糟的东西，因为客户端和服务器已经将数据经过加密处理了。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

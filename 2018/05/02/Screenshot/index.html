@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Screenshot | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用Golang获取手机屏幕截图在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Screenshot">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/Screenshot/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="使用Golang获取手机屏幕截图在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:47:33.678Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Screenshot">
+<meta name="twitter:description" content="使用Golang获取手机屏幕截图在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Screenshot"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Screenshot
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-02T12:29:04.000Z" itemprop="datePublished">
+        May 2, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="使用Golang获取手机屏幕截图"><a href="#使用Golang获取手机屏幕截图" class="headerlink" title="使用Golang获取手机屏幕截图"></a>使用Golang获取手机屏幕截图</h1><p>在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举），这种作弊方法在初期真是屡试不爽，所以今天就让我们来看一下整个作弊流程的关键环节——自动获取手机截屏的代码实现吧。</p>
+<p>因为手机分为 <code>Android</code> 阵营和 <code>iOS</code> 阵营，而且两者实现截屏的方法也稍有不同，所以我们先定义一个 <code>Screenshot</code> interface对两种平台进行抽象，之后会分别定义 <code>iOS</code> 和 <code>Android</code> 这两个结构体来实现这个接口（有没有慢慢开始体会到 <code>interface</code> 的好处呢），下面的代码中我们也利用了工厂模式来返回 <code>Screenshot</code> 实例。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Screenshot <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetImage() (image.Image. error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewScreenshot</span><span class="params">(cfg *Config)</span> <span class="title">Screenshot</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> cfg.Device == <span class="string">"iOS"</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> NewIOS(cfg)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> NewAndroid(cfg)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Config &#123;</span><br><span class="line">    Device     <span class="keyword">string</span></span><br><span class="line">    WdaAddress <span class="keyword">string</span></span><br><span class="line">    .....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Android-实现"><a href="#Android-实现" class="headerlink" title="Android 实现"></a>Android 实现</h2><p>我们先定义个 <code>Android</code> 结构体，这个结构体实现了 <code>GetImage</code> 方法，所以可以在上面的工厂方法中作为 <code>Screenshot</code> 接口返回。而在真正运行我们的代码之前，我们需要确保安卓机已经正确地连接至电脑，并且要确保电脑上已经安装过 <code>adb</code> 这个命令行工具。这里实现截屏主要靠调用 <code>adb</code> 的 <code>screencap</code> 和 <code>pull</code> 这两个子命令，<code>screencap</code> 对当前手机进行截屏并保存到手机本地，<code>pull</code> 命令将手机上的截图传到电脑本地（然后就可以接着一通骚操作了），我们通过 <code>exec.Command</code> 接口对 <code>adb</code> 进行调用，整体思路比较清晰，难点应该就在我们不熟悉 <code>adb</code> 命令的使用。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Android <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewAndroid</span><span class="params">(cfg *Config)</span> *<span class="title">Android</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">new</span>(Android)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(android *Android)</span> <span class="title">GetImage</span><span class="params">()</span> <span class="params">(img image.Image, err error)</span></span> &#123;</span><br><span class="line">    err := exec.Command(<span class="string">"adb"</span>, <span class="string">"shell"</span>, <span class="string">"screencap"</span>, <span class="string">"-p"</span>. <span class="string">"/sdcard/screenshot.png"</span>).Run()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    dstImagePath := <span class="string">"/Desktop"</span> + <span class="string">"origin.png"</span></span><br><span class="line">    err = exec.Command(<span class="string">"adb"</span>, <span class="string">"pull"</span>, <span class="string">"/sdcard/screenshot.png"</span>, dstImgPath).Run()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    f, err := os.Open(dstImagePath)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> f.Close()</span><br><span class="line">    <span class="keyword">return</span> png.Decode(f)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="iOS-实现"><a href="#iOS-实现" class="headerlink" title="iOS 实现"></a>iOS 实现</h2><p>依葫芦画瓢，同样定义一个 <code>IOS</code> 结构体，来实现 <code>GetImage</code> 方法，在具体截屏的实现中，由于 <code>iOS</code> 系统的封闭性，所以自然没有像 <code>Android</code> 的 <code>adb</code> 那样的命令行调试工具，不过也不是说啥事也做不了，在 <code>iOS</code> 中，我们可以向特定接口地址 <code>wdaAddress</code> 发送 <code>http</code> 的<code>GET</code> 请求，然后通过解析返回的 <code>json</code> 数据，这个 <code>json</code> 数据中就编码了我们的图片信息，然后再利用 <code>base64</code> 进行解码获得一个字节数组，再对该字节数组进行 <code>png</code> 解码，最终就可以获得我们想要的 <code>image</code> 了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> IOS <span class="keyword">struct</span> &#123;</span><br><span class="line">    wdaAddress <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> screenshotRes &#123;</span><br><span class="line">    Value     <span class="keyword">string</span> <span class="string">`json:"value"`</span></span><br><span class="line">    SessionID <span class="keyword">string</span> <span class="string">`json:"sessionId"`</span></span><br><span class="line">    Status    <span class="keyword">int</span>    <span class="string">`json:"status"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewIOS</span><span class="params">(cfg *Config)</span> *<span class="title">IOS</span></span> &#123;</span><br><span class="line">    ios := <span class="built_in">new</span>(IOS)</span><br><span class="line">    ios.wdaAddress = cfg.WdaAddress</span><br><span class="line">    <span class="keyword">if</span> ios.wdaAddress == <span class="string">""</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">"Please specify the wda address"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ios</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ios *IOS)</span> <span class="title">GetImage</span><span class="params">()</span> <span class="params">(img image.Image, err error)</span></span> &#123;</span><br><span class="line">    body, err := util.HTTPGet(ios.wdaAddress)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    res := <span class="built_in">new</span>(screenshotRes)</span><br><span class="line">    err = json.Unmarshal(body, res)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    pngValue, err := base64.stdEncoding.DecodeString(res.Value)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    src, err := png.Decode(bytes.NewReader(pngValue))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    img = src</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在本篇博客中，我们看到了工厂模式在具体程序设计中的应用，灵活使用工厂模式可以提供我们工程代码的水平，也见识到了如何利用 <code>adb</code> 工具对 <code>Android</code> 机器进行调试，当然了 <code>adb</code> 的功能不仅仅局限于上述两点，它还可以干非常多的事情，有兴趣的小伙伴可以自己研究一下，最后还有就是因为 <code>iOS</code> 系统本身的封闭性，我们只能通过调用web接口来获取其截图信息。</p>
+<p>最后，作为程序员圈子里的一员，在日常生活中还是要多思考，啥东西要是可以用代码实现自动化，就马上动手去实现它吧。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

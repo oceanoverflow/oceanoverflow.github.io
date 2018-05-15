@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Dubbo Protocol | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Decoding Dubbo Protocol之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo Protocol">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/DecodingDubboProtocol/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Decoding Dubbo Protocol之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png">
+<meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png">
+<meta property="og:updated_time" content="2018-05-15T11:40:13.049Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dubbo Protocol">
+<meta name="twitter:description" content="Decoding Dubbo Protocol之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么">
+<meta name="twitter:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-DecodingDubboProtocol"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Dubbo Protocol
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-02T07:58:24.000Z" itemprop="datePublished">
+        May 2, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Decoding-Dubbo-Protocol"><a href="#Decoding-Dubbo-Protocol" class="headerlink" title="Decoding Dubbo Protocol"></a>Decoding Dubbo Protocol</h1><p>之前看 <code>shadowsocks</code> 源码的时候看过好多遍 <code>SOCKS5</code> 的 <code>RFC</code> ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么意思，但是如果二者约定同时用两者都会的语言——英语进行交流，那么两者就可以正常交流下去了，因为两者协议了一套规则，可以相互理解的规则（这里的规则就是英语）。</p>
+<p>一般来说要是想自己定义一套网络协议，首先需要做的事情就是定义这个协议中特定位置的字段分别代表什么含义，例如下图中的 <code>Dubbo</code> 协议，它就规定了一个报文中各个字段代表的含义，如下面第一个字节和第二个字节合在一起就叫做一个 <code>Magic Number</code> ，以此类推。</p>
+<p><img src="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png" alt="Dubbo"></p>
+<p>所以，解析网络协议的本质就是去解析一个字节数组，并将它包含的数据转换成特定的含义的过程，下面我们就以解析 <code>Dubbo</code> 协议为例，来看一下如何正确地读取字节数组中的信息，在这之前，我们先了解一下golang标准库中的两个函数。</p>
+<p>第一个就是 <code>bytes.NewBuffer(buf []byte) *bytes.Buffer</code> ，因为我们处理协议本质上就是处理字节数组，使用该函数对字节数组进行封装而不是直接操作字节数组的好处自然不用多说。当使用上述函数的时候，返回的 <code>Buffer</code> 会以 <code>buf</code> 这个字节数组作为它的初始内容，而且在这之后该 <code>Buffer</code> 就会全权掌控该字节数组（也就是说之后我们不可以再碰 <code>buf</code>了）。</p>
+<p>第二个就是 <code>binary.Read(r io.Reader, order ByteOrder, data interface{}) error</code>，该函数可以非常方便的将结构化的二进制数据从 <code>r</code> 中以固定的字节序（ <code>ByteOrder</code> ）读到 <code>data</code>相应的数据字段中，由于<code>bytes.Buffer</code> 实现了<code>io.Reader</code> 中的 <code>Read</code> 方法，所以它也能作为第一个参数传入<code>binary.Read</code> 进行使用。</p>
+<p>很多协议的报文都是变长的，为了方便起见，一般都是先解析定长部分的数据，然后再解析其变长部分的数据。</p>
+<h2 id="Dubbo-协议分析"><a href="#Dubbo-协议分析" class="headerlink" title="Dubbo 协议分析"></a>Dubbo 协议分析</h2><p>在正式写协议解析类的代码之前，最好先明确该协议中各个字段的含义，所谓磨刀不误砍柴工嘛。</p>
+<p><img src="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png" alt="Dubbo"></p>
+<ul>
+<li>Magic 字段，共2字节，包含 <code>Magic High</code> 和 <code>Magic Low</code> 字段，用于特定标识该报文是否采用 <code>Dubbo</code> 协议而存在的，如果是则要求其值等于0xdabb。</li>
+<li>Req/Res，1比特，用于表示该报文是请求报文还是答复报文，当值为1时说明该报文为请求报文，0时为答复报文。</li>
+<li>2way，1比特，当且仅当 <code>Req/Res</code> 为1时有效，也就是该报文为请求报文时，指明是否期望服务器返回数据，当值为1时则表示希望服务器返回数据。</li>
+<li>Event，1比特，标记该报文是否为事件消息，例如心跳消息，则设置为1。</li>
+<li>Serialization ID，5比特，用于表示变长数据部分序列化的方法，例如当使用 <code>fastjson</code> 时它的值为6。</li>
+<li><p>Status，1字节，用于表示请求的状态，其值可以是</p>
+<ul>
+<li>20 - OK</li>
+<li>30 - CLIENT_TIMEOUT</li>
+<li>31 - SERVER_TIMEOUT</li>
+<li>40 - BAD_REQUEST</li>
+<li>50 - BAD_RESPONSE</li>
+<li>60 - SERVICE_NOT_FOUND</li>
+<li>70 - SERVICE_ERROR</li>
+<li>80 - SERVER_ERROR</li>
+<li>90 - CLIENT_ERROR</li>
+<li>100 -SERVER_THREADPOOL_EXHAUSTED_ERROR</li>
+</ul>
+</li>
+<li><p>Request ID，64比特即8字节，用于唯一标识该请求。</p>
+</li>
+<li>Data Length，变长部分的数据长度，4字节长度。</li>
+<li>Variable Part 报文中数据的变长部分，其使用的序列化方法由上述的<code>serializationID</code> 字段决定。</li>
+</ul>
+<h2 id="解析过程"><a href="#解析过程" class="headerlink" title="解析过程"></a>解析过程</h2><p>由于从 <code>Magic Number</code> 到 <code>Data Length</code> 这个数据字段，其总长度都是固定的，所以我们可以定义一个 <code>dubboHeader</code> 结构体包含这些数据字段，其中各个数据字段的类型由协议中各个字段的长度决定，例如 <code>MagicHigh</code> 的长度为一个字节，所以我们在结构体中使用一个 <code>byte</code> 来表示它就可以了，再比如 <code>RequestID</code> 的长度是8字节，我们可以用 <code>uint64</code> 来表示，依次类推。</p>
+<p>由于我们要解析的是一个字节数组，为了后面方便起见，我们使用 <code>bytes.NewBuffer</code> 来封装它，这样就可以得到一个 <code>io.Reader</code> ，然后再使用 <code>binary.Read</code> 就可以解码得到 <code>dubboHeader</code> 这个结构体了。</p>
+<p>当使用 <code>bytes.Buffer</code> 的时候需要注意一点，它里面有类似于指针概念，也就是当我们调用 <code>Read</code> 方法读取多少字节时，内部的指针 <code>off</code> 也会向前移动多少字节的长度，所以当我们使用 <code>binary.Read(buf, binary.BigEndian, &amp;dubboHeader)</code> ，它就会将内部的指针移动 <code>len(dubboHeader)</code> 个长度，这样我们就可以利用 <code>buf.Next</code> 方法获取剩下变长部分的数据啦。</p>
+<p>定长部分解决好之后，我们来看变长部分应该怎么解决，协议中 <code>Serialization ID</code> 字段规定了变长部分数据的序列化方法，例如这里使用 <code>json</code> 格式进行序列化，所以我们只要获取剩余部分的字节数组，然后调用<code>json.Unmarshal</code> 就可以获得剩余部分的数据内容了。</p>
+<h2 id="完整代码段"><a href="#完整代码段" class="headerlink" title="完整代码段"></a>完整代码段</h2><p>自定义解析过程中可能出现的错误类型</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ErrInvalidMagicNumber = errors.New(<span class="string">"Invalid Magic Number"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> ErrInvalidDataLength = errors.New(<span class="string">"Invalid Data Length"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> ErrUnmarshallingJSON = errors.New(<span class="string">"Encounter Error when Unmarshalling JSON"</span>)</span><br></pre></td></tr></table></figure>
+<p>自定义变长部分数据对应的结构体，注意，结构体中的数据字段必须为大写，否则使用 <code>json.Unmarshal</code> 会出错。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> VariablePart <span class="keyword">struct</span> &#123;</span><br><span class="line">    DubboVersion     <span class="keyword">string</span> <span class="string">`json:"DubboVersion"`</span></span><br><span class="line">    ServiceName      <span class="keyword">string</span> <span class="string">`json:"ServiceName"`</span></span><br><span class="line">    ServiceMethod    <span class="keyword">string</span> <span class="string">`json:"ServiceMethod"`</span></span><br><span class="line">    MethodName       <span class="keyword">string</span> <span class="string">`json:"MethodName"`</span></span><br><span class="line">    MethodParamTypes <span class="keyword">string</span> <span class="string">`json:"MethodParamTypes"`</span></span><br><span class="line">    MethodArguments  <span class="keyword">string</span> <span class="string">`json:"MethodArguments"`</span></span><br><span class="line">    Attachments      <span class="keyword">string</span> <span class="string">`json:"Attachments"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>按协议规则一步步解析字节数组并得到相应的信息。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Parse</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(*VariablePart, error)</span></span> &#123;</span><br><span class="line">    buf := bytes.NewBuffer(b)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">var</span> dubboHeader <span class="keyword">struct</span> &#123;</span><br><span class="line">        MagicHigh  <span class="keyword">byte</span></span><br><span class="line">        MagicLow   <span class="keyword">byte</span></span><br><span class="line">        Misc       <span class="keyword">byte</span></span><br><span class="line">        Status     <span class="keyword">byte</span></span><br><span class="line">        RequestID  <span class="keyword">uint64</span></span><br><span class="line">        DataLength <span class="keyword">uint32</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line">    err = binary.Read(buf, binary.BigEndian, &amp;dubboHeader)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> !(dubboHeader.MagicHigh == <span class="number">0xda</span> &amp;&amp; dubboHeader.MagicLow == <span class="number">0xbb</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, ErrInvalidMagicNumber</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    partBytes := buf.Next(<span class="keyword">int</span>(dubboHeader.DataLength))</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(partBytes) &lt; <span class="keyword">int</span>(dubbo.DataLength) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, ErrInvalidDataLength</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    partBuffer := bytes.NewBuffer(partBytes)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> variablePart VariablePart</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> dubboHeader.Misc &amp; <span class="number">0x1F</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        err = json.Unmarshal(partBuffer, &amp;variablePart)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, ErrUnmarshallingJSON</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &amp;variablePart, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

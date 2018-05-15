@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Reverse Proxy | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Reverse Proxy在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Reverse Proxy">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/12/ReverseProxy/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Reverse Proxy在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Reverse_proxy_h2g2bob.svg/1200px-Reverse_proxy_h2g2bob.svg.png">
+<meta property="og:updated_time" content="2018-05-15T11:57:53.103Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Reverse Proxy">
+<meta name="twitter:description" content="Reverse Proxy在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Reverse_proxy_h2g2bob.svg/1200px-Reverse_proxy_h2g2bob.svg.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-ReverseProxy"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Reverse Proxy
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-12T13:30:04.000Z" itemprop="datePublished">
+        May 12, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Reverse-Proxy"><a href="#Reverse-Proxy" class="headerlink" title="Reverse Proxy"></a>Reverse Proxy</h1><p>在正常的 <code>HTTP</code> 服务流程中，客户端向服务器发送 <code>HTTP</code> 请求，服务器收到后会向客户端返回一个 <code>HTTP</code> 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 <code>HTTP</code> 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的服务器，让它去处理，业务逻辑服务器处理完之后，会先将答复返回给反向代理服务器，再由反向代理服务器返回给客户端。</p>
+<p>生活中常见的 <code>NGINX</code> 就常常作为反向代理服务器来使用。那么你可能会问，传统 <code>C/S</code> 模型难道不够好吗，还非要引入一个不知道什么鬼的反向代理来捣乱，引入之后只会把架构变得更复杂，有啥好处？（傲娇状）其实原因很简单，第一反向代理服务器可以当作防火墙来用，它为真正的业务逻辑服务器与外界可能的恶意攻击之间提供了一个屏障，尤其是像银行这种对安全性要求极高的金融机构无论加几个这样的防火墙都不会嫌多。第二点就是它可以提供负载均衡功能，通过使用不同的策略将请求转发给不同的服务器，以达到负载均衡的目的。</p>
+<p>幸运的是，引入反向代理，并不会改变传统的 <code>C/S</code> 编程模型，因为客户端无法感知反向代理服务器的存在，他们只会觉得反向代理服务器就是真正处理业务逻辑的服务器。</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Reverse_proxy_h2g2bob.svg/1200px-Reverse_proxy_h2g2bob.svg.png" alt="Reverse Proxy"></p>
+<p>下面我们来实现一个简单的反向代理服务器吧，虽然听着很恐怖，但是不用慌，强大的 <code>Golang</code> 标准库已经实现了反向代理的功能了。<code>httputil</code> 中提供的 <code>ReverseProxy</code> 结构体具有将请求重定向的能力（ <code>Director</code> ），也具有将答复修改的能力（ <code>ModifyResponse</code> ），最重要的是，可以通过 <code>Transport</code> 这个 <code>http.RoundTripper</code> 将我们的代理请求发送出去。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ReverseProxy <span class="keyword">struct</span> &#123;</span><br><span class="line">    Director      <span class="function"><span class="keyword">func</span><span class="params">(*http.Request)</span></span></span><br><span class="line"><span class="function">    <span class="title">Transport</span>     <span class="title">http</span>.<span class="title">RoundTripper</span></span></span><br><span class="line"><span class="function">    <span class="title">FlushInterval</span> <span class="title">time</span>.<span class="title">Duration</span></span></span><br><span class="line"><span class="function">    <span class="title">ErrorLog</span>      *<span class="title">log</span>.<span class="title">Logger</span></span></span><br><span class="line"><span class="function">    <span class="title">BufferPool</span>    <span class="title">BufferPool</span></span></span><br><span class="line"><span class="function">    <span class="title">ModifyReponse</span> <span class="title">func</span><span class="params">(*http.Response)</span> <span class="title">error</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">type</span> <span class="title">RoundTripper</span> <span class="title">interface</span></span> &#123;</span><br><span class="line">    RoundTrip(*http.Request) (*http.Response, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>作为一个代理服务器，虽然不直接处理业务逻辑，但是最基本的对请求的处理和答复的功能还是要有的，与一般的 <code>HTTP</code> 服务器类似，我们的反向代理服务器 <code>ReverseProxy</code> 也需要有 <code>ServeHTTP(http.ResponseWriter, *http.Request)</code> 这样的方法。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Handler <span class="keyword">interface</span> &#123;</span><br><span class="line">    ServeHTTP(http.ResponseWriter, *http.Request)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以为了实现代理请求的功能，我们需要定义一个结构体 <code>handler</code> ，使其实现 <code>ServeHTTP(http.ResponseWriter, *http.Request)</code> 方法，在该方法中我们通过 <code>httputil.NewSingleHostReverseProxy</code> 来构造一个反向代理，并将请求通过 <code>proxy.ServeHTTP(w, r)</code> 方法将请求代理到随机的（随机是为了实现负载均衡）服务器上。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">servers := []<span class="keyword">string</span>&#123;</span><br><span class="line">     <span class="string">"111.222.111.222"</span>,</span><br><span class="line">     <span class="string">"222.111.222.111"</span>,</span><br><span class="line">     <span class="string">"111.233.111.233"</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> handler <span class="keyword">struct</span> &#123;</span><br><span class="line">    reverseProxy <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *handler)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    addr := servers[rand.Intn(<span class="built_in">len</span>(servers))]</span><br><span class="line">    remote, err := url.Parse(<span class="string">"http://"</span> + addr)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line">    proxy := httputil.NewSingleHostReverseProxy(remote)</span><br><span class="line">    proxy.ServeHTTP(w, r)   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面我们申明一个 <code>http.Server</code> ，在 <code>StartServer</code> 中我们监听指定的端口（ <code>bind</code> ），其对应的 <code>Handler</code> 就是我们之前实现的 <code>handler</code> 结构体，用于把请求代理到 <code>remote</code> 上去，这样以来一个基本的反向代理服务器就实现好了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> srv http.Server</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StartServer</span><span class="params">(bind <span class="keyword">string</span>, remote <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    log.Printf(<span class="string">"Listening on %s, forwarding to %s"</span>, bind, remote)</span><br><span class="line">    h := &amp;handler&#123;reverseProxy: remote&#125;</span><br><span class="line">    srv.Addr = bind</span><br><span class="line">    srv.Handler = h</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err := srv.ListenAndServe(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatalln(<span class="string">"ListenAndServe:"</span> err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StopServer</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> err := srv.Shutdown(<span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    StartServer(<span class="string">":8080"</span>, <span class="string">"remote:8080"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述例子中的采用的负载均衡算法只用了非常简单的随机选取策略，这只适合每台服务器性能差别不大的情况，如果服务器之间性能差距较大，我们可以使用 <code>Weighted Round Robin</code> 这样的负载均衡算法。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>TCP/IP | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="TCP/IP网络是分布式系统之间通信的媒介，掌握网络编程自然变成了程序猿们居家旅行必备技能之一了，与直接使用应用层的 http 协议不同，我们一般使用传输层的协议例如 tcp 进行编程，掌握好了 tcp 编程，我们甚至能写一套类似http 这样的应用层协议，是不是很兴奋呢，那今天就让我们从最简单的例子出发，掌握 tcp/ip 编程的精髓吧。 一般来说大部分网络通信模型是 c/s 模型，也有部分是">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/29/TCP_IP/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="TCP/IP网络是分布式系统之间通信的媒介，掌握网络编程自然变成了程序猿们居家旅行必备技能之一了，与直接使用应用层的 http 协议不同，我们一般使用传输层的协议例如 tcp 进行编程，掌握好了 tcp 编程，我们甚至能写一套类似http 这样的应用层协议，是不是很兴奋呢，那今天就让我们从最简单的例子出发，掌握 tcp/ip 编程的精髓吧。 一般来说大部分网络通信模型是 c/s 模型，也有部分是">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:56:23.419Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP&#x2F;IP">
+<meta name="twitter:description" content="TCP/IP网络是分布式系统之间通信的媒介，掌握网络编程自然变成了程序猿们居家旅行必备技能之一了，与直接使用应用层的 http 协议不同，我们一般使用传输层的协议例如 tcp 进行编程，掌握好了 tcp 编程，我们甚至能写一套类似http 这样的应用层协议，是不是很兴奋呢，那今天就让我们从最简单的例子出发，掌握 tcp/ip 编程的精髓吧。 一般来说大部分网络通信模型是 c/s 模型，也有部分是">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-TCP_IP"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      TCP/IP
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-29T11:56:04.000Z" itemprop="datePublished">
+        Apr 29, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="TCP-IP"><a href="#TCP-IP" class="headerlink" title="TCP/IP"></a>TCP/IP</h1><p>网络是分布式系统之间通信的媒介，掌握网络编程自然变成了程序猿们居家旅行必备技能之一了，与直接使用应用层的 <code>http</code> 协议不同，我们一般使用传输层的协议例如 <code>tcp</code> 进行编程，掌握好了 <code>tcp</code> 编程，我们甚至能写一套类似<code>http</code> 这样的应用层协议，是不是很兴奋呢，那今天就让我们从最简单的例子出发，掌握 <code>tcp/ip</code> 编程的精髓吧。</p>
+<p>一般来说大部分网络通信模型是 <code>c/s</code> 模型，也有部分是 <code>p2p</code> 模型，今天我们先了解一下 <code>c/s</code> 模型的编程使用吧。</p>
+<p>客户端要想与服务器通信，前提必须是服务器已经启动并且监听了某个端口了。如果服务器没有监听而客户端直接连接的话，就会报类似下面这样的错误：</p>
+<p><code>dial tcp 127.0.0.1:8080: connect: connection refused</code></p>
+<p>也就是说，服务器端要调用 <code>net.Listen</code> 接口对特定端口进行监听，监听会返回一个 <code>Listener</code> ，服务器一旦监听到来自客户端的请求，就会调用 <code>Accept</code> 来接受该请求，<code>Accept</code> 会返回一个 <code>net.Conn</code> ，以后服务器就可以使用 <code>net.Conn</code> 与客户端进行通信。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Listener <span class="keyword">interface</span> &#123;</span><br><span class="line">    Accept() (Conn, error)</span><br><span class="line">    Close() error</span><br><span class="line">    Addr() Addr</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Conn <span class="keyword">interface</span> &#123;</span><br><span class="line">    Read(b []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">    Write(b []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">    Close() error</span><br><span class="line">    LocalAddr() Addr</span><br><span class="line">    RemoteAddr() Addr</span><br><span class="line">    SetDeadline(t time.Time) error</span><br><span class="line">    SetReadDeadline(t time.Time) error</span><br><span class="line">    SetWriteDeadline(t time.Time) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="server-go"><a href="#server-go" class="headerlink" title="server.go"></a>server.go</h2><p>一般来说，服务器需要处理来自多个客户端的请求，所以我们使用goroutine来处理不同客户端的请求，这样就达到一个并发的目的。</p>
+<p>服务器处理客户端请求的主要的流程如下：<br><code>Listen =&gt; Accept =&gt; Read &amp; Write =&gt; Close</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main </span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"net"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"bufio"</span></span><br><span class="line">    <span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"Launching server..."</span>)</span><br><span class="line"></span><br><span class="line">    l, err := net.Listen(<span class="string">"tcp"</span>, <span class="string">":8080"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> l.Close()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        conn, err := ln.Accept()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Fatal(err)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">go</span> handleConn(conn)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handleConn</span><span class="params">(c net.Conn)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        m, _ := bufio.NewReader(c).ReadString(<span class="string">'\n'</span>)</span><br><span class="line">        fmt.Print(<span class="string">"Message Received:"</span>, <span class="keyword">string</span>(m))</span><br><span class="line">        newMsg := strings.ToUpper(m)</span><br><span class="line">        c.Write([]<span class="keyword">byte</span>(newMsg + <span class="string">"\n"</span>))</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="client-go"><a href="#client-go" class="headerlink" title="client.go"></a>client.go</h2><p>一般来说连接都是由客户端主动发起的，客户端调用 <code>net.Dial</code> 向服务器发起连接行为，在正常情况下，则也返回一个 <code>net.Conn</code> ，注意到客户端和服务器都是通过 <code>net.Conn</code> 进行通信的，linux基础好的同学，就知道它的本质就是一个套接字（socket），而套接字的本质则是一个文件，所以我们可以对待正常文件一样去使用它，例如使用 <code>fmt.Fprintf</code> 来对套接字写入数据。</p>
+<p>主要的流程如下：<br><code>Dial =&gt; Read &amp; Write =&gt; Close</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"net"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"bufio"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    c, e := net.Dial(<span class="string">"tcp"</span>, <span class="string">"localhost:8080"</span>)</span><br><span class="line">    <span class="keyword">if</span> e != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(e)</span><br><span class="line">    &#125;</span><br><span class="line">    reader := bufio.NewReader(os.Stdin)</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        fmt.Print(<span class="string">"Text to send: "</span>)</span><br><span class="line">        text, err := reader.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Fatal(err)</span><br><span class="line">        &#125;</span><br><span class="line">        fmt.Fprintf(c, text + <span class="string">"\n"</span>)</span><br><span class="line">        m, e := bufio.NewReader(c).ReadString(<span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">if</span> e != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Fatal(e)</span><br><span class="line">        &#125;</span><br><span class="line">        fmt.Print(<span class="string">"Message from server: "</span> + m)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>先对两个源文件进行编译。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go build *.go</span><br></pre></td></tr></table></figure></p>
+<p>在一个命令行中输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./server</span><br></pre></td></tr></table></figure>
+<p>在另一个命令行中输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./client</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

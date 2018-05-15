@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>PKCS7 Padding | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="由于某些特定加密算法的要求，例如AES中的CBC，要求被加密的数据是特定块大小的整数倍，例如在AES中一个块大小即BlockSize的大小为16字节，故被加密数据的长度 len(src) % BlockSize == 0 ，但现实生活中要求加密的数据长度往往是随机的，所以需要有一种可靠高效的数据填充方法（padding）。 现在我们的问题是这样的，一个不定长度的数据作为加密的输入，我们需要把它填充">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PKCS7 Padding">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/24/PKCS7_Padding/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="由于某些特定加密算法的要求，例如AES中的CBC，要求被加密的数据是特定块大小的整数倍，例如在AES中一个块大小即BlockSize的大小为16字节，故被加密数据的长度 len(src) % BlockSize == 0 ，但现实生活中要求加密的数据长度往往是随机的，所以需要有一种可靠高效的数据填充方法（padding）。 现在我们的问题是这样的，一个不定长度的数据作为加密的输入，我们需要把它填充">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:53:19.826Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PKCS7 Padding">
+<meta name="twitter:description" content="由于某些特定加密算法的要求，例如AES中的CBC，要求被加密的数据是特定块大小的整数倍，例如在AES中一个块大小即BlockSize的大小为16字节，故被加密数据的长度 len(src) % BlockSize == 0 ，但现实生活中要求加密的数据长度往往是随机的，所以需要有一种可靠高效的数据填充方法（padding）。 现在我们的问题是这样的，一个不定长度的数据作为加密的输入，我们需要把它填充">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-PKCS7_Padding"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      PKCS7 Padding
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-24T08:26:24.000Z" itemprop="datePublished">
+        Apr 24, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <p>由于某些特定加密算法的要求，例如AES中的CBC，要求被加密的数据是特定块大小的整数倍，例如在AES中一个块大小即BlockSize的大小为16字节，故被加密数据的长度 <code>len(src) % BlockSize == 0</code> ，但现实生活中要求加密的数据长度往往是随机的，所以需要有一种可靠高效的数据填充方法（padding）。</p>
+<p>现在我们的问题是这样的，一个不定长度的数据作为加密的输入，我们需要把它填充到固定的长度，即满足 <code>len(src) % BlockSize == 0</code> 的条件，并且在解密时可以获得原来的数据。</p>
+<p>现在的前提是BlockSize为16字节，输入长度随机。流程大致经过下面几步，填充=&gt;加密=&gt;网络传输=&gt;解密=&gt;去填充。问题的难点就是如何保证去填充之后可以获取原来填充之前的数据。</p>
+<p>我们的初始数据即待加密数据的格式如下</p>
+<p>|XX16bytesXX|XX16bytesXX|…….|XX16bytesXX|XX?bytesXX|</p>
+<p>填充后得到的数据格式为如下。</p>
+<p>|XX16bytesXX|XX16bytesXX|…….|XX16bytesXX|XX16bytesXX|</p>
+<p>这里我们使用 |XX16bytesXX| 表示一段16字节的随机数据。也就是说我们需要把最后的?bytes填充到固定长度的16bytes，这里？的取值范围是0到15。现在我们就来引入PKCS7这种填充标准。</p>
+<p>PKCS7填充的做法是这样的，首先它会确定需要被填充的字节的长度，也就是上述所说的?bytes的那一段字节。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">padding := aes.BlockSize - <span class="built_in">len</span>(src)%aes.BlockSize</span><br></pre></td></tr></table></figure>
+<p>上面的代码段非常好理解，首先对待加密的数据长度对BlockSize取模，获得我们的?bytes，再利用它与BlockSize的差值获得我们需要填充的长度值，这里的padding就是一个int值。</p>
+<p>下面就是真正填充的一个逻辑了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">padtext := bytes.Repeat([]<span class="keyword">byte</span>&#123;<span class="keyword">byte</span>(padding)&#125;, padding)</span><br></pre></td></tr></table></figure>
+<p>这一行代码乍看起来有点复杂，我们一步一步来看，它要做的一件事情就是获得一个用于填充的文字，而这个文字就是利用我们上述获得的padding（注意它是一个int）转化成一个byte后重复padding次。</p>
+<p>也就是说假设我们的padding是7，也就是需要填充7字节的信息，那我们的padtext也就是我们填充的文字就是 7 7 7 7 7 7 7，当然我们这里的每个7都是一个byte。</p>
+<p>以此类推，同理我们padtext里面的每一个数字就是一个byte，6 6 6 6 6 6 应该理解成byte(6) byte(6) byte(6) byte(6) byte(6) byte(6)。</p>
+<p>获得了我们的填充信息后，我们将原数据与我们的填充信息相连接就行了，下面就是我们完整填充过程的函数，非常简单。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">PKCS7Padding</span><span class="params">(src []<span class="keyword">byte</span>)</span> []<span class="title">byte</span></span> &#123;</span><br><span class="line">    padding := aes.BlockSize - <span class="built_in">len</span>(src)%aes.BlockSize</span><br><span class="line">    padtext := bytes.Repeat([]<span class="keyword">byte</span>&#123;<span class="keyword">byte</span>(padding)&#125;, padding)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">append</span>(src, padtext...)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>理解了PKCS7中填充的标准之后，我们再来看一下如何去填充，去填充的过程也非常简单，但是在工程代码中实现还需要考虑一些特殊的边界情况。</p>
+<p>下面直接给出去填充的代码。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">PKCS7Unpadding</span><span class="params">(src []<span class="keyword">byte</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">    length := <span class="built_in">len</span>(src)</span><br><span class="line">    unpadding := <span class="keyword">int</span>(src[length - <span class="number">1</span>])</span><br><span class="line">	</span><br><span class="line">    <span class="keyword">if</span> unpadding &gt; aes.BlockSize || unpadding == <span class="number">0</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"invalid unpadding"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">	  </span><br><span class="line">    pad := src[<span class="built_in">len</span>(src)-unpadding:]</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; unpadding; i++ &#123;</span><br><span class="line">        <span class="keyword">if</span> pad[i] != <span class="keyword">byte</span>(unpadding) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"invalid padding"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> src[:(<span class="built_in">len</span>(src)-unpadding)], <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们需要去填充的为src，讲src的最后一个byte取出再转换为int，这个数值就是我们之前填充字节的个数，记为unpadding，如果unpadding的值大于BlockSize或者出现unpadding为0的情况，这种情况是一场的因为我们填充的时候就将padding值约束在[1, BlockSize-1)，所以出现不符合要求的padding值都将返回异常。</p>
+<p>然后将数组末尾取出unpadding个字节，将unpadding个字节分别与byte(unpadding)这个字节进行比较，如果不想等，则返回异常。</p>
+<p>最后如果一切都没有问题，则返回去除padding个字节后的byte数组。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

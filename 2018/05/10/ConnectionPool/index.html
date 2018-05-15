@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Connection Pool | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Connection Pool因为 TCP 连接都是客户端主动发起的，也就是说需要经过三次握手才能够进行读写操作，如果客户端需要建立连接的次数较少，那么握手需要的开销倒可以忽略不计，但是如果客户端需要建立成千上万个 TCP 连接，那么就需要成千上万次握手了。如果真是这样，势必会导致系统性能低下，我们引入连接池来解决多次握手的问题。 连接池（ Connection Pool ）在广义上来说算是资源池">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Connection Pool">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/10/ConnectionPool/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Connection Pool因为 TCP 连接都是客户端主动发起的，也就是说需要经过三次握手才能够进行读写操作，如果客户端需要建立连接的次数较少，那么握手需要的开销倒可以忽略不计，但是如果客户端需要建立成千上万个 TCP 连接，那么就需要成千上万次握手了。如果真是这样，势必会导致系统性能低下，我们引入连接池来解决多次握手的问题。 连接池（ Connection Pool ）在广义上来说算是资源池">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png">
+<meta property="og:updated_time" content="2018-05-15T11:38:26.591Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Connection Pool">
+<meta name="twitter:description" content="Connection Pool因为 TCP 连接都是客户端主动发起的，也就是说需要经过三次握手才能够进行读写操作，如果客户端需要建立连接的次数较少，那么握手需要的开销倒可以忽略不计，但是如果客户端需要建立成千上万个 TCP 连接，那么就需要成千上万次握手了。如果真是这样，势必会导致系统性能低下，我们引入连接池来解决多次握手的问题。 连接池（ Connection Pool ）在广义上来说算是资源池">
+<meta name="twitter:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-ConnectionPool"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Connection Pool
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-10T03:40:24.000Z" itemprop="datePublished">
+        May 10, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Connection-Pool"><a href="#Connection-Pool" class="headerlink" title="Connection Pool"></a>Connection Pool</h1><p>因为 <code>TCP</code> 连接都是客户端主动发起的，也就是说需要经过三次握手才能够进行读写操作，如果客户端需要建立连接的次数较少，那么握手需要的开销倒可以忽略不计，但是如果客户端需要建立成千上万个 <code>TCP</code> 连接，那么就需要成千上万次握手了。如果真是这样，势必会导致系统性能低下，我们引入连接池来解决多次握手的问题。</p>
+<p>连接池（ <code>Connection Pool</code> ）在广义上来说算是资源池，我们之前讲过的  <a href="LeakyBuffer.md">LeakyBuffer</a> 也算是资源池的一种，不过 <code>LeakyBuffer</code> 的目的是反复利用内存资源，减少内存分配的次数。而连接池则是为了减少建立连接的次数，重复利用已有的 <code>TCP</code> 连接。</p>
+<p><img src="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png" alt="ConnPool"></p>
+<p>例如在上图中，<code>Consumer Agent</code> 不断收到来自 <code>Consumer</code> 的 <code>HTTP</code> 请求，它解析请求的内容后，<code>Consumer Agent</code> 就要利用 <code>TCP</code> 连接给 <code>Provider Agent</code> 发送消息，那么如果按照传统的方法我们就需要每一个 <code>HTTP</code> 请求都要对应一个新的 <code>TCP</code> 连接，也就对应新的三次握手，这样的话系统开销会非常大。你可能会问为什么不直接用一个 <code>TCP</code> 连接来解决传输数据的问题，这样的话甚至不用这么多握手操作了，这问题不错，但是考虑到由于 <code>TCP</code> 传输的是应用层的数据，它并不了解应用层传输的信息究竟是什么意思，如果多个客户端发起的连接共用一个 <code>TCP</code> 连接，那么我们还需要写逻辑去区分收到的消息究竟需要属于哪个 <code>HTTP</code> 请求，另外还需要考虑<code>TCP</code> 发送和接受时读写竞争的问题，操作起来比较混乱，还不如重复利用多个 <code>TCP</code> 连接来发送和接受数据来的干净利落。</p>
+<p>总的来说，连接池是一种利用空间换时间的技术。下面我们来看一下如何设计一个连接池。连接池中最核心的操作就是获取一个空闲的 <code>TCP</code> 连接，另外还要考虑连接池资源释放的问题，否则可能会导致内存泄漏。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ErrClosed = errors.New(<span class="string">"pool is closed"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Pool <span class="keyword">interface</span> &#123;</span><br><span class="line">    Get() (net.Conn, error)</span><br><span class="line">    Close()</span><br><span class="line">    Len() <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在正常的 <code>TCP</code> 流程中，<code>Close</code> 会关闭本次连接，底层会进行四个挥手操作，但是我们不希望我们调用 <code>Close</code> 时直接关闭这个连接，而是希望能回收这个连接，所以我们对普通的 <code>net.Conn</code> 做了一层封装，来该改变其 <code>Close</code> 行为（其实这就是装饰器模式的应用），我们想要客户端调用 <code>Close</code> 的时候被我们的连接池所回收而非直接关闭，除非该连接被标记为不可用时 <code>unusable</code> （通过 <code>MarkUnusable</code> ）， 我们才决定关闭本次连接。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> PooledConn <span class="keyword">struct</span> &#123;</span><br><span class="line">    net.Conn</span><br><span class="line">    mu  sync.RWMutex</span><br><span class="line">    c   *ConnPool</span><br><span class="line">    unusable <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *PooledConn)</span> <span class="title">Close</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    p.mu.RLock()</span><br><span class="line">    <span class="keyword">defer</span> p.mu.Runlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> p.unusable &#123;</span><br><span class="line">        <span class="keyword">if</span> p.Conn != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> p.Conn.Close()      </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> p.c.put(p.Conn)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *PooledConn)</span> <span class="title">MarkUnusable</span><span class="params">()</span></span> &#123;</span><br><span class="line">    p.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> p.mu.Unlock()</span><br><span class="line">    p.unusable = <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConnPool)</span> <span class="title">wrapConn</span><span class="params">(conn net.Conn)</span> <span class="title">net</span>.<span class="title">Conn</span></span> &#123;</span><br><span class="line">    p := &amp;PooledConn&#123;c: c&#125;</span><br><span class="line">    p.Conn = conn</span><br><span class="line">    <span class="keyword">return</span> p</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>连接池的构建需要考虑两个问题，一个就是连接创建问题，第二就是回收连接问题，创建我们用一个 <code>Factory</code> 工厂方法来表示，而回收连接可以利用 <code>golang</code> 中的通道机制（ <code>chan</code> ）来进行储存。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Factory <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="params">(net.Conn, error)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">type</span> <span class="title">ConnPool</span> <span class="title">struct</span></span> &#123;</span><br><span class="line">    mu sync.RWMutex</span><br><span class="line">    conns <span class="keyword">chan</span> net.Conn</span><br><span class="line">    factroy Factory</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在初始化连接池时，我们先建立 <code>initialCap</code> 个连接用于刚开始时使用，具体创建可以使用 <code>factory</code> 产生 <code>TCP</code> 连接。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewConnPool</span><span class="params">(initialCap, maxCap <span class="keyword">int</span>, factory Factory)</span> <span class="params">(Pool, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> initialCap &lt; <span class="number">0</span> || maxCap &lt;= <span class="number">0</span> || initialCap &gt; maxCap &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span> , errors.New(<span class="string">"invalid capacity settings"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    c := &amp;ConnPool&#123;</span><br><span class="line">        conns: <span class="built_in">make</span>(<span class="keyword">chan</span> net.Conn, maxCap),</span><br><span class="line">        factory: factory,</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; initialCap; i++ &#123;</span><br><span class="line">        conn, err := factory()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            c.Close()</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"factory is not able to fill the pool: %s"</span>, err)</span><br><span class="line">        &#125;</span><br><span class="line">        c.conns &lt;- conn</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> c, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConnPool)</span> <span class="title">getConnsAndFactory</span><span class="params">()</span> <span class="params">(<span class="keyword">chan</span> net.Conn, Factory)</span></span>&#123;</span><br><span class="line">    c.mu.RLock()</span><br><span class="line">    <span class="keyword">defer</span> c.mu.RUnlock()</span><br><span class="line">    conns := c.conns</span><br><span class="line">    factory := c.factory</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当客户端使用完一次 <code>TCP</code> 连接后，会主动调用 <code>Close</code> 来关闭此次连接，由于我们重新定义了 <code>Close</code> 函数，当调用 <code>Close</code> 时，连接不会直接关闭而是会重新放回连接池中供其他部分代码使用，从而达到重复使用的目的，如果此时连接池已满，则直接释放该连接。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConnPool)</span> <span class="title">put</span><span class="params">(conn net.Conn)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> conn == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> errors.New(<span class="string">"connection is nil, rejecting"</span>)</span><br><span class="line">    &#125; </span><br><span class="line">    c.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.mu.RUnlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> c.conns == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> conn.Close()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> c.conns &lt;- conn:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> conn.Close()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面的结构体 <code>ConnPool</code> 实现了 <code>Pool</code> 接口。在 <code>Get</code> 方法中我们先得到具体用于存储连接的通道 <code>conns</code> 和用于制造连接的工厂方法 <code>factory</code>，然后试着去通道中拿，和 <code>put</code> 方法类似，如果该通道中还有空闲的 <code>TCP</code> 连接，则直接拿出并经过封装后（ <code>wrapConn</code> ）使用，如果没有则使用工厂方法新建一个 <code>TCP</code> 连接再经过封装后使用。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConnPool)</span> <span class="title">Get</span><span class="params">()</span> <span class="params">(net.Conn, error)</span></span> &#123;</span><br><span class="line">    conns, factory := c.getConnsAndFactory()</span><br><span class="line">    <span class="keyword">if</span> conns == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, ErrClosed</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> conn := &lt;- conns:</span><br><span class="line">        <span class="keyword">if</span> conn == <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, ErrClosed</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> c.wrapConn(conn), <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        conn, err := factory()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> c.wrapConn(conn), <span class="literal">nil</span></span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConnPool)</span> <span class="title">Close</span><span class="params">()</span></span> &#123;</span><br><span class="line">    c.mu.Lock()</span><br><span class="line">    conns := c.conns</span><br><span class="line">    c.conns. = <span class="literal">nil</span></span><br><span class="line">    c.factory = <span class="literal">nil</span></span><br><span class="line">    c.mu.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> conns == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">close</span>(conns)</span><br><span class="line">    <span class="keyword">for</span> conn := <span class="keyword">range</span> conns &#123;</span><br><span class="line">        conn.Close()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConnPool)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    conns, _ := c.getConnsAndFactory()</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(conns)   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="连接池的使用"><a href="#连接池的使用" class="headerlink" title="连接池的使用"></a>连接池的使用</h2><p>由于具体的连接逻辑是由客户端决定的，所以 <code>factory</code> 应该由使用者定义。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">factory := <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="params">(net.Conn, error)</span></span> &#123;<span class="keyword">return</span> net.Dial(<span class="string">"tcp"</span>, <span class="string">"localhost:8080"</span>)&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过 <code>pool.NewConnPool</code> 来新建一个连接池，这里我们指定连接池中初始的连接个数为5，而最大的连接个数为30。通过 <code>p.Get</code> 来获得可用的连接，<code>Get</code> 方法会根据当前池中的情况返回连接，如果池中没有可用的连接则用 <code>factory</code> 方法新建一个，此时系统开销较大，但是这种情况并不常见，所以基本可以忽略不计。如果池中有可用连接，则直接返回，此时开销较小。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">p, err := pool.NewConnPool(<span class="number">5</span>, <span class="number">30</span>, factory)</span><br><span class="line"></span><br><span class="line">conn, err := p.Get()</span><br><span class="line"></span><br><span class="line"><span class="keyword">defer</span> conn.Close()</span><br></pre></td></tr></table></figure>
+<p>下面给出真正关闭该连接的方法，因为我们重载了 <code>Close</code> 方法，直接调用 <code>Close</code> 只会将此连接放回连接池中，所以需要在真正关闭前将此连接设为不可用（ <code>MarkUnusable</code> ）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> pc, ok := conn.(*pool.PooledConn); ok &#123;</span><br><span class="line">    pc.MarkUnusable()</span><br><span class="line">    pc.Close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

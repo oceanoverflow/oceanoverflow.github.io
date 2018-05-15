@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>iobridge | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="iobridge每个人小时候都或多或少经历过父母冷战吧，当他们冷战的时候，我们这些可怜的小屁孩就成了传话筒，一般事情就会发展成下面这种情况了：   「老爸 -&amp;gt; 我 ：“叫你老妈安静一点”    然后   我 -&amp;gt; 老妈 ：“老妈，老爸叫你安静一点”」   「老妈 -&amp;gt; 我 ：“你老爸才需要安静呢”    然后   我 -&amp;gt; 老爸 ：“老爸，老妈说你才需要安静呢”」 上述对">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iobridge">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/01/iobridge/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="iobridge每个人小时候都或多或少经历过父母冷战吧，当他们冷战的时候，我们这些可怜的小屁孩就成了传话筒，一般事情就会发展成下面这种情况了：   「老爸 -&amp;gt; 我 ：“叫你老妈安静一点”    然后   我 -&amp;gt; 老妈 ：“老妈，老爸叫你安静一点”」   「老妈 -&amp;gt; 我 ：“你老爸才需要安静呢”    然后   我 -&amp;gt; 老爸 ：“老爸，老妈说你才需要安静呢”」 上述对">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:54:55.537Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iobridge">
+<meta name="twitter:description" content="iobridge每个人小时候都或多或少经历过父母冷战吧，当他们冷战的时候，我们这些可怜的小屁孩就成了传话筒，一般事情就会发展成下面这种情况了：   「老爸 -&amp;gt; 我 ：“叫你老妈安静一点”    然后   我 -&amp;gt; 老妈 ：“老妈，老爸叫你安静一点”」   「老妈 -&amp;gt; 我 ：“你老爸才需要安静呢”    然后   我 -&amp;gt; 老爸 ：“老爸，老妈说你才需要安静呢”」 上述对">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-iobridge"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      iobridge
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-01T13:13:24.000Z" itemprop="datePublished">
+        May 1, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="iobridge"><a href="#iobridge" class="headerlink" title="iobridge"></a>iobridge</h1><p>每个人小时候都或多或少经历过父母冷战吧，当他们冷战的时候，我们这些可怜的小屁孩就成了传话筒，一般事情就会发展成下面这种情况了：</p>
+<p>  「老爸 -&gt; 我 ：“叫你老妈安静一点”<br>    然后<br>   我 -&gt; 老妈 ：“老妈，老爸叫你安静一点”」</p>
+<p>  「老妈 -&gt; 我 ：“你老爸才需要安静呢”<br>    然后<br>   我 -&gt; 老爸 ：“老爸，老妈说你才需要安静呢”」</p>
+<p>上述对话如此往复，诶，可怜天下小屁孩，要是冷战的话，老爸老妈必须通过一个中介人——我来进行语言上的交流。</p>
+<p>在现代网络编程中，也会出现与上述例子极其相似的情况，例如，现在有三台服务器，分别是A，B，C，其中A能与B直接通信，B能与C直接通信，但是A不能与C直接通信，在这种情况下，A要想能与C交流，就必须要经过B，下面我们就来看如何实现上面这种情况吧。</p>
+<p>下面的 <code>iobridge</code> 函数就做了一件传话筒的工作，其原理非常简单，就是从我们的数据源 <code>src</code> 读取（调用 <code>Read</code> 方法）数据，然后将它写到我们的目的地（调用 <code>Write</code> 方法）。也就是相当于我们上述过程中我从老妈那里获取消息，然后再将这个消息发给老爸的过程，注意到，这里函数中数据流的方法是单向的。</p>
+<p>因为在读数据的过程中经常需要开辟新内存，为了节约运行时的成本，我们通过之前写过的 <code>LeakyBuffer</code> 模型来获取内存。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">iobridge</span><span class="params">(src io.Reader, dst io.Writer, shutdown <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        shutdown &lt;- <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        buf := leakyBuffer.Get()</span><br><span class="line">        n, err := src.Read(buf)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> !(err == io.EOF || UseClosedConn(err)) &#123;</span><br><span class="line">                log.Print(<span class="string">"error reading %s:"</span>, src, err)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        _, err := dst.Write(buf[:n])</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Prinf(<span class="string">"error writing %s: %s\n"</span>, dst, err)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        leakyBuffer.Put(buf)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">UseClosedConn</span><span class="params">(err error)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    operr, ok := err.(*net.OpErr)</span><br><span class="line">    <span class="keyword">return</span> ok &amp;&amp; operr.Err.Error() == <span class="string">"use of closed network connection"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为我们的 <code>net.Conn</code> 同时定义了 <code>Read(b []byte) (n int, err error)</code> 方法和 <code>Write(b []byte) (n int, err error)</code> 方法，而这两个方法分别由接口 <code>io.Reader</code> 和 <code>io.Writer</code> 定义，所以 <code>net.Conn</code> 既是 <code>io.Reader</code> 也是 <code>io.Writer</code> 。故上述方法中的第一个和第二个参数我们都可以使用 <code>net.Conn</code> 做我们的参数。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// defined in package io</span></span><br><span class="line"><span class="keyword">type</span> Reader <span class="keyword">interface</span> &#123;</span><br><span class="line">    Read(p []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// defined in package io</span></span><br><span class="line"><span class="keyword">type</span> Writer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Write(p []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// defined in package net</span></span><br><span class="line"><span class="keyword">type</span> Conn <span class="keyword">interface</span> &#123;</span><br><span class="line">    Read(b []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">    Write(b []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的main函数应该运行在中间那台服务器也就是B上面，B作为客户端向远程服务器C发起TCP连接，并返回一个套接字conn1，同时B也作为服务器监听端口，服务来自A的连接请求，<code>Accept</code> 成功返回另一个套接字conn2，那么如何使得来个无法直接接触的服务器A和C有来有往的进行交流对话呢，这里的技巧就是起两个goroutine分别调用 <code>iobridge</code> 方法，使得两个 <code>net.Conn</code> conn1和conn2相互传递数据以互通有无，<code>shutdown</code> 这个通道这里算一个hack，用于阻塞main routine 不让其马上返回。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    conn1, err := net.Dial(<span class="string">"tcp"</span>, <span class="string">"remotehost"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(<span class="string">"Error Dialing"</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    l. err := net.Listen(<span class="string">"tcp"</span>, <span class="string">":2333"</span>)</span><br><span class="line">    conn2, err := listener.Accept()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(<span class="string">"Error Accepting Connection"</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    shutdown := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> iobridge(conn1, conn2, shutdown)</span><br><span class="line">    <span class="keyword">go</span> iobridge(conn2, conn1, shutdown)</span><br><span class="line"></span><br><span class="line">    &lt;-shutdown</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>设有服务器A，B，C，除了A与C不能直接接触，其余两两都能沟通，要想A能与C进行沟通交流，解决方案就是A作为客户端调用 <code>net.Dial</code> 向B发起TCP连接，如果连接成功，则A上会有一个 <code>net.Conn</code> sA，B上也有一个 <code>net.Conn</code> sB1，此时B也作为客户端向C发起TCP连接，B上又多了一个 <code>net.Conn</code> sB2，C上也有一个<code>net.Conn</code> sC。注意这些 <code>net.Conn</code> 的本质都是一个套接字，可以直接当成文件描述符来进行操作。</p>
+<p>此时A和C要想互相交流，唯一的方法就是将sB1和sB2进行某种程度的联系，通过起两个 <code>iobridge</code> 函数，我们就将sB1读到的数据发送给sB2，也可sB2读到的数据发送给sB1，注意，一旦sB1将读到的数据发送给sB2，sB2会马上把这个数据发送给sC，这样就达到了A与C相互交流的目的了。</p>
+<p>聪明的小伙伴一定注意到了，上面讲的就是代理（shadowsocks）的基本工作原理了，是不是很简单也很有趣呢。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

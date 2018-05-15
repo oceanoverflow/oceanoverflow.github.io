@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Event Timer | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Event Timer还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Event Timer">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/27/EventTimer/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Event Timer还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T12:01:31.129Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Event Timer">
+<meta name="twitter:description" content="Event Timer还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-EventTimer"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Event Timer
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-27T06:47:24.000Z" itemprop="datePublished">
+        Apr 27, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Event-Timer"><a href="#Event-Timer" class="headerlink" title="Event Timer"></a>Event Timer</h1><p>还记得我们在 <a href="EventProcessEngine.md">EventProcessEngine</a> 里讲过的 <code>Event Manager</code> 吗，我们这里要实现的 <code>Event Timer</code> 其实和那个是有点耦合的，本篇博客与<a href="EventProcessEngine.md">EventProcessEngine</a> 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。</p>
+<p>关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 <code>Timer</code> 结构体里包含一个 <code>&lt;- chan Time</code> 通道，在经历过一定的时间后，该通道就会返回，这样就达到了倒计时的目的，当然还有一个 <code>Reset</code> 方法用于重置我们的定时器。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Timer <span class="keyword">struct</span> &#123;</span><br><span class="line">    C &lt;- <span class="keyword">chan</span> Time</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AfterFunc</span><span class="params">(d Duration, f <span class="keyword">func</span>()</span>) *<span class="title">Timer</span> </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">NewTimer</span><span class="params">(d Duration)</span> *<span class="title">Timer</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(t *Timer)</span> <span class="title">Reset</span><span class="params">(d Duration)</span> <span class="title">bool</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(t *Timer)</span> <span class="title">Stop</span><span class="params">()</span> <span class="title">bool</span></span></span><br></pre></td></tr></table></figure>
+<p>那么为什么要实现一个自己的定时器呢，当然是觉得官方提供的不够用啦。</p>
+<p>先说一说我们的 <code>EventTimer</code> 会在哪里用到，例如在分布式系统中，主节点需要向从节点周期性发送心跳消息，以期望从节点可以判定主节点有没有出现宕机之类的故障，所以每个从节点都需要设置一个心跳超时的定时器，如果在规定的时间内，从节点接收到了来自主节点的心跳消息，那么从节点将定时器重置，如果没有收到，那么从节点会发起申请成为主节点的请求。</p>
+<p>下面例举几个在PBFT算法中定义的几个定时器超时的事件。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// viewChangeTimerEvent is sent when the view change timer expires</span></span><br><span class="line"><span class="keyword">type</span> viewChangeTimerEvent <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// viewChangeResendTimerEvent is sent when the view change resend timer expires</span></span><br><span class="line"><span class="keyword">type</span> viewChangeResendTimerEvent <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// batchTimerEvent is sent when the batch timer expires</span></span><br><span class="line"><span class="keyword">type</span> batchTimerEvent <span class="keyword">struct</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>所以我们接下来需要实现的定时器需要有两个功能，第一点就是老功能，定时操作，第二点是增加的新功能，当定时器超时将我们预设好的事件发送给我们的事件管理器（Event Manager）作进一步处理。</p>
+<p>首先，我们来定义一下我们自己实现的 <code>Timer</code> 需要实现的接口，作为一个定时器，第一要务肯定是定时了，所以我们需要它有倒计时的功能，当倒计时结束我们发送事先定义好的事件给我们的事件管理器（Event Manager），第二点我们需要在不需要它的时候随时停止它。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Event <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Timer <span class="keyword">interface</span> &#123;</span><br><span class="line">    SoftReset(timeout time.Duration, event Event)</span><br><span class="line">    Reset(timeout time.Duration, event Event)</span><br><span class="line">    Stop()</span><br><span class="line">    Halt()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> threaded <span class="keyword">struct</span> &#123;</span><br><span class="line">    exit <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> timerImpl <span class="keyword">struct</span> &#123;</span><br><span class="line">    threaded </span><br><span class="line">    timerChan &lt;- <span class="keyword">chan</span> time.Time</span><br><span class="line">    startChan <span class="keyword">chan</span> *timerStart</span><br><span class="line">    stopChan  <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    manager   Manager</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> timerStart <span class="keyword">struct</span> &#123;</span><br><span class="line">    hard     <span class="keyword">bool</span></span><br><span class="line">    event    Event</span><br><span class="line">    duration time.Duration</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newTimer</span><span class="params">(manager Manager)</span> <span class="title">Timer</span></span> &#123;</span><br><span class="line">    et := &amp;timerImpl&#123;</span><br><span class="line">        threaded:  threaded&#123;<span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)&#125;,</span><br><span class="line">        startChan: <span class="built_in">make</span>(<span class="keyword">chan</span> *timerStart),</span><br><span class="line">        stopChan:  <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;),</span><br><span class="line">        manager: manager,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">go</span> et.loop()</span><br><span class="line">    <span class="keyword">return</span> et</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>interface <code>Timer</code> 中的 <code>Reset</code> 和 <code>SoftReset</code> 方法的功能都是让定时器重新开始倒计时，倒计时结束向我们的事件管理器发送事件，然后由事件管理器对我们的事件进行集中处理。它们之间的区别就是 <code>Reset</code> 会清除掉之前所有定时的事件，而 <code>SoftReset</code> 则不会，<code>Stop</code> 和 <code>Halt</code> 则非常简单，就是停止定时器，但<code>Stop</code> 会清除掉所有定时的事件。</p>
+<p><code>timerImpl</code>  实现了 <code>Timer</code> 接口，这里就可以清楚地看到 <code>Reset</code> 和 <code>SoftReset</code> 就是向 <code>startChan</code> 中发送我们的倒计时事件，也就是和我们的定时器申明，在 <code>timeout</code> 这么长的时间后，发射一个 <code>event</code> 事件。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *timerImpl)</span> <span class="title">Reset</span><span class="params">(timeout time.Duration, event Event)</span></span> &#123;</span><br><span class="line">    t.startChan &lt;- &amp;timerStart&#123;</span><br><span class="line">        duration: timeout,</span><br><span class="line">        event: event,</span><br><span class="line">        hard: <span class="literal">true</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *timerImpl)</span> <span class="title">SoftReset</span><span class="params">(timeout time.Duration, event Event)</span></span> &#123;</span><br><span class="line">     t.startChan &lt;- &amp;timerStart&#123;</span><br><span class="line">         duration: timeout,</span><br><span class="line">         event: event,</span><br><span class="line">         hard: <span class="literal">false</span>,</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *timerImpl)</span> <span class="title">Stop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    et.stopChan &lt;- <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *timerImpl)</span> <span class="title">Halt</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> &lt;-t.threaded.exit:</span><br><span class="line">        logger.Warning(<span class="string">"Attempted to halt a threaded object twice"</span>)</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">close</span>(t.threaded.exit)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来我们用工厂模式来新建我们的 <code>Timer</code>， 使用工厂模式有很多好处，我们会在另一篇博客中详细讲述它的用法和好处。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> TimerFactory <span class="keyword">interface</span> &#123;</span><br><span class="line">    CreateTimer() Timer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> timerFactoryImpl <span class="keyword">struct</span> &#123;</span><br><span class="line">    manager Manager</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTimerFactory</span><span class="params">(manager Manager)</span> <span class="title">TimerFactory</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;timerFactoryImpl(manager)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(etf *timerFactoryImpl)</span> <span class="title">CreateTimer</span><span class="params">()</span> <span class="title">Timer</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> newTimer(etf.manager)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后我们来看一下定时器最核心的函数 <code>loop()</code> 的实现。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(et *timerImpl)</span> <span class="title">loop</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> eventDestChan <span class="keyword">chan</span>&lt;- Event</span><br><span class="line">	<span class="keyword">var</span> event Event</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="comment">// A little state machine, relying on the fact that nil channels will block on read/write indefinitely</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="comment">// case 1.</span></span><br><span class="line">		<span class="keyword">case</span> start := &lt;-et.startChan:</span><br><span class="line">			<span class="keyword">if</span> et.timerChan != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">if</span> start.hard &#123;</span><br><span class="line">					logger.Debug(<span class="string">"Resetting a running timer"</span>)</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					<span class="keyword">continue</span></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			logger.Debug(<span class="string">"Starting timer"</span>)</span><br><span class="line">			et.timerChan = time.After(start.duration)</span><br><span class="line">			<span class="keyword">if</span> eventDestChan != <span class="literal">nil</span> &#123;</span><br><span class="line">				logger.Debug(<span class="string">"Timer cleared pending event"</span>)</span><br><span class="line">			&#125;</span><br><span class="line">			event = start.event</span><br><span class="line">			eventDestChan = <span class="literal">nil</span></span><br><span class="line">    <span class="comment">// case 2.</span></span><br><span class="line">		<span class="keyword">case</span> &lt;-et.stopChan:</span><br><span class="line">			<span class="keyword">if</span> et.timerChan == <span class="literal">nil</span> &amp;&amp; eventDestChan == <span class="literal">nil</span> &#123;</span><br><span class="line">				logger.Debug(<span class="string">"Attempting to stop an unfired idle timer"</span>)</span><br><span class="line">			&#125;</span><br><span class="line">			et.timerChan = <span class="literal">nil</span></span><br><span class="line">			logger.Debug(<span class="string">"Stopping timer"</span>)</span><br><span class="line">			<span class="keyword">if</span> eventDestChan != <span class="literal">nil</span> &#123;</span><br><span class="line">				logger.Debug(<span class="string">"Timer cleared pending event"</span>)</span><br><span class="line">			&#125;</span><br><span class="line">			eventDestChan = <span class="literal">nil</span></span><br><span class="line">			event = <span class="literal">nil</span></span><br><span class="line">    <span class="comment">// case 3.</span></span><br><span class="line">		<span class="keyword">case</span> &lt;-et.timerChan:</span><br><span class="line">			logger.Debug(<span class="string">"Event timer fired"</span>)</span><br><span class="line">			et.timerChan = <span class="literal">nil</span></span><br><span class="line">			eventDestChan = et.manager.Queue()</span><br><span class="line">    <span class="comment">// case 4.</span></span><br><span class="line">		<span class="keyword">case</span> eventDestChan &lt;- event:</span><br><span class="line">			logger.Debug(<span class="string">"Timer event delivered"</span>)</span><br><span class="line">			eventDestChan = <span class="literal">nil</span></span><br><span class="line">    <span class="comment">// case 5.</span></span><br><span class="line">		<span class="keyword">case</span> &lt;-et.exit:</span><br><span class="line">			logger.Debug(<span class="string">"Halting timer"</span>)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然又一点恐怖，还是一步一步来吧。</p>
+<p>首先，说一下大致的思路，<code>loop()</code> 方法在开头定义了 <code>eventDestChan</code> 通道变量和 <code>event</code> 变量分别用于记录事件发送的目的地和事件本身。<code>loop()</code> 方法使用 <code>for select</code> 机制去轮询 <code>timerImpl</code> 中定义的几个通道。并且5个case条件中都是等待从通道中读取数据，2和5都是非正常流程，而1，3，4则是正常的流程。我们先从非正常流程说起。</p>
+<p>当程序某处调用 <code>Stop()</code> 方法时，<code>stopChan</code> 里就会有数据 <code>struct{}</code> ，<code>case 2</code> 就会被执行，我们分别将<code>timerChan</code>，<code>eventDstChan</code>，<code>event</code> 设置为nil就可以达到暂停的目的了，非常简单。</p>
+<p>当程序某处调用 <code>Halt()</code> 方法时，同样道理， <code>case 5</code> 会被执行，整个定时器将会被暂停，然后返回，这里也没有什么难度。</p>
+<p>接下来我们来捋一捋正常的流程也就是倒计时结束时发射事件的流程。一般来说正常的流程无非是程序某处调用了 <code>Reset()</code> 或者 <code>SoftReset()</code> 方法，那么我们的 <code>startChan</code> 里面就会有一个 <code>timerStart</code> 结构体，此时 <code>case 1</code> 就会被执行，然后判断当前时候是否有正在倒计时的时间，如果有并且新事件为hard，那么我们可以重置之前的倒计时，如果不是，则进入下一个for循环中。之后我们通过设置 <code>et.timerChan = time.After(start.duration)</code> 来真正开始倒计时，并且设置倒计时结束后要发生的event，但此时 <code>eventDestChan</code> 仍应设置为nil，毕竟倒计时还没有结束呢，超时事件不能马上发射。</p>
+<p>5，4， 3， 2， 1，眼瞧着我们之前设置好的倒计时结束了，那么我们的 <code>case 3</code> 就会被紧接着执行了，倒计时结束，说明超时事件已经触发了，但是现在我们超时事件究竟应该发送给谁还不知道，通过设置 <code>eventDestChan = et.manager.Queue()</code> 就将我们的事件目的地设置为我们的事件管理器，然后通过设置 <code>et.timerChan = nil</code> 就可以暂停我们的定时器了。</p>
+<p>执行完 <code>case 3</code>， 注意到我们现在 <code>event</code> 和 <code>eventDstChan</code> 都已经不为nil了，那么终于可以执行我们的 <code>case 4</code> 了，此处才真正地将我们的超时事件发送给我们的事件处理的目的地，之后的流程就交给我们的事件管理器（Event Manager）来处理啦。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

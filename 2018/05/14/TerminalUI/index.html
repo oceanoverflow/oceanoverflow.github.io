@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Terminal UI | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Terminal UI之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Terminal UI">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/14/TerminalUI/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Terminal UI之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:43:47.822Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Terminal UI">
+<meta name="twitter:description" content="Terminal UI之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-TerminalUI"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Terminal UI
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-14T14:49:04.000Z" itemprop="datePublished">
+        May 14, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Terminal-UI"><a href="#Terminal-UI" class="headerlink" title="Terminal UI"></a>Terminal UI</h1><p>之前用命令行版本的网易云音乐来听歌（ <code>musicbox</code> ，在 <code>github</code> 上可以搜索到），觉得实在是太 <code>geek</code> 了，但它是用 <code>python</code> 写的，略微容易崩，所以决定试着用 <code>golang</code> 仿造一个，第一步肯定是模仿它的 <code>UI</code> 了，在浏览器中我们用三元老 <code>HTML/CSS/JS</code> 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 <code>UI</code> 应该怎么搞，其实说实话我也不知道，大概搜了一下，发现用 <code>termui</code> 这个库就可以比较轻松撸出一个与 <code>musicbox</code> 类似的界面了，下面我们来看一下如何用代码来实现吧。</p>
+<h2 id="termui-安装"><a href="#termui-安装" class="headerlink" title="termui 安装"></a>termui 安装</h2><p>一般来说我们可以使用 <code>go get</code> 来进行获取安装，但最好使用 <code>dep</code> 来帮助我们管理项目的相关依赖。</p>
+<p><code>go get -u github.com/gizak/termui</code></p>
+<p>然后在代码中 <code>import</code> 就可以了。</p>
+<p><code>import &quot;github.com/gizak/termui&quot;</code></p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>在使用 <code>termui</code> 时需要先进行初始化（ <code>termui.Init()</code> ），并且最后还要释放资源 <code>defer termui.Close()</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">err := termui.Init()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(err)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">defer</span> termui.Close()</span><br></pre></td></tr></table></figure>
+<h2 id="界面相关数据准备"><a href="#界面相关数据准备" class="headerlink" title="界面相关数据准备"></a>界面相关数据准备</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">strs := []<span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="string">"   0. 排行榜"</span>,</span><br><span class="line">    <span class="string">"   1. 艺术家"</span>,</span><br><span class="line">    <span class="string">"   2. 新碟上架"</span>,</span><br><span class="line">    <span class="string">"   3. 精选歌单"</span>,</span><br><span class="line">    <span class="string">"   4. 我的歌单"</span>,</span><br><span class="line">    <span class="string">"   5. 主播电台"</span>,</span><br><span class="line">    <span class="string">"   6. 每日推荐"</span>,</span><br><span class="line">    <span class="string">"   7. 私人FM"</span>,</span><br><span class="line">    <span class="string">"   8. 搜索"</span>,</span><br><span class="line">    <span class="string">"   9. 帮助"</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">off := []<span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="string">"   0. 排行榜"</span>,</span><br><span class="line">    <span class="string">"   1. 艺术家"</span>,</span><br><span class="line">    <span class="string">"   2. 新碟上架"</span>,</span><br><span class="line">    <span class="string">"   3. 精选歌单"</span>,</span><br><span class="line">    <span class="string">"   4. 我的歌单"</span>,</span><br><span class="line">    <span class="string">"   5. 主播电台"</span>,</span><br><span class="line">    <span class="string">"   6. 每日推荐"</span>,</span><br><span class="line">    <span class="string">"   7. 私人FM"</span>,</span><br><span class="line">    <span class="string">"   8. 搜索"</span>,</span><br><span class="line">    <span class="string">"   9. 帮助"</span>,</span><br><span class="line">&#125;</span><br><span class="line">on := []<span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="string">"[-&gt; 0. 排行榜](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 1. 艺术家](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 2. 新碟上架](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 3. 精选歌单](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 4. 我的歌单](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 5. 主播电台](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 6. 每日推荐](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 7. 私人FM](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 8. 搜索](fg-cyan)"</span>,</span><br><span class="line">    <span class="string">"[-&gt; 9. 帮助](fg-cyan)"</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="定义界面参数"><a href="#定义界面参数" class="headerlink" title="定义界面参数"></a>定义界面参数</h2><p>在使用 <code>termui</code> 时，我们需要确定界面元素及其属性，以及它在命令行中的排版，其实 <code>UI</code> 就是对数据的一种呈现，反正就是你觉得怎么好看就怎么来。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ls := termui.List()</span><br><span class="line">ls.Items = strs</span><br><span class="line">ls.ItemFgColor = termui.ColorWhite</span><br><span class="line">ls.BorderLabel = <span class="string">"网易云音乐"</span></span><br><span class="line">ls.Height = <span class="number">12</span></span><br><span class="line">ls.Width = <span class="number">20</span></span><br><span class="line">ls.Y = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h2 id="termui对事件的处理"><a href="#termui对事件的处理" class="headerlink" title="termui对事件的处理"></a>termui对事件的处理</h2><p><code>termui</code> 对事件的处理和 <code>HTTP</code> 处理事件的做法类似，我们需要对不同的事件注册回调函数，例如检测到用户输入 <code>q</code> ，我们注册一个类似的回调函数就可以了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">termui.Handle(<span class="string">"/sys/kbd/q"</span>, <span class="function"><span class="keyword">func</span><span class="params">(termui.Event)</span></span> &#123;</span><br><span class="line">    termui.StopLoop()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>相关事件可以是键盘输入，界面点击，窗口伸缩甚至可以是自定义事件。相关事件触发后，对应的数据可能会发生改变，这样以来用户界面就需要发生改变，我们可以使用 <code>termui.Render</code> 对界面重新进行渲染。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">cursor := <span class="number">0</span></span><br><span class="line">termui.Render(ls)</span><br><span class="line">termui.Handle(<span class="string">"/sys/kbd/j"</span>, <span class="function"><span class="keyword">func</span><span class="params">(termui.Event)</span></span> &#123;</span><br><span class="line">    strs[cursor%<span class="built_in">len</span>(strs)] = off[cursor%<span class="built_in">len</span>(strs)]</span><br><span class="line">    cursor++</span><br><span class="line">    <span class="keyword">if</span> cursor == <span class="built_in">len</span>(strs) &#123;</span><br><span class="line">        cursor = <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">    strs[cursor%<span class="built_in">len</span>(strs)] = on[cursor%<span class="built_in">len</span>(strs)]</span><br><span class="line">    termui.Render(ls)</span><br><span class="line">&#125;)</span><br><span class="line">termui.Handle(<span class="string">"/sys/kbd/k"</span>, <span class="function"><span class="keyword">func</span><span class="params">(termui.Event)</span></span> &#123;</span><br><span class="line">    strs[cursor%<span class="built_in">len</span>(strs)] = off[cursor%<span class="built_in">len</span>(strs)]</span><br><span class="line">    cursor--</span><br><span class="line">    <span class="keyword">if</span> cursor &lt; <span class="number">0</span> &#123;</span><br><span class="line">        cursor = <span class="built_in">len</span>(strs) - <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    strs[cursor%<span class="built_in">len</span>(strs)] = on[cursor%<span class="built_in">len</span>(strs)]</span><br><span class="line">    termui.Render(ls)</span><br><span class="line">&#125;)</span><br><span class="line">termui.Loop()</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

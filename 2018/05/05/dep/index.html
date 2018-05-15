@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>dep | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="dep在写大型工程项目的时候，难免会依赖第三方的库（自己重复造轮子肯定不现实），如果依赖的库数量非常多时，自己去手动管理肯定是不现实的，所以我们需要一个依赖管理工具帮助我们管理依赖的库。就像 node 有 npm ，java 有 maven 。而 golang 之前一直没有一个官方推荐的依赖管理工具，所以第三方的依赖管理工具 glide ，govendor 之类的就应运而生，但由于不是官方出品的，">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dep">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/05/dep/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="dep在写大型工程项目的时候，难免会依赖第三方的库（自己重复造轮子肯定不现实），如果依赖的库数量非常多时，自己去手动管理肯定是不现实的，所以我们需要一个依赖管理工具帮助我们管理依赖的库。就像 node 有 npm ，java 有 maven 。而 golang 之前一直没有一个官方推荐的依赖管理工具，所以第三方的依赖管理工具 glide ，govendor 之类的就应运而生，但由于不是官方出品的，">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://github.com/golang/dep/raw/master/docs/assets/DigbyShadows.png">
+<meta property="og:updated_time" content="2018-05-15T11:44:24.267Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="dep">
+<meta name="twitter:description" content="dep在写大型工程项目的时候，难免会依赖第三方的库（自己重复造轮子肯定不现实），如果依赖的库数量非常多时，自己去手动管理肯定是不现实的，所以我们需要一个依赖管理工具帮助我们管理依赖的库。就像 node 有 npm ，java 有 maven 。而 golang 之前一直没有一个官方推荐的依赖管理工具，所以第三方的依赖管理工具 glide ，govendor 之类的就应运而生，但由于不是官方出品的，">
+<meta name="twitter:image" content="https://github.com/golang/dep/raw/master/docs/assets/DigbyShadows.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-dep"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      dep
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-05T02:47:24.000Z" itemprop="datePublished">
+        May 5, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="dep"><a href="#dep" class="headerlink" title="dep"></a>dep</h1><p>在写大型工程项目的时候，难免会依赖第三方的库（自己重复造轮子肯定不现实），如果依赖的库数量非常多时，自己去手动管理肯定是不现实的，所以我们需要一个依赖管理工具帮助我们管理依赖的库。就像 <code>node</code> 有 <code>npm</code> ，<code>java</code> 有 <code>maven</code> 。而 <code>golang</code> 之前一直没有一个官方推荐的依赖管理工具，所以第三方的依赖管理工具 <code>glide</code> ，<code>govendor</code> 之类的就应运而生，但由于不是官方出品的，自己用起来心里总有些毛毛的，后来，<code>golang</code> 官方终于推出了 <code>dep</code> 这个依赖管理工具，终于给我们这些强迫症患者安了一个心。下面我们就以一个demo为例子，看看<code>dep</code> 如何使用吧。</p>
+<p><img src="https://github.com/golang/dep/raw/master/docs/assets/DigbyShadows.png" alt="godep"></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>由于 <code>dep</code> 是一个命令行工具，安装起来也非常的方便，下面给出两种安装方式。</p>
+<h4 id="二进制安装"><a href="#二进制安装" class="headerlink" title="二进制安装"></a>二进制安装</h4><p>这种安装方法通用型比较强，下面的命令会根据你的操作系统直接安装相应的二进制。</p>
+<p><code>$ curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh</code></p>
+<h4 id="macOS-安装"><a href="#macOS-安装" class="headerlink" title="macOS 安装"></a>macOS 安装</h4><p>但是 <code>macOS</code> 用户一般还是比较习惯于使用<code>brew</code> 的，使用 <code>brew</code> 也是<code>no-brainer</code> 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ brew install dep</span><br><span class="line">$ brew upgrade dep</span><br></pre></td></tr></table></figure>
+<h2 id="vendor-机制"><a href="#vendor-机制" class="headerlink" title="vendor 机制"></a>vendor 机制</h2><p>要了解 <code>dep</code> 存在的必要性就不得不提 <code>vendor</code> 机制了，我们都知道如果我们在 <code>go</code> 文件中导入一个非标准库，在编译时 <code>go</code> 会在 <code>$GOPATH</code> 下面去寻找它，但是这就导致一个问题，如果两个项目A和B同时用到了这个库，但是A和B对这个库的版本需求是不同的，这样就很难办了，毕竟在 <code>$GOPATH</code> 下面只能存在一个版本的库，所以为了解决这种情况，在<code>Go1.5</code>的时候，就出现 <code>vendor</code> 文件夹这个机制，也就是说，<code>go</code> 在编译项目的时候，会去这个项目目录下面寻找是否存在 <code>vendor</code> 这个文件夹，并且 <code>vendor</code> 下面是否存在我们需要的库，如果有则使用它，如果没有则去 <code>$GOPATH</code> 下去寻找。</p>
+<p>例如项目C依赖 <code>github.com/aaa/bbb</code> 这个库，那么 <code>go</code> 在编译时回去查看当前项目目录下有没有<code>vendor/github.com/aaa/bbb</code> 这个文件夹目录，如果有则使用这个版本，如果没有再去 <code>$GOPATH</code> 下面去找。而 <code>dep</code> 就是为了帮我们管理 <code>vendor</code> 这个目录下面的依赖而存在的。</p>
+<h2 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h2><p>例如我们要写一个与 <code>WebSocket</code> 相关的项目，无奈 <code>golang</code> 的标准库里实现的 <code>WebSocket</code> 我们并不是非常满意，所以我们去 <code>github</code> 上面搜了一下，最后发现 <code>girilla</code> 家的 <code>websocket</code> 库还是比较符合我们项目的需求的，所以决定使用它。</p>
+<p>第一步就是新建一个 <code>dep</code> 项目，使用 <code>dep init</code> 命令，会帮我们生成两个文件和一个空的 <code>vendor</code> 文件夹。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ dep init</span><br><span class="line">$ ls</span><br><span class="line">Gopkg.toml Gopkg.lock vendor/</span><br></pre></td></tr></table></figure>
+<p>然后我们写了一个 <code>main.go</code> 文件用于存放我们项目的所有逻辑（bad practice），这个文件除了标准库之外当然还导入了我们需要的 <code>websocket</code> 依赖。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"flag"</span></span><br><span class="line">    <span class="string">"html/template"</span></span><br><span class="line">    <span class="string">"io/ioutil"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">    <span class="string">"strconv"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">    </span><br><span class="line">    <span class="string">"github.com/gorilla/websocket"</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>编辑完之后，在命令行中输入 <code>dep ensure</code> ，<code>dep</code> 会扫描我们当前项目中所有的依赖，并找出我们依赖的三方库，然后更新相应的文件（Gopkg.toml 和 Gopkg.lock），并更新我们的 <code>vendor</code> 文件夹，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── Gopkg.lock</span><br><span class="line">├── Gopkg.toml</span><br><span class="line">├── main.go</span><br><span class="line">└── vendor</span><br><span class="line">    └── github.com</span><br><span class="line">        └── gorilla</span><br><span class="line">            └── websocket</span><br><span class="line">                ├── AUTHORS</span><br><span class="line">                ├── LICENSE</span><br><span class="line">                ├── README.md</span><br><span class="line">                ├── client.go</span><br><span class="line">                ├── client_clone.go</span><br><span class="line">                ├── client_clone_legacy.go</span><br><span class="line">                ├── compression.go</span><br><span class="line">                ├── conn.go</span><br><span class="line">                ├── conn_read.go</span><br><span class="line">                ├── conn_read_legacy.go</span><br><span class="line">                ├── doc.go</span><br><span class="line">                ├── json.go</span><br><span class="line">                ├── mask.go</span><br><span class="line">                ├── mask_safe.go</span><br><span class="line">                ├── prepared.go</span><br><span class="line">                ├── server.go</span><br><span class="line">                └── util.go</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>反正以后用 <code>dep</code> 作为go项目的依赖管理工具准没错的，如果你用 <code>glide</code> 或者 <code>govendor</code> 之类的还是趁早投靠 <code>dep</code> 吧。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

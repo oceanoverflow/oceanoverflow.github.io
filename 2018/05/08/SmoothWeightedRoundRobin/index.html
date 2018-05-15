@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Weighted Round Robin | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Smooth Weighted Round Robin我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Weighted Round Robin">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/08/SmoothWeightedRoundRobin/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Smooth Weighted Round Robin我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T12:04:29.328Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Weighted Round Robin">
+<meta name="twitter:description" content="Smooth Weighted Round Robin我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-SmoothWeightedRoundRobin"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Weighted Round Robin
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-08T02:29:04.000Z" itemprop="datePublished">
+        May 8, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Smooth-Weighted-Round-Robin"><a href="#Smooth-Weighted-Round-Robin" class="headerlink" title="Smooth Weighted Round Robin"></a>Smooth Weighted Round Robin</h1><p>我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。</p>
+<p>例如服务器的性能比例如下：<code>{a:3, b: 2, c:1}</code> ，一般来说可以使用加权的轮询算法（ <code>Weighted Round Robin</code> ）进行负载均衡，但是普通的加权轮询会得出类似这样的序列， <code>a a a b b c</code> ，这样的序列有一个问题，就是它并不够平滑，我们更希望得到像这样的序列 <code>a b a c b a</code> 。也就是说一般的轮询调度在调度的过程中并没有考虑瞬时的情况，所以会导致对某一台服务器的瞬时访问。</p>
+<p>下面我们就来介绍一下平滑版本的加权轮询算法，来解决上述瞬时访问可能出现的问题。我们对每个节点赋予两个权重， <code>Weight</code> ，这是一个较为固定的值，就是前面给出的 <code>{a:3, b: 2, c:1}</code> ，还需要一个 <code>CurrentWeight</code> 来记录当前的权重，初始时均为0，这个权重是在每次选择节点时动态变化的。</p>
+<p>例如现在有三台服务器，其权重比值为 <code>{a:3, b: 2, c:1}</code> ，刚开始时它们的 <code>CurrentWeight</code> 均为0，按照下面的算法，每一回合中各个节点的 <code>CurrentWeight</code> 都会加上它相应的的 <code>Weight</code> ，<code>total</code> 变量则用于记录每一个节点增加的 <code>Weight</code> 的总和，并记录当前权重最高的那一个节点，也就是我们的 <code>best</code> ，在一轮计算之后，再让 <code>best</code> 节点的 <code>CurrentWeight</code> 减去 <code>total</code> 值。</p>
+<p>也就是说开始时每台服务器的 <code>CurrentWeight</code> 为 <code>{a:0, b: 0, c:0}</code> ，在选择节点的过程中，每个节点均会加上自己对应的 <code>Weight</code> ，这样就变成 <code>{a:3, b: 2, c:1}</code> ， 此时 <code>best=a</code> ， 最后 a 对应的 <code>CurrentWeight</code> 要减去 <code>total</code> ，也就是 <code>{a:-3, b: 2, c:1}</code>  。</p>
+<p>然后 <code>{a:-3, b: 2, c:1}</code> 作为下一轮挑选节点时的初始状态，以此类推，最后可以得到下面这样的序列  <code>a b a c b a</code> ，这样就不会导致对服务器 <code>a</code> 集中访问的情况，也就是说访问序列更加平滑了。</p>
+<p>整个周期计算的流程如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">a   b   c</span><br><span class="line">0   0   0</span><br><span class="line"></span><br><span class="line">3   2   1   Next() : a</span><br><span class="line">-3  2   1</span><br><span class="line"></span><br><span class="line">0   4   2   Next() : b</span><br><span class="line">0  -2   2</span><br><span class="line"></span><br><span class="line">3   0   3   Next() : a</span><br><span class="line">-3  0   3</span><br><span class="line"></span><br><span class="line">0   2   4   Next() : c</span><br><span class="line">0   2   -2 </span><br><span class="line"></span><br><span class="line">3   4   -1  Next() : b</span><br><span class="line">3  -2   -1</span><br><span class="line"></span><br><span class="line">6   0   0   Next() : a</span><br><span class="line">0   0   0</span><br></pre></td></tr></table></figure>
+<h2 id="普通版本平滑轮询调度算法"><a href="#普通版本平滑轮询调度算法" class="headerlink" title="普通版本平滑轮询调度算法"></a>普通版本平滑轮询调度算法</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Weighted <span class="keyword">struct</span> &#123;</span><br><span class="line">    Server <span class="keyword">string</span></span><br><span class="line">    Weight <span class="keyword">int</span></span><br><span class="line">    CurrentWeight <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>普通版本的算法，每次选择结点的时候，我们为每个候选结点的 <code>CurrentWeight</code> 增加 <code>Weight</code> ，选取 <code>CurrentWeight</code> 最大的节点作为我们最后返回的结果，然后将该节点减去所有节点增加的 <code>Weight</code> 之和。 </p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Next</span><span class="params">(servers []*Weighted)</span> <span class="params">(best *Weight)</span></span> &#123;</span><br><span class="line">    total := <span class="number">0</span> </span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(servers); i++ &#123;</span><br><span class="line">        w := servers[i]</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> w == <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        w.CurrentWeight += w.Weight</span><br><span class="line">        total += w.CurrentWeight </span><br><span class="line">        <span class="keyword">if</span> best == <span class="literal">nil</span> || w.CurrentWeight &gt; best.CurrentWeight &#123;</span><br><span class="line">            best = w</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> best == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    best.CurrentWeight -= total</span><br><span class="line">    <span class="keyword">return</span> best</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="考虑节点失效情况时的算法"><a href="#考虑节点失效情况时的算法" class="headerlink" title="考虑节点失效情况时的算法"></a>考虑节点失效情况时的算法</h2><p>上面那种算法不能很好的应对节点失效的情况，为了解决节点失效时的这种突发情况，我们多引入一个权重也就是 <code>EffectiveWeight</code> ，该权重初始时与 <code>Weight</code> 的值相同，例如上述的例子中都是  <code>{a:3, b: 2, c:1}</code> ，但是 <code>EffectiveWeight</code> 会在节点失败的时候清0，当节点恢复正常时再慢慢递增直到达到原本的 <code>Weight</code> ，这样就能很好地考虑了节点失效再重启时的真实情况。因为引入了 <code>EffectiveWeight</code> ， 我们在相应计算的时候就不直接采用 <code>Weight</code> 而是直接使用<code>EffectiveWeight</code> 来代替计算。 </p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Weighted <span class="keyword">struct</span> &#123;</span><br><span class="line">    Server <span class="keyword">string</span></span><br><span class="line">    Weight <span class="keyword">int</span></span><br><span class="line">    CurrentWeight <span class="keyword">int</span></span><br><span class="line">    EffectiveWeight <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(w *Weighted)</span> <span class="title">fail</span><span class="params">()</span></span> &#123;</span><br><span class="line">    w.EffetiveWeight -= w.Weight</span><br><span class="line">    <span class="keyword">if</span> w.EffectiveWeight &lt; <span class="number">0</span> &#123;</span><br><span class="line">        w.EffectiveWeight = <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Next</span><span class="params">(servers []*Weighted)</span> <span class="params">(best *Weight)</span></span> &#123;</span><br><span class="line">    total := <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(servers); i++ &#123;</span><br><span class="line">        w := servers[i]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> w == <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        w.CurrentWeight += w.EffectiveWeight</span><br><span class="line">        total += w.EffectiveWeight</span><br><span class="line">        <span class="keyword">if</span> w.EffectiveWeight &lt; w.Weight &#123;</span><br><span class="line">            w.EffectiveWeight++</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> best == <span class="literal">nil</span> || w.CurrentWeight &gt; best.CurrentWeight &#123;</span><br><span class="line">            best = w</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> best == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    best.CurrentWeight -= total</span><br><span class="line">    <span class="keyword">return</span> best</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

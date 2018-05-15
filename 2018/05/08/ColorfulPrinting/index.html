@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Colorful Printing | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Colorful Printing平时在使用一些命令行工具时，是否经常注意到彩色的 log 打出来呢，然而自己写的命令行工具永远都是清一色白底黑字（或者黑底白字）的输出，是不是会怀疑别人施了黑魔法才让输出变得五彩斑斓，其实要让命令行输出彩色字体并没有那么难，关键就在对其规则的把握。 为了让字符变色，我们需要规定其伴随的属性，一般来说属性有以下几类。  基本属性，例如字体粗细，是否为斜体等等 前景字">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Colorful Printing">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/08/ColorfulPrinting/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Colorful Printing平时在使用一些命令行工具时，是否经常注意到彩色的 log 打出来呢，然而自己写的命令行工具永远都是清一色白底黑字（或者黑底白字）的输出，是不是会怀疑别人施了黑魔法才让输出变得五彩斑斓，其实要让命令行输出彩色字体并没有那么难，关键就在对其规则的把握。 为了让字符变色，我们需要规定其伴随的属性，一般来说属性有以下几类。  基本属性，例如字体粗细，是否为斜体等等 前景字">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:35:50.848Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Colorful Printing">
+<meta name="twitter:description" content="Colorful Printing平时在使用一些命令行工具时，是否经常注意到彩色的 log 打出来呢，然而自己写的命令行工具永远都是清一色白底黑字（或者黑底白字）的输出，是不是会怀疑别人施了黑魔法才让输出变得五彩斑斓，其实要让命令行输出彩色字体并没有那么难，关键就在对其规则的把握。 为了让字符变色，我们需要规定其伴随的属性，一般来说属性有以下几类。  基本属性，例如字体粗细，是否为斜体等等 前景字">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-ColorfulPrinting"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Colorful Printing
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-08T11:48:24.000Z" itemprop="datePublished">
+        May 8, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Colorful-Printing"><a href="#Colorful-Printing" class="headerlink" title="Colorful Printing"></a>Colorful Printing</h1><p>平时在使用一些命令行工具时，是否经常注意到彩色的 <code>log</code> 打出来呢，然而自己写的命令行工具永远都是清一色白底黑字（或者黑底白字）的输出，是不是会怀疑别人施了黑魔法才让输出变得五彩斑斓，其实要让命令行输出彩色字体并没有那么难，关键就在对其规则的把握。</p>
+<p>为了让字符变色，我们需要规定其伴随的属性，一般来说属性有以下几类。</p>
+<ul>
+<li>基本属性，例如字体粗细，是否为斜体等等</li>
+<li>前景字体颜色</li>
+<li>前景字体颜色（强烈版）</li>
+<li>背景字体颜色</li>
+<li>背景字体颜色（强烈版）</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Base attributes</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    Reset Attribute = <span class="literal">iota</span></span><br><span class="line">    Bold</span><br><span class="line">    Faint</span><br><span class="line">    Italic</span><br><span class="line">    Underline</span><br><span class="line">    BlinkSlow</span><br><span class="line">    BlinkRapid</span><br><span class="line">    ReverseVideo</span><br><span class="line">    Concealed</span><br><span class="line">    CrossedOut</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Foreground text colors</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    FgBlack Attribute = <span class="literal">iota</span> + <span class="number">30</span></span><br><span class="line">    FgRed</span><br><span class="line">    FgGreen</span><br><span class="line">    FgYellow</span><br><span class="line">    FgBlue</span><br><span class="line">    FgMagenta</span><br><span class="line">    FgCyan</span><br><span class="line">    FgWhite</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Foreground Hi-Intensity text colors</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    FgHiBlack Attribute = <span class="literal">iota</span> + <span class="number">90</span></span><br><span class="line">    FgHiRed</span><br><span class="line">    FgHiGreen</span><br><span class="line">    FgHiYellow</span><br><span class="line">    FgHiBlue</span><br><span class="line">    FgHiMagenta</span><br><span class="line">    FgHiCyan</span><br><span class="line">    FgHiWhite</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Background text colors</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    BgBlack Attribute = <span class="literal">iota</span> + <span class="number">40</span></span><br><span class="line">    BgRed</span><br><span class="line">    BgGreen</span><br><span class="line">    BgYellow</span><br><span class="line">    BgBlue</span><br><span class="line">    BgMagenta</span><br><span class="line">    BgCyan</span><br><span class="line">    BgWhite</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Background Hi-Intensity text colors</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    BgHiBlack Attribute = <span class="literal">iota</span> + <span class="number">100</span></span><br><span class="line">    BgHiRed</span><br><span class="line">    BgHiGreen</span><br><span class="line">    BgHiYellow</span><br><span class="line">    BgHiBlue</span><br><span class="line">    BgHiMagenta</span><br><span class="line">    BgHiCyan</span><br><span class="line">    BgHiWhite</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>让字符变色的关键在于转义字符的使用，转义字符对每个程序员来说肯定都不陌生，它的作用就是让紧随其后的字符变成其他含义，所谓转义转义就是这个意思，我们这里要使用的转义字符是 <code>\x1b</code> ，或者写作  <code>\033</code> ，二者都是可以的，因为十六进制的 <code>1b</code> 和八进制的 <code>33</code> 相等。</p>
+<p>下面我们定义一个 <code>Color</code> 结构体，里面包含一个属性数组，规定了我们的文字会变化成什么样。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> escape = <span class="string">"\x1b"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Attribute <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Color <span class="keyword">struct</span> &#123;</span><br><span class="line">    params []Attribute</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(value ...Attribute)</span> *<span class="title">Color</span></span> &#123;</span><br><span class="line">    c := &amp;Color&#123;params: <span class="built_in">make</span>([]Attribute, <span class="number">0</span>)&#125;</span><br><span class="line">    c.params = <span class="built_in">append</span>(c.params, value...)</span><br><span class="line">    <span class="keyword">return</span> c</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例如一段文字 <code>how are you?</code> ，我们想要把把中间的 <code>are</code> 变为绿色，我们应该怎么办呢，其实就是分别在 <code>are</code> 的前后加上一些修饰符。</p>
+<p>在 <code>are</code> 的前面加上 <code>\x1b[32m</code> 表示从这之后将后面的字变为绿色。<br>而在 <code>are</code> 的后面加上 <code>\x1b[0m</code> 则表示结束属性变化。</p>
+<p>所以我们在开始变化的时候加上 <code>fmt.Sprintf(&quot;%s[%sm&quot;, escape, c.sequence())</code> ，这里的 <code>escape</code> 就是我们之前提过的转义字符，而 <code>c.sequence()</code> 就是我们规定的属性。</p>
+<p>在变化结束的时候加上 <code>fmt.Sprintf(&quot;%s[%dm&quot;, escape, Reset)</code> ，这里 <code>Reset</code> 就表示重置变化，其值为0。</p>
+<p>注意如果有多个属性，我们使用 <code>;</code> 连接就可以了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Color)</span> <span class="title">sequence</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    format := <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="built_in">len</span>(c.params))</span><br><span class="line">    <span class="keyword">for</span> i, v := <span class="keyword">range</span> c.params &#123;</span><br><span class="line">        format[i] = strconv.Itoa(<span class="keyword">int</span>(v))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> strings.Join(format, <span class="string">";"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Color)</span> <span class="title">format</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s[%sm"</span>, escape, c.sequence())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Color)</span> <span class="title">unformat</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s[%dm"</span>, escape, Reset)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Color)</span> <span class="title">wrap</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> c.format() + s + c.unformat() </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面我们对常见的几个函数作一层封装。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Color)</span> <span class="title">Sprint</span><span class="params">(a ...<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> c.wrap(fmt.Sprint(a...))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Color)</span> <span class="title">Sprintln</span><span class="params">(a ...<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> c.wrap(fmt.Sprintln(a...))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Color)</span> <span class="title">Sprintf</span><span class="params">(format <span class="keyword">string</span>, a ...<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> c.wrap(fmt.Sprintf(format, a...))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>理清了基本思路，使用它就变的非常简单了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    c := New(Bold, FgGreen)</span><br><span class="line">    fmt.Println(c.Sprintln(<span class="string">"hello world"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Merkle Tree | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Merkle TreeMerkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Merkle Tree">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/27/MerkleTree/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Merkle TreeMerkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:51:54.955Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Merkle Tree">
+<meta name="twitter:description" content="Merkle TreeMerkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-MerkleTree"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Merkle Tree
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-27T04:18:24.000Z" itemprop="datePublished">
+        Apr 27, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Merkle-Tree"><a href="#Merkle-Tree" class="headerlink" title="Merkle Tree"></a>Merkle Tree</h1><p><code>Merkle Tree</code> 在各个领域都有着广泛的应用，就拿我们熟悉的 <code>bittorrent</code> 来举例，在我们使用 <code>bittorrent</code> 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 <code>Merkle proofs</code> 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。<code>Merkle proofs</code> 可以用于验证某个数据子集是否从属于更大的集合。</p>
+<p>那么下面我们来看一下如何实现一个 <code>Merkle Tree</code> 吧。与传统的二叉树类似，每个 <code>Merkle Tree</code> 中由许多节点组成，每个节点都指向它的左孩子节点，右孩子节点和父节点，同时，还有一个flag指明它是否为叶子结点等其他元信息。<code>Content</code> 是每个节点所存储的内容，只要实现了该接口 <code>Content</code> 的结构体都能被节点所存储。</p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    Parent *Node</span><br><span class="line">    Left   *Node</span><br><span class="line">    Right  *Node</span><br><span class="line">    leaf   <span class="keyword">bool</span></span><br><span class="line">    dup    <span class="keyword">bool</span></span><br><span class="line">    Hash   []<span class="keyword">byte</span></span><br><span class="line">    C      Content</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Content <span class="keyword">interface</span> &#123;</span><br><span class="line">    CalculateHash() []<span class="keyword">byte</span></span><br><span class="line">    Equals(other Content) <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MerkleTree <span class="keyword">struct</span> &#123;</span><br><span class="line">    Root       *Node</span><br><span class="line">    merkleRoot []<span class="keyword">byte</span></span><br><span class="line">    Leafs      []*Node</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>Merkle Tree</code> 当中，有一个非常重要的特性就是获取节点的哈希值，我们来定义一个helper function 用于计算节点的哈希值。计算哈希分为两种情况，第一种就是如果当前被计算的节点为叶子结点，那么我们调用interface <code>Content</code> 中的 <code>CalculateHash</code> 方法来计算所存储内容的哈希值，如果不是叶子结点，则说明是中间层的节点，那么就计算左子节点和右子节点的哈希值的拼接值的哈希值，即 <code>H(P) = H( H(P.L) + H(P.R) )</code>。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *Node)</span> <span class="title">calculateNodeHash</span><span class="params">()</span> []<span class="title">byte</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n.leaf &#123;</span><br><span class="line">        <span class="keyword">return</span> n.C.CalculateHash()</span><br><span class="line">    &#125;</span><br><span class="line">    h := sha256.New()</span><br><span class="line">    h.Write(<span class="built_in">append</span>(n.Left.Hash, n.Right.Hash...))</span><br><span class="line">    <span class="keyword">return</span> h.Sum(<span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="新建一棵树"><a href="#新建一棵树" class="headerlink" title="新建一棵树"></a>新建一棵树</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTree</span><span class="params">(cs []Content)</span> <span class="params">(*MerkleTree, error)</span></span> &#123;</span><br><span class="line">    root, leafs, err := buildWithContent(cs)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    mk := &amp;MerkleTree&#123;</span><br><span class="line">        Root: root,</span><br><span class="line">        merkleRoot: root.Hash,</span><br><span class="line">        Leafs: leafs</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> mk, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">buildWithContent</span><span class="params">(cs []Content)</span> <span class="params">(*Node, []*Node, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(cs) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">nil</span>, errors.New(<span class="string">"Error: cannot construct tree with no content"</span>)</span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">var</span> leafs []*Node</span><br><span class="line">    <span class="keyword">for</span> _, c := <span class="keyword">range</span> cs &#123;</span><br><span class="line">        leafs = <span class="built_in">append</span>(leafs, &amp;Node&#123;</span><br><span class="line">            Hash: c.CalculateHash(),</span><br><span class="line">            C: c,</span><br><span class="line">            leaf: <span class="literal">true</span>,</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(cs) % <span class="number">2</span> == <span class="number">1</span> &#123;</span><br><span class="line">        duplicate := &amp;Node&#123;</span><br><span class="line">            Hash: leafs[<span class="built_in">len</span>(leafs)<span class="number">-1</span>].Hash,</span><br><span class="line">            C: leafs[<span class="built_in">len</span>(leafs)<span class="number">-1</span>].C,</span><br><span class="line">            leaf: <span class="literal">true</span>,</span><br><span class="line">            dup: <span class="literal">true</span>,</span><br><span class="line">        &#125;</span><br><span class="line">        leafs = <span class="built_in">append</span>(leafs, duplicate)</span><br><span class="line">    &#125;</span><br><span class="line">    root := buildIntermediate(leafs)</span><br><span class="line">    <span class="keyword">return</span> root, leafs, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>buildIntermediate</code> 函数利用递归的方法建立树，递归在树的建立中是一种非常常用的套路，只需要特别关注一下它的退出条件就可以了，这里的退出条件就是最后仅剩两个节点了，说明已经可以返回根节点，那么函数执行到这里就可以返回了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">buildIntermediate</span><span class="params">(nl []*Node)</span> *<span class="title">Node</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> nodes []*Node</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(nl); i += <span class="number">2</span> &#123;</span><br><span class="line">        h := sha256.New()</span><br><span class="line">        <span class="keyword">var</span> l, r <span class="keyword">int</span> = i, i+<span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> r == <span class="built_in">len</span>(nl) &#123;</span><br><span class="line">            r = <span class="built_in">len</span>(nl)<span class="number">-1</span></span><br><span class="line">        &#125;</span><br><span class="line">        h.Write(nl[l].Hash, nl[r].Hash...)</span><br><span class="line">        n := &amp;Node&#123;</span><br><span class="line">            Left:  nl[l],</span><br><span class="line">            Right: nl[r],</span><br><span class="line">            Hash:  h.Sum(<span class="literal">nil</span>),</span><br><span class="line">        &#125;</span><br><span class="line">        nodes = <span class="built_in">append</span>(nodes, n)</span><br><span class="line">        nl[l].Parent = n</span><br><span class="line">        nl[r].Parent = n</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(nl) == <span class="number">2</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> n</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> buildIntermediate(nodes)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只有当叶子结点的个数为 <code>2^n</code> 的时候，才能保证每一层的中节点都能两两配对，但一般来说叶子结点的个数不一定恰好为 <code>2^n</code> ，在这种情况下，就可以将每一层的最右边的结点进行自我复制，自己与自己配对然后再计算哈希值，上面的算法就采用了这样的解决方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">     ┌───┴──┐       ┌────┴───┐         ┌─────┴─────┐          ┌─────┴─────┐</span><br><span class="line">  ┌──┴──┐   │    ┌──┴──┐     │      ┌──┴──┐     ┌──┴──┐    ┌──┴──┐     ┌──┴──┐</span><br><span class="line">┌─┴─┐ ┌─┴─┐ │  ┌─┴─┐ ┌─┴─┐ ┌─┴─┐  ┌─┴─┐ ┌─┴─┐ ┌─┴─┐   │  ┌─┴─┐ ┌─┴─┐ ┌─┴─┐ ┌─┴─┐ </span><br><span class="line">   (5-leaf)         (6-leaf)             (7-leaf)                (8-leaf)</span><br></pre></td></tr></table></figure>
+<h2 id="验证内容是否存在在-Merkle-Tree-中"><a href="#验证内容是否存在在-Merkle-Tree-中" class="headerlink" title="验证内容是否存在在 Merkle Tree 中"></a>验证内容是否存在在 Merkle Tree 中</h2><p>那么，我们又如何验证某个部分的内容是否真正存在于我们的 <code>MerkleTree</code> 中呢。具体的思路非常简单，就是遍历该树的叶子结点，看有没有与我们要验证的内容相一致的，如果没有则直接返回false，如果有则开始真正的验证阶段，验证的基本思路也不难，就是一个从叶子节点往根节点走并且验证这条路上的哈希值是否都正确的过程，先获取当前遍历的节点的父节点，然后判断父节点的左子节点和右子节点的哈希值是否相匹配，如果不匹配，则直接返回false，如果匹配，则继续验证知道根节点为止。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *MerkleTree)</span> <span class="title">VerifyContent</span><span class="params">(expectedMerkleRoot []<span class="keyword">byte</span>, content Content)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> _, l := <span class="keyword">range</span> m.Leafs &#123;</span><br><span class="line">        <span class="keyword">if</span> l.C.Content.Equals(content) &#123;</span><br><span class="line">            currentParent := l.Parent</span><br><span class="line">            <span class="keyword">for</span> currentParent != <span class="literal">nil</span> &#123;</span><br><span class="line">                h := sha256.New()</span><br><span class="line">               h.Write(<span class="built_in">append</span>(currentParent.Left.calculateNodeHash(), currentParent.Right.calculateNodeHash()...))  </span><br><span class="line">                <span class="keyword">if</span> bytes.Compare(h.Sum(<span class="literal">nil</span>), currentParent.Hash) != <span class="number">0</span> &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">                &#125; </span><br><span class="line">                currentParent = currentParent.Parent</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

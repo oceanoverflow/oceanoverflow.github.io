@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Factory Pattern | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="工厂模式工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Factory Pattern">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/26/FactoryPattern/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="工厂模式工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T12:00:06.573Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Factory Pattern">
+<meta name="twitter:description" content="工厂模式工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-FactoryPattern"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Factory Pattern
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-26T15:27:24.000Z" itemprop="datePublished">
+        Apr 26, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h1><p>工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。</p>
+<p>下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要点，就可以轻松写代码了。</p>
+<ul>
+<li>Creator: 申明我们的工厂方法，会返回抽象的Product</li>
+<li>Product: 申明我们的工厂方法会返回的东西</li>
+<li>Concrete Creator: 具体的工厂，返回一个特定的Product或者说是Concrete Product</li>
+<li>Concrete Product: 具体的Product的实现</li>
+</ul>
+<p>我们以实现一个制造电脑组件的工厂方法作为例子来深入了解一下工厂模式的使用吧，我们的工厂会生产鼠标，键盘，显示器这三种组件，我们把工厂定义为接口 <code>Factory</code> ，而生产的产品定义为 <code>Product</code> 。<code>Factory</code>  通过 <code>Create()</code> 来生产 <code>Product</code> ，这就是工厂方法的精髓所在。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Factory <span class="keyword">interface</span> &#123;</span><br><span class="line">    Create(spec Spec) Component</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Component <span class="keyword">interface</span> &#123;</span><br><span class="line">    Make(io.Writer) error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Spec <span class="keyword">struct</span> &#123;</span><br><span class="line">    MadeIn <span class="keyword">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面我们都实现了三种产品，分别是 <code>Mouse</code> ，<code>Keyboard</code> 和 <code>Screen</code> 。注意到他们都实现了 <code>Component</code> 接口，说明它们都是电脑的组件。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mouse <span class="keyword">struct</span> &#123;</span><br><span class="line">    MadeIn    <span class="keyword">string</span></span><br><span class="line">    Bluetooth <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mouse)</span> <span class="title">Make</span><span class="params">(w io.Writer)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    _, err := fmt.Fprintf(w, <span class="string">"The mouse is made in %s, and bluetooth enabled is %v\n"</span>, m.MadeIn, m.Bluetooth)</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Keyboard <span class="keyword">struct</span> &#123;</span><br><span class="line">    MadeIn    <span class="keyword">string</span></span><br><span class="line">    Bluetooth <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(k *Keyboard)</span> <span class="title">Make</span><span class="params">(w io.Writer)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    _, err := fmt.Fprintf(w, <span class="string">"The Keyboard is made in %s, and bluetooth enabled is %v\n"</span>, k.MadeIn, k.Bluetooth)</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Screen <span class="keyword">struct</span> &#123;</span><br><span class="line">    MadeIn     <span class="keyword">string</span></span><br><span class="line">    Resolution <span class="keyword">uint64</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Screen)</span> <span class="title">Make</span><span class="params">(w io.Writer)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    _, err := fmt.Fprintf(w, <span class="string">"The Screen is made in %s, And the resolution is %d\n"</span>, s.MadeIn, s.Resolution)</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们定义具体的工厂，来生产具体的电脑组件，<code>MouseFactory</code> ，<code>KeyboardFactory</code> 和 <code>ScreenFactory</code> 都实现了 <code>Factory</code> 接口，并且返回具体的 <code>Component</code> 例如 <code>Mouse</code> ，<code>Keyboard</code> 和 <code>Screen</code> 。也就是说让子类决定实例化哪一个工厂类，工厂模式使得其创建过程延迟到子类，当然这里说子类并不是特别恰当，毕竟golang里没有类的概念。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MouseFactory <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mf *MouseFactory)</span> <span class="title">Create</span><span class="params">(spec Spec)</span> <span class="title">Component</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Mouse&#123;</span><br><span class="line">        MadeIn:    <span class="string">"China"</span>,</span><br><span class="line">        Bluetooth: <span class="literal">true</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> KeyboardFactory <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(kf *KeyboardFactory)</span> <span class="title">Create</span><span class="params">(spec Spec)</span> <span class="title">Component</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Keyboard&#123;</span><br><span class="line">        MadeIn:    <span class="string">"China"</span>,</span><br><span class="line">        Bluetooth: <span class="literal">false</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ScreenFactory <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sf *ScreenFactory)</span> <span class="title">Create</span><span class="params">(spec Spec)</span> <span class="title">Component</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Screen&#123;</span><br><span class="line">        MadeIn: <span class="string">"China"</span>,</span><br><span class="line">        Resolution: <span class="number">4000000</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Computer</code> 这个结构体包含了不同的工厂，这就可以让我们自定义<code>Computer</code> 所包含的内容。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Computer <span class="keyword">struct</span> &#123;</span><br><span class="line">    ComponentFactories []Factory</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Computer)</span> <span class="title">Make</span><span class="params">(w io.Writer)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    spec := Spec&#123;</span><br><span class="line">        MadeIn: <span class="string">"China"</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> _, err := fmt.Fprintln(w, <span class="string">"Computer Manufacture Begin"</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _, factory := <span class="keyword">range</span> c.ComponentFactories &#123;</span><br><span class="line">        component := factory.Create(spec)</span><br><span class="line">        <span class="keyword">if</span> err := component.Make(w); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> err</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _, err := fmt.Fprintln(<span class="string">"Computer Manufacture Done"</span>)</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意到通过工厂模式来产生实例时非常简单，因为我们之前已经把代码封装好了，这样就减少了出现错误或者业务需求改变时修改代码的机会了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">c := &amp;Computer&#123;</span><br><span class="line">    ComponentFactories: []Factory&#123;</span><br><span class="line">        &amp;MouseFactory&#123;&#125;,</span><br><span class="line">        &amp;ScreenFactory&#123;&#125;,</span><br><span class="line">        &amp;KeyboardFactory&#123;&#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">c.Make(os.Stdout)</span><br></pre></td></tr></table></figure>
+<p>工厂方法是实现代码去耦合的非常精妙的一种方法，希望读者可以仔细品味并加以掌握。如果下次你的项目中需要在很多地方初始化相同的对象，你可以抛弃传统的new方法而转向使用工厂模式来新建对象。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

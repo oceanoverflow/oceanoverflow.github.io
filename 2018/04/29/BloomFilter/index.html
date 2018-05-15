@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Bloom Filter | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Bloom Filter当我们写爬虫应用的时候，有一件事情是值得我们仔细考虑的，在抓取网上数据的时候，我们的爬虫会沿着当前爬取的网页中的链接继续进行深度优先搜索或者广度优先搜索，但是很显然，这些链接形成的拓扑图肯定不是一个有向无环图，所以肯定会重复抓取某些网页，这肯定不是我们所想要的，为了避免重复抓取导致的返工，我们不加思索的增加了一个 map 来存储当前已经被抓取过的url，这在要求抓取的url">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bloom Filter">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/29/BloomFilter/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Bloom Filter当我们写爬虫应用的时候，有一件事情是值得我们仔细考虑的，在抓取网上数据的时候，我们的爬虫会沿着当前爬取的网页中的链接继续进行深度优先搜索或者广度优先搜索，但是很显然，这些链接形成的拓扑图肯定不是一个有向无环图，所以肯定会重复抓取某些网页，这肯定不是我们所想要的，为了避免重复抓取导致的返工，我们不加思索的增加了一个 map 来存储当前已经被抓取过的url，这在要求抓取的url">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Bloom_filter.svg/649px-Bloom_filter.svg.png">
+<meta property="og:updated_time" content="2018-05-15T11:34:02.216Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bloom Filter">
+<meta name="twitter:description" content="Bloom Filter当我们写爬虫应用的时候，有一件事情是值得我们仔细考虑的，在抓取网上数据的时候，我们的爬虫会沿着当前爬取的网页中的链接继续进行深度优先搜索或者广度优先搜索，但是很显然，这些链接形成的拓扑图肯定不是一个有向无环图，所以肯定会重复抓取某些网页，这肯定不是我们所想要的，为了避免重复抓取导致的返工，我们不加思索的增加了一个 map 来存储当前已经被抓取过的url，这在要求抓取的url">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Bloom_filter.svg/649px-Bloom_filter.svg.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-BloomFilter"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Bloom Filter
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-28T16:00:04.000Z" itemprop="datePublished">
+        Apr 29, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Bloom-Filter"><a href="#Bloom-Filter" class="headerlink" title="Bloom Filter"></a>Bloom Filter</h1><p>当我们写爬虫应用的时候，有一件事情是值得我们仔细考虑的，在抓取网上数据的时候，我们的爬虫会沿着当前爬取的网页中的链接继续进行深度优先搜索或者广度优先搜索，但是很显然，这些链接形成的拓扑图肯定不是一个有向无环图，所以肯定会重复抓取某些网页，这肯定不是我们所想要的，为了避免重复抓取导致的返工，我们不加思索的增加了一个 <code>map</code> 来存储当前已经被抓取过的url，这在要求抓取的url数量较少的时候或许是一个不错的解决方案，但是一旦我们要抓取亿级别的url数量时（在现在这种自媒体爆发的时代还是很正常的一件事情），假设我们要抓取的url平均大小是20字节，那么不考虑其他开销，1亿个url需要消耗的内存就是20GB，这显然<br>是不现实的。我们需要一种更加优化的解决方案。</p>
+<p>上述的问题可以抽象为，给定一个元素E，问它是否存在于给定的集合S中，上述使用 <code>map</code> 的存储导致空间开销过大的主要原因就是我们需要存储原来的url，那有没有一种方法不存储每条消息而可以知晓它是否存在于特定的集合中呢，答案就是 <code>Bloom Filter</code>。</p>
+<p><code>Bloom Filter</code> 是一个空间和时间都非常高效的数据结构，它解决的问题也非常简单，就是用于查询特定元素是否存在于某个集合当中，但是这种高效是引入错误率的基础上的高效，下面我们引入 <code>BloomFilter</code> 的两个特性。</p>
+<ul>
+<li>False Positive </li>
+</ul>
+<p><code>Bloom Filter</code> 可能会出现 <code>False Positive</code> 的概率，就是指查询特定元素E是否存在于集合E中，真实情况是E不存在，但是 <code>Bloom Filter</code> 却出现了误判，当 <code>Bloom Filter</code> 存储的元素越多，出现误判的概率也就会越大（一般来说会把误判率控制在可以接受的范围内），这是由 <code>Bloom Filter</code> 本身的特性造成的。</p>
+<ul>
+<li>False Negative</li>
+</ul>
+<p><code>False Negative</code> 指的是元素E本来存在于集合S中，但是 <code>Bloom Filter</code>却出现误判，认为元素E并不存在于集合S中，这种情况是绝对不会出现的，这也是由<code>Bloom Filter</code> 本身的特性决定的。</p>
+<p><code>Bloom Filter</code>实现的思路非常简单，它主要由两个元素组成。</p>
+<ol>
+<li>一张位图，决定了 <code>BloomFilter</code> 在空间上是高效的。</li>
+<li>多个哈希函数，决定了 <code>BloomFilter</code> 是查询时间上是高效的，理论上的时间复杂度是 <code>O(1)</code>。</li>
+</ol>
+<p>下面这张图就大概描述了 <code>Bloom Filter</code> 实现的大致思路，我们来简单过一遍。</p>
+<p>假设当前由集合 <code>S: {x, y, z}</code> ，我们需要查询元素w是否存在于集合S中，第一步应该是位图的构建，位图开始是是一张全部为0的数组，当第一个元素x进入时，程序会通过 <code>Bloom Filter</code> 的所有哈希函数计算出哈希函数对应的哈希值，并将哈希值对应位图的相应位置都设置为1，y和z同理，也就是说此时位图的某些地方已经被设置为1了，但是其余地方都是0。此时我们需要查询元素w是否存在于集合S中，先利用 <code>Bloom Filter</code> 的所有哈希函数计算出相应的哈希值，并利用哈希值查询对应的位图中元素是否都为1，如果都为1，那么则说明元素w可能存在于该集合中，但是只要有一个位置为0，就可以直接判定该元素不存在于该集合中。</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Bloom_filter.svg/649px-Bloom_filter.svg.png" alt="alt text"></p>
+<p>下面是 <code>Bloom Filter</code> 的简单实现，<code>bitmap</code> 就是位图，<code>k</code> 是哈希函数的个数，<code>n</code> 是当前存储的元素的个数，当然这里存储的意思并不是把整个元素存储下来，而是在位图中进行标记的意思，<code>m</code> 是整个 <code>Bloom Filter</code> 或者说位图的大小。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> BloomFilter <span class="keyword">struct</span> &#123;</span><br><span class="line">    bitmap []<span class="keyword">bool</span></span><br><span class="line">    k      <span class="keyword">int</span></span><br><span class="line">    n      <span class="keyword">int</span></span><br><span class="line">    m      <span class="keyword">int</span></span><br><span class="line">    hashfn hash.Hash64</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBloomFilter</span><span class="params">(numHashFuncs, bfSize <span class="keyword">int</span>)</span> *<span class="title">BloomFilter</span></span> &#123;</span><br><span class="line">    bf := <span class="built_in">new</span>(BloomFilter)</span><br><span class="line">    bf.bitmap = <span class="built_in">make</span>([]<span class="keyword">bool</span>, bfSize)</span><br><span class="line">    bf.k, bf.m = numHashFuncs, bfSize</span><br><span class="line">    bf.n = <span class="number">0</span></span><br><span class="line">    bf.hashfn = fnv.New64()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>getHash</code> 就是利用 <code>Bloom Filter</code> 中事先定义的哈希函数计算对应的多个哈希值，这里可以挑选抗碰撞性较好的哈希函数来提高我们程序的鲁棒性。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bf *BloomFilter)</span> <span class="title">getHash</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(<span class="keyword">uint32</span>, <span class="keyword">uint32</span>)</span></span> &#123;</span><br><span class="line">    bf.hashfn.Reset()</span><br><span class="line">    bf.hashfn.Write(b)</span><br><span class="line">    hash64 := bf.hashfn.Sum64()</span><br><span class="line">    h1 := <span class="keyword">uint32</span>(hash64 &amp; ((<span class="number">1</span> &lt;&lt; <span class="number">32</span>) - <span class="number">1</span>))</span><br><span class="line">    h2 := <span class="keyword">uint32</span>(hash64 &gt;&gt; <span class="number">32</span>)</span><br><span class="line">    <span class="keyword">return</span> h1, h2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Add</code> 将元素 e 加入 <code>Bloom Filter</code> 中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bf *BloomFilter)</span> <span class="title">Add</span><span class="params">(e []<span class="keyword">byte</span>)</span></span> &#123;</span><br><span class="line">    h1, h2 := bf.getHash(e)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; bf.k; i++ &#123;</span><br><span class="line">        ind := (h1 + <span class="keyword">uint32</span>(i)*h2) % <span class="keyword">uint32</span>(bf.m)</span><br><span class="line">        bf.bitmap[ind] = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    bf.n++</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Check</code> 检查特定元素 e 是否存在于 <code>Bloom Filter</code> 中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bf *BloomFilter)</span> <span class="title">Check</span><span class="params">(e []<span class="keyword">byte</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    h1, h2 := bf.getHash(e)</span><br><span class="line">    result := <span class="literal">true</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; bf.k; i++ &#123;</span><br><span class="line">        ind := (h1 + <span class="keyword">uint32</span>(i)*h2) % <span class="keyword">uint32</span>(bf.m)</span><br><span class="line">        result = result &amp; bf.bitmap[ind]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数 <code>FalsePositiveRate()</code> 可以计算 <code>Bloom Filter</code> 出现 <code>False Positive</code> 的概率，这个公式有严格的数学证明，有兴趣的同学可以参考一下它的证明过程，我们现在只需要掌握一点就可以了，就是它存储的元素个数（n）越多，它出现 <code>False Positive</code> 的概率也就越大。但只要调整合适的<code>m</code> 和 <code>k</code> 的值，就可以把错误率控制在可以接受的范围内。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bf *BloomFilter)</span> <span class="title">FalsePositiveRate</span><span class="params">()</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> math.Pow((<span class="number">1</span> - math.Exp(-<span class="keyword">float64</span>(bf.k*bf.n) / <span class="keyword">float64</span>(bf.m))), <span class="keyword">float64</span>(bf.k))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

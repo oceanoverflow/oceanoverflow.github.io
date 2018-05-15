@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Docker &amp; Golang | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Docker &amp;amp; Golang还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker &amp; Golang">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/04/Docker/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Docker &amp;amp; Golang还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:44:49.439Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker &amp; Golang">
+<meta name="twitter:description" content="Docker &amp;amp; Golang还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Docker"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Docker &amp; Golang
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-04T09:01:24.000Z" itemprop="datePublished">
+        May 4, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Docker-amp-Golang"><a href="#Docker-amp-Golang" class="headerlink" title="Docker &amp; Golang"></a>Docker &amp; Golang</h1><p>还记得 <code>java</code> 当初响遍大江南北的口号吗，<code>Write one，run anywhere</code> ，到了互联网时代，<code>Docker</code> 这家公司打出了更为牛逼的口号，<code>Build，Ship，and Run Any App，Anywhere</code> ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。<code>java</code> 的跨平台是因为它在不同平台下有不同的 <code>jvm</code> 实现，不过它仅仅局限于 <code>java</code> 这个生态系统里面，相比之下，<code>Docker</code> 的野心就更大了，它并没有给我们把编程语言给限定死了，它提供了一个与操作系统隔离的环境，可以让我们写任何应用，而且可以在几乎所有平台下跑。</p>
+<p>具体 <code>Docker</code> 的细节这里就不具体探讨了，网上也有一堆文章，今天我们主要看一下如何使用它，也就是如何将我们的应用打包成一个 <code>Docker</code> 镜像。</p>
+<p>下面我们要实现的是一个用 <code>golang</code> 写的 <code>http</code> 服务器，但是这个服务器并不是跑在裸机上，而是跑在 <code>Docker</code> 容器中的。顺便一提，<code>Docker</code> 也是用 <code>golang</code> 写的哦，是不是感觉很厉害呢。</p>
+<h2 id="书写自己的应用逻辑"><a href="#书写自己的应用逻辑" class="headerlink" title="书写自己的应用逻辑"></a>书写自己的应用逻辑</h2><p>下面定义了我们要实现的 <code>http</code> 服务器的前端，无奈直男不会写 <code>CSS</code> ，就用 <code>HTML</code> 写了一下最基本的提交 <code>FORM</code> 表单的功能。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"/hash"</span> <span class="attr">method</span>=<span class="string">"post"</span>&gt;</span></span><br><span class="line">            interface: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"interface"</span>&gt;</span></span><br><span class="line">            method: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"method"</span>&gt;</span></span><br><span class="line">            parameterTypesString: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"parameterTypesString"</span>&gt;</span></span><br><span class="line">            parameter: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"parameter"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"hash"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>下面使用了golang中的标准库 <code>net/http</code> 和 <code>html/template</code> 起一个服务器，我们自己定义的 <code>hashHandler</code> 会根据请求的类型分别进行处理，如果是 <code>GET</code> 请求则展示我们的前端界面，如果是 <code>POST</code> 请求则处理我们浏览器提交的表单并将表单输出到命令行中。到这里，一个非常简单的 <code>http</code> 服务器就写好了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"html/template"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    <span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hashHandler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"method: "</span>, r.Method)</span><br><span class="line">    <span class="keyword">if</span> r.Method == <span class="string">"GET"</span> &#123;</span><br><span class="line">        t, _ := template.ParseFiles(<span class="string">"hash.tpl"</span>)</span><br><span class="line">        t.Execute(w, <span class="literal">nil</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        r.ParseForm()</span><br><span class="line">        <span class="keyword">for</span> k, v := <span class="keyword">range</span> r.Form &#123;</span><br><span class="line">            fmt.Printf(<span class="string">"key: %s, value: %s\n"</span>, k, v)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    http.HandleFunc(<span class="string">"/hash"</span>, hashHandler)</span><br><span class="line">    err := http.ListenAndServe(<span class="string">":8080"</span>, <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(<span class="string">"ListenAndServe: "</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Dockerfile的撰写"><a href="#Dockerfile的撰写" class="headerlink" title="Dockerfile的撰写"></a>Dockerfile的撰写</h2><p>到现在，就没我们 <code>golang</code> 什么事情了，有请我们今天的主角 <code>Docker</code> 登场了。为了能让我们的 <code>http</code> 服务器在容器中运行，我们需要写一个 <code>Dockerfile</code> ，<code>Dockerfile</code> 的作用就是让 <code>Docker</code> 知道该如何构建镜像，当然平时大部分时候我们都可以直接用别人打包好的镜像，但是自己会写 <code>Dockerfile</code> 也是一个非常重要的能力哦。</p>
+<p><code>FROM</code> 指令指定了我们的基础镜像是什么，也就是说我们构建的镜像是基于哪个镜像的基础之上的，这里 <code>golang:alpine</code> 作为我们的基础镜像。而<code>COPY</code> 指令则将我们的文件从操作系统中拷贝到容器环境中。<code>WORKDIR</code> 命令则制定了在 <code>Docker</code> 内部的工作目录，类似于 <code>cd</code> 命令，<code>RUN</code> 命令在容器中执行指令，这里我们把go源文件编译成二进制。<code>CMD</code> 指令指定了启动该容器时内部应该执行的命令。当然 <code>Dockerfile</code> 的命令还有很多，具体还是参考官方的文档吧。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> golang:alpine</span><br><span class="line"><span class="keyword">COPY</span> . /home</span><br><span class="line">WORKDIR /home</span><br><span class="line">RUN go build -o server ./server.go</span><br><span class="line">CMD /home/server</span><br></pre></td></tr></table></figure>
+<p>写完了 <code>Dockerfile</code> ，就可以构建镜像了，不过构建镜像的事情我可干不来，还是交给 <code>Docker</code> 去做吧。下面的命令就帮助我们构建一个名为 <code>oceanoverflow/server</code> 的 <code>golang</code> 服务器镜像。构建镜像的过程可能会比较花时间，需要耐心等待。</p>
+<p><code>$ docker build -t oceanoverflow/server .</code></p>
+<h2 id="运行Docker容器"><a href="#运行Docker容器" class="headerlink" title="运行Docker容器"></a>运行Docker容器</h2><p>构建完了我们使用 <code>docker image ls</code> 就可以看到我们新构建的镜像啦，最后一步就是起容器服务了。</p>
+<p><code>-p</code> 命令这里将容器内的端口8080映射到操作系统的端口8080上去，如果不指定8080，那我们在自己的操作系统上就无法获取到它提供的服务，所以 <code>-p</code> 还是非常重要的。</p>
+<p><code>$ docker run -p 8080:8080 --rm -it go-server</code></p>
+<p>如果一切无误，到浏览器中输入 <code>localhost:8080/hash</code> 就可以看到我们跑在 <code>Docker</code> 里面的 <code>http</code> 服务器已经成功地跑起来啦。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>让自己的应用跑在 <code>Docker</code> 容器中非常简单，第一步就是构建自己的应用程序的源码，第二步正确编写适应自己业务场景的 <code>Dockerfile</code> 然后利用 <code>Docker</code> 自带的功能打包成一个镜像，最后一步就是运行容器了。就这么三步走，可谓是 <code>Docker</code>在手，天下我有了。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

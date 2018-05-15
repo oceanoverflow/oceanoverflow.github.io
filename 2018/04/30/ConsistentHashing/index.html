@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Connection Hashing | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Consistent Hashing比如说我们现在有3台服务器用于存储kv值，分别是 {s1, s2, s3} ，而我们用的哈希策略非常简单，例如 h(x) = ( x^2 + 3 * x + 2 ) % 3 ，也就是说当k=1时，对应的v值会被存放在s1上，但如果业务量增加，我们又需要增加一个服务器来均衡负载，此时哈希策略就变成 h(x) = ( x^2 + 3 * x + 2 ) % 4，那按">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Connection Hashing">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/30/ConsistentHashing/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Consistent Hashing比如说我们现在有3台服务器用于存储kv值，分别是 {s1, s2, s3} ，而我们用的哈希策略非常简单，例如 h(x) = ( x^2 + 3 * x + 2 ) % 3 ，也就是说当k=1时，对应的v值会被存放在s1上，但如果业务量增加，我们又需要增加一个服务器来均衡负载，此时哈希策略就变成 h(x) = ( x^2 + 3 * x + 2 ) % 4，那按">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://dajh2p2mfq4ra.cloudfront.net/assets/site-images/system_design/consistent_hashing_virtual.jpg">
+<meta property="og:updated_time" content="2018-05-15T12:03:25.393Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Connection Hashing">
+<meta name="twitter:description" content="Consistent Hashing比如说我们现在有3台服务器用于存储kv值，分别是 {s1, s2, s3} ，而我们用的哈希策略非常简单，例如 h(x) = ( x^2 + 3 * x + 2 ) % 3 ，也就是说当k=1时，对应的v值会被存放在s1上，但如果业务量增加，我们又需要增加一个服务器来均衡负载，此时哈希策略就变成 h(x) = ( x^2 + 3 * x + 2 ) % 4，那按">
+<meta name="twitter:image" content="https://dajh2p2mfq4ra.cloudfront.net/assets/site-images/system_design/consistent_hashing_virtual.jpg">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-ConsistentHashing"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Connection Hashing
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-30T10:59:24.000Z" itemprop="datePublished">
+        Apr 30, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Consistent-Hashing"><a href="#Consistent-Hashing" class="headerlink" title="Consistent Hashing"></a>Consistent Hashing</h1><p>比如说我们现在有3台服务器用于存储kv值，分别是 <code>{s1, s2, s3}</code> ，而我们用的哈希策略非常简单，例如 <code>h(x) = ( x^2 + 3 * x + 2 ) % 3</code> ，也就是说当k=1时，对应的v值会被存放在s1上，但如果业务量增加，我们又需要增加一个服务器来均衡负载，此时哈希策略就变成 <code>h(x) = ( x^2 + 3 * x + 2 ) % 4</code>，那按照这种策略，当k=1的时候，应该是把对应的v值存放在s3上面，然而s3上面并没有存放，为了能够获取到k=1对应的v值，我们就需要将原来三台服务器上的数据做一个 <code>remapping</code> ，也就是说基本上所有的数据都要进行迁移，在小数据量的情况下这倒没什么问题，但是一旦数据量达到T级别，这种开销将是无法忍受的，所以，为了当增删节点时尽量少的数据迁移，我们可以利用一致性哈希这种非常神奇的算法。</p>
+<p>所谓一致性哈希，就是当相应的哈希表调整大小的时候（对应到现实生活中就是服务器增删节点），只有 <code>K/n</code> 个数据需要迁移，这里的 <code>K</code> 是指键的数量，而 <code>n</code>则是指所有的卡槽（对应服务器的数量），如果不用一致性哈希而是用传统的哈希表，当哈希表调整的时候，基本所有的键都要进行 <code>remapping</code>。</p>
+<p>一致性哈希有几个要点，第一个就是它所有的地址空间会形成一个环，例如它的地址空间是从 <code>[0, 2^32-1)</code> ，它的头部和尾部会进行拼接而形成一个环，还有就是虚节点的概念，例如下图中我们有<code>{s1, s2, s3, s4}</code>这四个节点，但每个节点都会有自己的拷贝（称为虚节点），然后这些复制过的节点群会根据特定的哈希算法分布在这个环上面，一般来说都是均匀分布的，而我们要存储的键值对，同样根据与节点相同的哈希算法，算出一个值后，顺时针（或者逆时针）去寻找与自己最近的虚节点的位置，找到最近的虚节点后，就将自己存放在对应的节点上，这就是实现一致性哈希的基本思路，下面就让我们来看一下一致性哈希算法的实现吧。</p>
+<p><img src="https://dajh2p2mfq4ra.cloudfront.net/assets/site-images/system_design/consistent_hashing_virtual.jpg" alt="alt text"></p>
+<h2 id="一致性哈希的实现"><a href="#一致性哈希的实现" class="headerlink" title="一致性哈希的实现"></a>一致性哈希的实现</h2><p>上面我们知道了一致性哈希的核心是一个环，环的地址空间假设是 <code>[0, 2^32-1)</code> ，我们可以用一个map记录虚节点对应的环上的位置，位置我们用一个uint32表示就可以了，因为是遍历map的时候是随机的，所以我们还需要一个数组来记录环上面虚节点的顺序。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> uints []<span class="keyword">uint32</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(x uints)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span> &#123; <span class="keyword">return</span> <span class="built_in">len</span>(x) &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(x uints)</span> <span class="title">Less</span><span class="params">(i, j <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123; <span class="keyword">return</span> x[i] &lt; x[j] &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(x uints)</span> <span class="title">Swap</span><span class="params">(i, j <span class="keyword">int</span>)</span></span> &#123; x[i], x[j] = x[j], x[i] &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Consistent <span class="keyword">struct</span> &#123;</span><br><span class="line">    circle <span class="keyword">map</span>[<span class="keyword">uint32</span>]<span class="keyword">string</span></span><br><span class="line">    sortedList uints</span><br><span class="line">    virtualNode <span class="keyword">int</span></span><br><span class="line">    sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">()</span> *<span class="title">Consistent</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Consistent&#123;</span><br><span class="line">        circle: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">uint32</span>]<span class="keyword">string</span>),</span><br><span class="line">        sortedList: <span class="built_in">make</span>(uints, <span class="number">0</span>)</span><br><span class="line">        virtualNode: <span class="number">20</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虚节点相当于实节点的影分身，例如s2，s2复制为s2-1，s2-2，s2-3。这些原来的节点和复制出来的节点我们可以把它们形象地称为哨兵。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Consistent)</span> <span class="title">KeyNum</span><span class="params">(key <span class="keyword">string</span>, num <span class="keyword">int</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> key + <span class="string">":"</span> + fmt.Sprintf(<span class="string">"%d"</span>, num)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要想把虚节点对应到一致性哈希的圆环上，我们还需要一个哈希函数用于把我们的哨兵和我们的键值对映射到环上面去。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Consistent)</span> <span class="title">hashKey</span><span class="params">(key <span class="keyword">string</span> <span class="keyword">uint32</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(key) &lt; <span class="number">64</span> &#123;</span><br><span class="line">        scratch := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">64</span>)</span><br><span class="line">        <span class="built_in">copy</span>(scratch[:], key)</span><br><span class="line">        <span class="keyword">return</span> crc32.ChecksumIEEE(scratch[:<span class="built_in">len</span>(key)])</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> crc32.ChecksumIEEE([]<span class="keyword">byte</span>(key))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之前说了，我们加入的键值对经过哈希后会在环上顺时针寻找离自己最近的虚节点的位置，因为我们之前已经用 <code>sortedList</code> 记录了节点在环上的相对顺序了，所以就可以利用二分法去查找对应虚节点的位置啦。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Consistent)</span> <span class="title">search</span><span class="params">(key <span class="keyword">uint32</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    i := sort.Search(<span class="built_in">len</span>(c.sortedList), <span class="function"><span class="keyword">func</span><span class="params">(x <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> c.sortedList[x] &gt; key</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">if</span> i &gt;= <span class="built_in">len</span>(c.sortedList) &#123;</span><br><span class="line">        i = <span class="number">0</span></span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> i</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然了，我们一致性哈希就牛逼的地方就在于当动态增删节点的时候，需要<code>remapping</code> 的键值对的数量比较少，动态增删节点无非也就是将该节点影分身后再经过哈希操作对应到环上或者进行相应的删除操作，当然还需要对我们的 <code>sortedList</code> 重新进行排序来对应增删的虚节点。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Consistent)</span> <span class="title">Add</span><span class="params">(key <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    c.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> n := <span class="number">0</span>; n &lt; virtualNode; n++ &#123;</span><br><span class="line">        c.circle[c.hashKey(c.KeyNum(key, n))] = key</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    c.updateList()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Consistent)</span> <span class="title">Remove</span><span class="params">(key <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    c.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.Unlock()</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> n := <span class="number">0</span>; n &lt; c.virtualNode; n++ &#123;</span><br><span class="line">        <span class="built_in">delete</span>(c.circle, c.hashKey(c.KeyNum(key, n)))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    c.updateList()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Consistent)</span> <span class="title">updateList</span><span class="params">()</span></span> &#123;</span><br><span class="line">    list := c.sortedList[:<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> k, _ := <span class="keyword">range</span> c.circle &#123;</span><br><span class="line">        list = <span class="built_in">append</span>(list, k)</span><br><span class="line">    &#125; </span><br><span class="line">    sort.Sort(list)</span><br><span class="line">    c.sortedList = list</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后就是当我们新增一个键值对时，我们可以查找对应的节点。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Consistent)</span> <span class="title">Get</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    c.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(c.circle) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, errors.New(<span class="string">"empty consistent circle"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    key := c.hashKey(name)</span><br><span class="line">    i := c.search(key)</span><br><span class="line">    <span class="keyword">return</span> c.circle[c.sortedList[i]], <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Advisory Lock | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Advisory Lock很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .p">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Advisory Lock">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/12/AdvisoryLock/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Advisory Lock很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .p">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T11:33:27.906Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Advisory Lock">
+<meta name="twitter:description" content="Advisory Lock很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .p">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-AdvisoryLock"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Advisory Lock
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-12T05:26:04.000Z" itemprop="datePublished">
+        May 12, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Advisory-Lock"><a href="#Advisory-Lock" class="headerlink" title="Advisory Lock"></a>Advisory Lock</h1><p>很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。</p>
+<p>那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 <code>.pid</code> 结尾的文件，并向这个文件上加一个建议性锁（ <code>advisory lock</code> ），这样如果有第二个这个的进程起来，它会试着去打开这个 <code>.pid</code> 文件，并试着向这个文件加建议性锁，但由于先起来的进程已经加过锁了，所以第二个进程就没有办法再加锁了，第二个进程知道自己不是第一个起起来的，所以就选择退出。</p>
+<p>等等，刚才说的建议性锁又是什么呢，建议性锁就好像人们指定的一系列规则， 例如交通法规建议人们红灯停，绿灯行，这里的红绿灯就是一个建议性锁，但是总有不听话的人不遵守这些规则，也就是说无视建议性锁的存在。建议性锁并不是强制性的，进程可以选择不去遵守它。</p>
+<p>上面进程的例子就是这样，第二个进程如果观测到文件已经上锁了，如果它不是恶意进程，那么它会选择尊重规则选择退出。</p>
+<h2 id="文件锁"><a href="#文件锁" class="headerlink" title="文件锁"></a>文件锁</h2><p>下面我们来实现一个文件锁，文件锁的本质就是文件，所以我们选择对 <code>os.File</code> 做一层封装，然后对它添加额外的行为使其成为一个真正的文件锁。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> LockFile <span class="keyword">struct</span> &#123;</span><br><span class="line">    *os.File</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewLockFile</span><span class="params">(file *os.File)</span> *<span class="title">LockFile</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;LockFile&#123;file&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对文件上锁和解锁的过程其实就是利用系统调用 <code>syscall.Flock</code>，下面是c语言中的系统调用。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/file.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOCK_SH 1 <span class="comment">/* shared lock */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOCK_EX 2 <span class="comment">/* exclusive lock */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOCK_NB 4 <span class="comment">/* don't block when locking */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOCK_UN 8 <span class="comment">/* unlock */</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span></span><br><span class="line">flock(<span class="keyword">int</span> fd, <span class="keyword">int</span> operation)</span><br></pre></td></tr></table></figure>
+<p>建议性锁分为两大类：共享锁（ <code>SH</code> ）和专有锁（ <code>EX</code> ），这里我们采用专有锁，也就是利用 <code>LOCK_EX</code> 选项，如果文件已经上过锁了，再次尝试对该文件上锁时，操作会被阻塞，为了避免调用此系统调用的进程被阻塞，我们在系统调用时增加一个 <code>LOCK_NB</code> 选项，也就是非阻塞（ <code>non blocking</code> ）的意思，指定该选项后如果尝试上锁时，文件已经上过锁了，此时则则不会发生阻塞而是返回一个 <code>EWOULDBLOCK</code> 错误，当对文件解锁时，只需要在系统调用时指定 <code>LOCK_UN</code> 选项就可以了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">ErrWouldBlock = errors.New(<span class="string">"Resource temporarily unavailable"</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(file *LockFile)</span> <span class="title">Lock</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> lockFile(file.Fd())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">lockFile</span><span class="params">(fd <span class="keyword">uintptr</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    err := syscall.Flock(<span class="keyword">int</span>(fd), syscall.LOCK_EX|syscall.LOCK_NB)</span><br><span class="line">    <span class="keyword">if</span> err == syscall.EWOULDBLOCK &#123;</span><br><span class="line">        err = ERRWouldBlock</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(file *LockFile)</span> <span class="title">Unlock</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> unlockFile(file.Fd())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">unlockFile</span><span class="params">(fd <span class="keyword">uintptr</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    err := syscall.Flock(<span class="keyword">int</span>(fd), syscall.LOCK_UN)</span><br><span class="line">    <span class="keyword">if</span> err == syscall.EWouldBLOCK &#123;</span><br><span class="line">        err = ErrWouldBlock</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>OpenLockFile</code> 方法很简单，就是对 <code>os.OpenFile</code> 方法进行了一层封装，将此方法返回的 <code>file</code> 封装为<code>LockFile</code> 返回供接下去使用。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">OpenLockFile</span><span class="params">(name <span class="keyword">string</span>, perm os.FileMode)</span> <span class="params">(lock *LockFile, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> file *os.File</span><br><span class="line">    <span class="keyword">if</span> file, err = os.OpenFile(name, os.O_RWWR|os.O_CREATE, perm); err == <span class="literal">nil</span> &#123;</span><br><span class="line">        lock = &amp;LockFile&#123;file&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="进程存在性检测"><a href="#进程存在性检测" class="headerlink" title="进程存在性检测"></a>进程存在性检测</h2><p>文件上锁可以用作进程存在性检测，我们在进程创建时生成一个以 <code>.pid</code> 结尾的文件，并向该文件中写入当前进程的进程号，下面的 <code>WritePid</code> 方法就将当前进程的进程号写入文件起始位置，而 <code>ReadPid</code> 则将此文件中存储的 <code>pid</code> 读取出来，注意这里无论是读操作还是写操作都会先将文件的指针定位到最开始的位置（通过 <code>file.Seek(0, os.SEEK_SET)</code> ）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(file *LockFile)</span> <span class="title">WritePid</span><span class="params">()</span> <span class="params">(err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> _, err = file.Seek(<span class="number">0</span>, os.SEEK_SET); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> fileLen <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">if</span> fileLen, err = fmt.Fprint(file, os.Getpid()); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> err = file.Truncate(<span class="keyword">int64</span>(fileLen)); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    err = file.Sync()</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(file *LockFile)</span> <span class="title">ReadPid</span><span class="params">()</span> <span class="params">(pid <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> _, err = file.Seek(<span class="number">0</span>, os.SEEK_SET); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    _, err = fmt.Fscan(file, &amp;pid)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(file *LockFile)</span> <span class="title">Remove</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> err := file.Unlock(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> os.Remove(file.Name())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们创建一个 <code>pid</code> 文件时候，我们需要检测其他进程是否已经存在，<code>CreatePidFile</code> 方法会使用 <code>Lock</code> 方法尝试对文件上锁，如果上锁失败，则说明已经有进程对该文件上过锁，此时则应该选择退出，如果上锁成功，则说明自己是第一个进程，并将自己的进程号写入该文件中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreatePidFile</span><span class="params">(name <span class="keyword">string</span>, perm os.FileMode)</span> <span class="params">(lock *LockFile, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> lock, err = OpenLockFile(name, perm); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> err = lock.Lock(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        lock.Remove()</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> err = lock.WritePid(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        lock.Remove()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ReadPidFile</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(pid <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> file *os.File</span><br><span class="line">    <span class="keyword">if</span> file, err = os.OpenFile(name, os.O_RDONLY, <span class="number">0640</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line">    lock := &amp;LockFile&#123;file&#125;</span><br><span class="line">    pid, err = lock.ReadPid()</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
