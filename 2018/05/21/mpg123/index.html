@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>mpg123 | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="mpg123日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mpg123">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/21/mpg123/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="mpg123日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-21T11:17:16.221Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mpg123">
+<meta name="twitter:description" content="mpg123日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-mpg123"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      mpg123
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-21T11:12:06.000Z" itemprop="datePublished">
+        May 21, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="mpg123"><a href="#mpg123" class="headerlink" title="mpg123"></a>mpg123</h1><p>日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。</p>
+<p>写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并没有怎么搞过音乐格式编码和解码之类的东西，不过不要慌，已经有强大的 <code>mpg123</code> 这个命令行工具帮我们搞定这类事情了。</p>
+<p><code>mpg123</code> 需要额外安装，<code>macOS</code> 用户可以使用 <code>homebrew</code> 进行安装。<code>mpg123</code> 可以帮助我们处理 <code>MPEG 1.0/2.0/2.5</code> 格式的数据流，并使用系统默认的音屏设备播放。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mpg123 [ options ] file-or-URL...</span><br></pre></td></tr></table></figure>
+<p>上面是它的简单使用，<code>[options]</code> 代表额外选项，真正的参数可以是本地音频文件地址或者 <code>URL</code> 地址。一般来说 <code>file/URL</code> 都需要是 <code>MPEG</code> 格式的音频比特流（ <code>audio bit stream</code> ）。</p>
+<p>问题的关键解决之后，下面就可以利用它写一个简单的音乐播放器了，这里播放器具有两种状态，<code>Stopped</code> 和 <code>Playing</code> ，播放器的核心操作依赖 <code>mpg123</code> 实现，<code>exec.Cmd</code> 用于代表这个命令。除此之外，还需要指定输入和输出，输入（ <code>io.ReadCloser</code> ）可以来自 <code>HTTP</code> 得到的数据流，而输出（ <code>io.WriteCloser</code> ）则是该命令的输入管道。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> State <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    Stopped State = <span class="literal">iota</span></span><br><span class="line">    Playing</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Player <span class="keyword">struct</span> &#123;</span><br><span class="line">    state      State</span><br><span class="line">    currentURL <span class="keyword">string</span></span><br><span class="line">    mpg123     *exec.Cmd</span><br><span class="line">    src        io.ReadCloser</span><br><span class="line">    dst        io.WriteCloser</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为播放音乐需要 <code>mpg123</code> 这个依赖，所以，在程序运行时需要检查其是否存在，<code>exec.LookPath</code> 会在系统路径（ <code>$PATH</code> ）下面寻找，如果不存在，则返回 <code>error</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewPlayer</span><span class="params">()</span> <span class="params">(*Player, error)</span></span> &#123;</span><br><span class="line">    _, err := exec.LookPath(<span class="string">"mpg123"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    p := &amp;Player&#123;&#125;</span><br><span class="line">    <span class="keyword">return</span> p, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用命令行听歌的关键还是在于对数据流的处理，通过 <code>io.Copy</code> 方法将数据流进行重定向。 </p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">stream</span><span class="params">(dst io.WriteCloser, src io.ReadCloser)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> dst.Close()</span><br><span class="line">    <span class="keyword">defer</span> src.Close()</span><br><span class="line">    io.Copy(dst, src)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为 <code>mpg123</code> 需要读取音频数据流，在构造命令时，我们使用 <code>-</code> 来指定<code>mpg123</code> 从标准输入中获取数据（ <code>exec.Command(&quot;mpg123&quot;, &quot;-q&quot;, &quot;-&quot;)</code> ），通过 <code>StdinPipe()</code> 方法可以获得连接到此命令的标准输入管道。输入的数据流可以利用 <code>http.Get</code> 获取，然后再利用上述 <code>stream</code> 方法将数据流重定向到 <code>mpg123</code> 的标准输入（ <code>stdin</code> ）中去，这样就可以实现音乐播放了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Player)</span> <span class="title">Play</span><span class="params">(URL <span class="keyword">string</span>)</span> <span class="params">(err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> p.state == Playing &#123;</span><br><span class="line">        p.Stop()</span><br><span class="line">        <span class="keyword">return</span> p.Play(URL)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mpg123 := exec.Command(<span class="string">"mpg123"</span>, <span class="string">"-q"</span>, <span class="string">"-"</span>)</span><br><span class="line">    stdin, err := mpg123.StdinPipe()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        stdin.Close()</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;   </span><br><span class="line"></span><br><span class="line">    err = mpg123.Start()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        stdin.Close()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response, err := http.Get(URL)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p.state = Playing</span><br><span class="line">    p.currentURL = URL</span><br><span class="line">    p.mpg123 = mpg123</span><br><span class="line">    p.src = response.Body</span><br><span class="line">    p.dst = stdin</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">go</span> stream(p.dst, p.src)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一个音乐播放器自然少不了暂停操作。因为输入和输出分别是 <code>io.ReadCloser</code> 和 <code>io.WriteCloser</code> 类型，所以都可以调用 <code>Close</code> 方法来将它们关闭。除此之外还需要将对应的 <code>mpg123</code> 的进程停掉（ <code>p.mpg123.Process.Kill()</code> ）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Player)</span> <span class="title">Stop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> p.state == Stopped &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    p.state = Stopped</span><br><span class="line">    p.src.Close()</span><br><span class="line">    p.src = <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line">    p.dst.Close()</span><br><span class="line">    p.mpg123.Process.Kill()</span><br><span class="line">    p.mpg123.Wait()</span><br><span class="line">    p.mpg123.Handler = <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>剩下最后一个问题就是如何获取各大平台音乐的链接地址，下面给获取网易云音乐歌曲外链地址的方法，这里的参数 <code>id</code> 表示音乐的 <code>id</code> ，其他平台获取方法也应该类似，感兴趣的读者可以自行寻找。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getMusicLink</span><span class="params">(id <span class="keyword">int</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    s := <span class="string">"http://music.163.com/song/media/outer/url?id=%d.mp3"</span></span><br><span class="line">    addr = fmt.Sprintf(s, id)</span><br><span class="line">    <span class="keyword">return</span> addr</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
