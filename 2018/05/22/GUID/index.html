@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>GUID | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="GUID在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GUID">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/22/GUID/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="GUID在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-22T03:51:22.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GUID">
+<meta name="twitter:description" content="GUID在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-GUID"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      GUID
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-22T03:49:08.000Z" itemprop="datePublished">
+        May 22, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="GUID"><a href="#GUID" class="headerlink" title="GUID"></a>GUID</h1><p>在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ <code>GUID</code> ）的生成算法。</p>
+<p>这里我们的 <code>GUID</code> 共64比特。<code>sequence</code> 部分占12比特，<code>nodeID</code> 占10比特，偏移10比特，时间戳 <code>timestamp</code> 占剩余的42比特，偏移22比特。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------------------------+----------+------------+</span><br><span class="line">|                timestamp                  |nodeIDBits|sequenceBits|</span><br><span class="line">+-------------------------------------------+----------+------------+</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    nodeIDBits = <span class="keyword">uint64</span>(<span class="number">10</span>)</span><br><span class="line">    sequenceBits = <span class="keyword">uint64</span>(<span class="number">12</span>)</span><br><span class="line">    nodeIDShift = sequenceBits</span><br><span class="line">    timestampShift = sequenceBits + nodeIDBits</span><br><span class="line">    sequenceMask   = <span class="keyword">int64</span>(<span class="number">-1</span>) ^ (<span class="keyword">int64</span>(<span class="number">-1</span>) &lt;&lt; sequenceBits)</span><br><span class="line"></span><br><span class="line">    twepoch = <span class="keyword">int64</span>(<span class="number">1288834974288</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    ErrIDBackwards = errors.New(<span class="string">"ID went backward"</span>)</span><br><span class="line">    ErrTimeBackwards = errors.New(<span class="string">"time has gone backwards"</span>)</span><br><span class="line">    ErrSequenceExpired = errors.New(<span class="string">"sequence expired"</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>下面我们定义一个生成 <code>guid</code> 的工厂， <code>guid</code> 由 <code>timestamp</code>  ，<code>nodeID</code> 和 <code>sequence</code> 这三个部分构成，每个工厂有自己的 <code>nodeID</code>。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> guid <span class="keyword">int64</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> guidFactory <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.Metex</span><br><span class="line">    nodeID        <span class="keyword">int64</span></span><br><span class="line">    sequence      <span class="keyword">int64</span></span><br><span class="line">    lastTimestamp <span class="keyword">int64</span></span><br><span class="line">    lastID        guid</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewGUIDFactory</span><span class="params">(nodeID <span class="keyword">int64</span>)</span> *<span class="title">guidFactory</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;guidFactory&#123;</span><br><span class="line">        nodeID: nodeID,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在利用工厂模式生成 <code>GUID</code> 时，首先计算当前时间戳，并且除以1048576（2的20次方），这样是为了去除时间的假随机部分，如果新生成的<code>timestamp</code> 小于 <code>lastTimestamp</code> ，则返回 <code>ErrTimeBackwards</code> 错误，对于相同的时间戳，我们的 <code>sequence</code> 采取递增策略，如果 <code>sequence</code> 达到最大值后归0，则返回 <code>ErrSequenceExpired</code> 错误，如果时间戳不相同，则令 <code>sequence</code> 重新从0开始，最后使三部分拼接组成一个新的 <code>guid</code> ，如果生成的 <code>guid</code> 小于 <code>lastID</code> ，则返回 <code>ErrIDBackwards</code> 错误，如果正常则返回结果。整个计算的过程需要由锁来保护。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *guidFactory)</span> <span class="title">Create</span><span class="params">()</span> <span class="params">(guid, error)</span></span> &#123;</span><br><span class="line">    f.Lock()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// divide by 1048576, giving pseudo-milliseconds</span></span><br><span class="line">    ts := time.Now().UnixNano() &gt;&gt; <span class="number">20</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> ts &lt; f.lastTimestamp &#123;</span><br><span class="line">        f.Unlock()</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, ErrTimeBackwards</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> f.lastTimestamp == ts &#123;</span><br><span class="line">        f.sequence = (f.sequence + <span class="number">1</span>) &amp; sequenceMask</span><br><span class="line">        <span class="keyword">if</span> f.sequence == <span class="number">0</span> &#123;</span><br><span class="line">            f.Unlock()</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>, ErrSequenceExpired</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        f.sequence = <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    f.lastTimestamp = ts</span><br><span class="line"></span><br><span class="line">    id := guid(((ts - twepoch) &lt;&lt; timestampShift) |</span><br><span class="line">        (f.nodeID &lt;&lt; nodeIDShift) |</span><br><span class="line">        f.sequence)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> id &lt;= f.lastID &#123;</span><br><span class="line">        f.Unlock()</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, ErrIDBackwards</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    f.lastID = id</span><br><span class="line"></span><br><span class="line">    f.Unlock()</span><br><span class="line"></span><br><span class="line">    return id, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了方便结果的表示，我们会将10进制转换为16进制，利用标准库中的 <code>hex</code> 就可以轻松实现了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g guid)</span> <span class="title">Hex</span><span class="params">()</span> <span class="title">MessageID</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> h MessageID</span><br><span class="line">    <span class="keyword">var</span> b [<span class="number">8</span>]<span class="keyword">byte</span></span><br><span class="line">    </span><br><span class="line">    b[<span class="number">0</span>] = <span class="keyword">byte</span>(g &gt;&gt; <span class="number">56</span>)</span><br><span class="line">    b[<span class="number">1</span>] = <span class="keyword">byte</span>(g &gt;&gt; <span class="number">48</span>)</span><br><span class="line">    b[<span class="number">2</span>] = <span class="keyword">byte</span>(g &gt;&gt; <span class="number">40</span>)</span><br><span class="line">    b[<span class="number">3</span>] = <span class="keyword">byte</span>(g &gt;&gt; <span class="number">32</span>)</span><br><span class="line">    b[<span class="number">4</span>] = <span class="keyword">byte</span>(g &gt;&gt; <span class="number">24</span>)</span><br><span class="line">    b[<span class="number">5</span>] = <span class="keyword">byte</span>(g &gt;&gt; <span class="number">16</span>)</span><br><span class="line">    b[<span class="number">6</span>] = <span class="keyword">byte</span>(g &gt;&gt; <span class="number">8</span>)</span><br><span class="line">    b[<span class="number">7</span>] = <span class="keyword">byte</span>(g)</span><br><span class="line"></span><br><span class="line">    hex.Encode(h[:], b[:])</span><br><span class="line">    <span class="keyword">return</span> h</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
