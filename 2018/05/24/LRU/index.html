@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>LRU | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Least Recently Used最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LRU">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/24/LRU/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Least Recently Used最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.ytimg.com/vi/4wVp97-uqr0/maxresdefault.jpg">
+<meta property="og:updated_time" content="2018-05-23T16:29:58.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LRU">
+<meta name="twitter:description" content="Least Recently Used最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时">
+<meta name="twitter:image" content="https://i.ytimg.com/vi/4wVp97-uqr0/maxresdefault.jpg">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-LRU"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      LRU
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-23T16:23:40.000Z" itemprop="datePublished">
+        May 24, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Least-Recently-Used"><a href="#Least-Recently-Used" class="headerlink" title="Least Recently Used"></a>Least Recently Used</h1><p>最近最少使用（ <code>Least Recently Used</code> ）也就是 <code>LRU</code> 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。</p>
+<p>例如我们有3个物理块，访问序列为 <code>7，0，1，2，0，3，0</code></p>
+<ul>
+<li>访问7时，LRU缺失，此时LRU未满，放入7，此时淘汰顺序为7</li>
+<li>访问0时，LRU缺失，此时LRU未满，放入0，此时淘汰顺序为7，0</li>
+<li>访问1时，LRU缺失，此时LRU未满，放入1，此时淘汰顺序为7，0 ，1</li>
+<li>访问2时，LRU缺失，此时LRU已满，驱逐7，放入2，此时淘汰顺序为0，1，2</li>
+<li>访问0时，LRU命中，更新淘汰顺序，此时淘汰循序为1，2，0</li>
+<li>访问3时，LRU缺失，此时LRU已满，驱逐1，放入3，此时淘汰顺序为2，0，3</li>
+<li>访问0时，LRU命中，更新淘汰顺序，此时淘汰顺序为0，3，2</li>
+</ul>
+<p><img src="https://i.ytimg.com/vi/4wVp97-uqr0/maxresdefault.jpg" alt="LRU"></p>
+<p>我们利用链表（ <code>*list.List</code> ）维护其淘汰顺序，利用 <code>map</code> 作为其存储引擎（作为物质基础）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;---------------------------------------------------------&gt;</span><br><span class="line">newest                                               oldest</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Key <span class="keyword">interface</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> entry <span class="keyword">struct</span> &#123;</span><br><span class="line">    key Key</span><br><span class="line">    value <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Cache <span class="keyword">struct</span> &#123;</span><br><span class="line">    MaxEntries <span class="keyword">int</span></span><br><span class="line">    OnEvicted  <span class="function"><span class="keyword">func</span><span class="params">(key Key, value <span class="keyword">interface</span>&#123;&#125;)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">    <span class="title">ll</span>         *<span class="title">list</span>.<span class="title">List</span></span></span><br><span class="line"><span class="function">    <span class="title">cache</span>      <span class="title">map</span>[<span class="title">interface</span></span>&#123;&#125;]*list.Element</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(maxEntries <span class="keyword">int</span>)</span> *<span class="title">Cache</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Cache&#123;</span><br><span class="line">        MaxEntries: maxEntries,</span><br><span class="line">        ll:         list.New(),</span><br><span class="line">        cache:      <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;]*list.Element),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为我们经常需要判断当前的 <code>LRU</code> 缓存是否存满，所以我们构造一个<code>helper function</code> 来获取当前缓存的容量。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Cache)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> c.cache == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> c.ll.Len()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>淘汰顺序在两种情况下会更新，一是新增元素时，如果元素在 <code>LRU</code> 缓存中不存在，则将它放在链表的头部（ <code>PushFront</code> ），如果存在，则直接将其移到链表的头部（ <code>MoveToFront</code> ）。二是在获取元素时，如果元素存在，则直接将其移到链表的头部（ <code>MoveToFront</code> ）。这样一来我们就能确保最新的东西在链表头，最老的东西在链表尾。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Cache)</span> <span class="title">Add</span><span class="params">(key Key, value interfacfe&#123;&#125;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> c.cache == <span class="literal">nil</span> &#123;</span><br><span class="line">        c.cache = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;*list.Element])</span><br><span class="line">        c.ll = list.New()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ee, ok := c.cache[key]; ok &#123;</span><br><span class="line">        c.ll.MoveToFront(ee)</span><br><span class="line">        ee.Value.(*entry).value = value</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    ele := c.ll.PushFront(&amp;entry&#123;key, value&#125;)</span><br><span class="line">    c.cache[key] = ele</span><br><span class="line">    <span class="keyword">if</span> c.MaxEntries != <span class="number">0</span> &amp;&amp; c.ll.Len() &gt; c.MaxEntries &#123;</span><br><span class="line">        c.RemoveOldest()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Cache)</span> <span class="title">Get</span><span class="params">(key Key)</span> <span class="params">(value <span class="keyword">interface</span>&#123;&#125;, ok <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> c.cache == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ele, hit := c.cache[key]; hit &#123;</span><br><span class="line">        c.ll.MoveToFront(ele)</span><br><span class="line">        <span class="keyword">return</span> ele.Value.(*entry).value, <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>RemoveOldest</code> 将最老的元素淘汰，也就是说将链表中最后一项移除，并将<code>map</code> 中对应的元素删除。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Cache)</span> <span class="title">RemoveOldest</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> c.cache == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    ele := c.ll.Back()</span><br><span class="line">    <span class="keyword">if</span> ele != <span class="literal">nil</span> &#123;</span><br><span class="line">        c.removeElement(ele)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Cache)</span> <span class="title">removeElement</span><span class="params">(e *list.Element)</span></span> &#123;</span><br><span class="line">    c.ll.Remove(e)</span><br><span class="line">    kv := e.Value.(*entry)</span><br><span class="line">    <span class="built_in">delete</span>(c.cache, kv.key)</span><br><span class="line">    <span class="keyword">if</span> c.OnEvicted != <span class="literal">nil</span> &#123;</span><br><span class="line">        c.OnEvicted(kv.key, kv.value)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>清除 <code>LRU</code> 缓存只需要将链表和 <code>map</code> 设为 <code>nil</code> 就可以了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Cache)</span> <span class="title">Clear</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> c.OnEvicted != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> _, e := <span class="keyword">range</span> c.cache &#123;</span><br><span class="line">            kv := e.Value.(*entry)</span><br><span class="line">            c.OnEvicted(kv.key, kv.value)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    c.ll = <span class="literal">nil</span></span><br><span class="line">    c.cache = <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
