@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Heartbeat | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Heartbeat在一个分布式集群中，个别节点出现宕机的情况并不少见，例如在一个只有一个主节点，和多个从节点的集群中，从节点发生宕机对整个系统影响倒不算太大，如果主节点宕机，系统将不能正常运行，所以必须有一个机制检测各个节点是否正常运行。 心跳机制是设计高可用性分布式系统的重要技术。心跳机制通过周期性地向其他节点发送心跳消息并等待确认来检测集群中的节点状态。当节点状态发生变化时，会通知发送心跳检测">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Heartbeat">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/23/Heartbeat/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Heartbeat在一个分布式集群中，个别节点出现宕机的情况并不少见，例如在一个只有一个主节点，和多个从节点的集群中，从节点发生宕机对整个系统影响倒不算太大，如果主节点宕机，系统将不能正常运行，所以必须有一个机制检测各个节点是否正常运行。 心跳机制是设计高可用性分布式系统的重要技术。心跳机制通过周期性地向其他节点发送心跳消息并等待确认来检测集群中的节点状态。当节点状态发生变化时，会通知发送心跳检测">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-23T09:55:09.789Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Heartbeat">
+<meta name="twitter:description" content="Heartbeat在一个分布式集群中，个别节点出现宕机的情况并不少见，例如在一个只有一个主节点，和多个从节点的集群中，从节点发生宕机对整个系统影响倒不算太大，如果主节点宕机，系统将不能正常运行，所以必须有一个机制检测各个节点是否正常运行。 心跳机制是设计高可用性分布式系统的重要技术。心跳机制通过周期性地向其他节点发送心跳消息并等待确认来检测集群中的节点状态。当节点状态发生变化时，会通知发送心跳检测">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Heartbeat"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Heartbeat
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-23T09:52:18.000Z" itemprop="datePublished">
+        May 23, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Heartbeat"><a href="#Heartbeat" class="headerlink" title="Heartbeat"></a>Heartbeat</h1><p>在一个分布式集群中，个别节点出现宕机的情况并不少见，例如在一个只有一个主节点，和多个从节点的集群中，从节点发生宕机对整个系统影响倒不算太大，如果主节点宕机，系统将不能正常运行，所以必须有一个机制检测各个节点是否正常运行。</p>
+<p>心跳机制是设计高可用性分布式系统的重要技术。心跳机制通过周期性地向其他节点发送心跳消息并等待确认来检测集群中的节点状态。当节点状态发生变化时，会通知发送心跳检测消息的节点。如果发送心跳检测消息的节点在一段时间内未收到确认，则该节点将被视为失败。这是心跳机制的基本原理。</p>
+<p>在设计心跳时，需要考虑心跳是单向，还是双向的，单向的心跳可以保证当发送方出现问题时，接收方在一定的时间内可以检测到，而双向则可以保证双方都可以检测到对方是否出现问题。</p>
+<p>下面我们来实现一个单向的心跳检测机制，这里存在一个主节点和多个从节点，主节点会向连接到自己的从节点定期发送心跳消息，如果从节点在规定时间内没有收到来自主节点的心跳消息，则认为主节点发生异常，然后进行相应的超时处理流程（如自己参与选举成为主节点等）。</p>
+<h2 id="Master"><a href="#Master" class="headerlink" title="Master"></a>Master</h2><p>在主节点中我们维护连接到主节点的从节点的信息，使用用一个数组保存，当节点加入或者退出系统时候，分别调用 <code>Add</code> 和 <code>Del</code> 方法进行增删。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Master <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.RWMutex</span><br><span class="line">    n      <span class="keyword">int</span></span><br><span class="line">    slaves []*Slave</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Master)</span> <span class="title">Add</span><span class="params">(s *Slave)</span></span> &#123;</span><br><span class="line">    s.Lock()</span><br><span class="line">    <span class="keyword">defer</span> s.Unlock()</span><br><span class="line">    s.n++</span><br><span class="line">    s.slaves = <span class="built_in">append</span>(s.slaves, s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Master)</span> <span class="title">Del</span><span class="params">(s *Slave)</span></span> &#123;</span><br><span class="line">    s.Lock()</span><br><span class="line">    <span class="keyword">defer</span> s.Unlock()</span><br><span class="line">    n := <span class="built_in">make</span>([]*Slave, <span class="built_in">len</span>(s.slaves)<span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">for</span> _, x := <span class="keyword">range</span> m.slaves &#123;</span><br><span class="line">        <span class="keyword">if</span> x != s &#123;</span><br><span class="line">            n = <span class="built_in">append</span>(n, x)</span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">    s.n--</span><br><span class="line">    s.slaves = n</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一旦从节点与主节点建立连接，主节点会通过 <code>heartbeatLoop</code> 向从节点定时发送心跳消息。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Master)</span> <span class="title">handleConn</span><span class="params">(conn net.Conn)</span></span> &#123;</span><br><span class="line">    s := &amp;slave&#123;</span><br><span class="line">        conn: conn,</span><br><span class="line">        connectTime: time.Now()</span><br><span class="line">    &#125;</span><br><span class="line">    m.Add(s)</span><br><span class="line">    log.Println(<span class="string">"Connected: "</span>, conn.RemoteAddr)</span><br><span class="line">    <span class="keyword">go</span> s.heartbeatLoop()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Slave"><a href="#Slave" class="headerlink" title="Slave"></a>Slave</h2><p><code>slave</code> 是主节点维护的从节点的信息，<code>connectTime</code> 表示从节点第一次连接的时间，<code>exit chan struct{}</code> 用于接收退出信号，例如当从节点退出该集群时或者从节点发生宕机时，通过该机制停止向从节点发送心跳信息。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> slave <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.RWMutex</span><br><span class="line">    conn        net.Conn</span><br><span class="line">    connectTime time.Time</span><br><span class="line">    exit        <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>hearbeatLoop</code> 方法中，通过 <code>time.NewTicker</code> 来设置一个定时器，每隔一秒钟向从节点发送心跳消息。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *slave)</span> <span class="title">heartbeatLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ticker := time.NewTicker(<span class="number">1</span> * time.Second)</span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        s.conn.Close()</span><br><span class="line">        ticker.Stop()</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> t := &lt;-ticker.C:</span><br><span class="line">            s.Lock()</span><br><span class="line">            c.conn.Write([]<span class="keyword">byte</span>(fmt.Sprintf(<span class="string">"heartbeat %d"</span>, time.Now())))</span><br><span class="line">            s.Unlock()</span><br><span class="line">        <span class="keyword">case</span> &lt;-s.exit:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *slave)</span> <span class="title">stop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    s.exit &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Main-Routine"><a href="#Main-Routine" class="headerlink" title="Main Routine"></a>Main Routine</h2><h2 id="master-main"><a href="#master-main" class="headerlink" title="master main"></a>master main</h2><p>主节点通过监听相应的端口，处理与自己连接的请求，对于每个连接请求，都会起一个新的 <code>goroutine</code> 分别处理。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    l, err := net.Listen(<span class="string">"tcp"</span>, <span class="string">":8080"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> l.Close()</span><br><span class="line">    m := &amp;Master&#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        conn, err := l.Accept()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Fatal(err)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">go</span> m.handleConnection(conn)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="slave-main"><a href="#slave-main" class="headerlink" title="slave main"></a>slave main</h2><p>从节点会接收来自主节点的心跳消息，并通过 <code>time.NewTimer</code> 来设置一个定时器，如果在规定的时间内没有收到来自主节点的消息，则说明心跳超时，怀疑主节点出现异常，如果在规定的时间内收到心跳消息，则通过<code>timer.Reset</code> 来重置定时器。一般来说，心跳超时的时间是心跳发送周期的3倍左右。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    conn, err := net.Dial(<span class="string">"tcp"</span>, <span class="string">"localhost:8080"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    timer := time.NewTimer(<span class="number">3</span> * time.Second)</span><br><span class="line"></span><br><span class="line">    msgChan := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(conn net.Conn)</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            b := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">100</span>)</span><br><span class="line">            n, err := conn.Read(b)</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="built_in">panic</span>(err)</span><br><span class="line">            &#125;</span><br><span class="line">            msgChan &lt;- <span class="keyword">string</span>(b[:n])</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;(conn)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> m := &lt;-msgChan:</span><br><span class="line">            fmt.Println(m)</span><br><span class="line">        <span class="keyword">case</span> &lt;-timer.C:</span><br><span class="line">            fmt.Println(<span class="string">"Timed out"</span>)</span><br><span class="line">            <span class="comment">// do something here</span></span><br><span class="line">            &lt;-msgChan</span><br><span class="line">        &#125;</span><br><span class="line">        timer.Reset(<span class="number">3</span> * time.Second)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
