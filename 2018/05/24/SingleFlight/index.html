@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Single Flight | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Single FlightSingleFlight很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Single Flight">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/24/SingleFlight/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Single FlightSingleFlight很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-24T06:06:47.087Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Single Flight">
+<meta name="twitter:description" content="Single FlightSingleFlight很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-SingleFlight"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Single Flight
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-24T05:46:36.000Z" itemprop="datePublished">
+        May 24, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Single-Flight"><a href="#Single-Flight" class="headerlink" title="Single Flight"></a>Single Flight</h1><h2 id="SingleFlight"><a href="#SingleFlight" class="headerlink" title="SingleFlight"></a>SingleFlight</h2><p>很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。</p>
+<p>我们需要实现一种机制，对于特定的请求，在该请求触发之后但还没有返回结果之前，对于之后所有相同的请求，无论多少个，都不会真正触发，而是等待第一个请求返回，然后共用一个结果。</p>
+<p><code>SingleFlight</code> 就可以帮助我们实现上述的要求，我们使用结构体 <code>call</code> 来表示特定请求返回的结果，在 <code>SingleFlight</code> 结构体中使用一个 <code>map</code> 来存储不同的请求结果，也就是一个请求对应一个<code>call</code>，并用锁保护 <code>map</code> 的读写。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> SingleFlight <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.Mutex</span><br><span class="line">    m <span class="keyword">map</span>[<span class="keyword">string</span>]*call</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> call <span class="keyword">struct</span> &#123;</span><br><span class="line">    wg  sync.WaitGroup</span><br><span class="line">    val <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    err error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一般来说，<code>call</code> 是一些所需时间长，消耗资源多的操作的返回结果（例如<code>HTTP</code> 请求）。<code>Do</code> 方法就保证对于同一个请求，在结果未返回之前，后面相同的请求都不会真正进行，而是等待第一个请求的结果。在函数运行时需要检测当前 <code>map</code> 是否为空，如果为空则 <code>make</code> 一个，然后检查是否有相同的请求正在进行，如果有则使用 <code>c.wg.Wait</code> 来等待执行结果。要是这个请求是该时间段内第一个请求，则将它加入 <code>map</code> 中，然后通过 <code>c.wg.Add</code> 来增加 <code>WaitGroup</code> 应该等待的 <code>goroutine</code> 个数，当函数执行完成之后，通过 <code>c.wg.Done</code> 来广播告知他人，此时任何调用<code>c.wg.Wait</code> 的地方都会解除阻塞，并返回该结果。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sf *SingleFlight)</span> <span class="title">Do</span><span class="params">(key <span class="keyword">string</span>, fn <span class="keyword">func</span>()</span> <span class="params">(<span class="keyword">interface</span>&#123;&#125;, error)</span>) <span class="params">(<span class="keyword">interface</span>&#123;&#125;, error)</span></span> &#123;</span><br><span class="line">    sf.Lock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> sf.m == <span class="literal">nil</span> &#123;</span><br><span class="line">        sf.m = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]*call)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> c, ok := sf.m[key]; ok &#123;</span><br><span class="line">        sf.Unlock()</span><br><span class="line">        c.wg.Wait()</span><br><span class="line">        <span class="keyword">return</span> c.val, c.err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    c := <span class="built_in">new</span>(call)</span><br><span class="line">    c.wg.Add(<span class="number">1</span>)</span><br><span class="line">    sf.m[key] = c</span><br><span class="line">    sf.Unlock()</span><br><span class="line"></span><br><span class="line">    c.val, c.err = fn()</span><br><span class="line">    c.wg.Done()</span><br><span class="line">    </span><br><span class="line">    sf.Lock()</span><br><span class="line">    <span class="built_in">delete</span>(sf.m, key)</span><br><span class="line">    sf.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> c.val, c.err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="WaitGroup"><a href="#WaitGroup" class="headerlink" title="WaitGroup"></a>WaitGroup</h2><p><code>SingleFlight</code> 机制主要是靠 <code>WaitGroup</code> 实现，一般来说，因为<code>main routine</code> 不会等待 <code>goroutine</code> 执行完成，所以需要某种机制等待所有的<code>goroutine</code> 执行完成，使用 <code>WaitGroup</code> 就可以帮助我们达到这样的目的。</p>
+<p><code>WaitGroup</code> 的本质就是一个计数器，当每起一个新的 <code>goroutine</code> 时，我们调用 <code>wg.Add(1)</code> 来增加计数器的数量，当该 <code>goroutine</code> 执行完毕时，利用 <code>wg.Done()</code> 可以将计数器减一，调用 <code>Wait()</code> 方法的地方会一直阻塞 <code>main routine</code> ，只有当计数器为0时，<code>wg</code> 才会解除阻塞，此时程序才可以继续执行下去。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> WaitGroup <span class="keyword">struct</span> &#123;</span><br><span class="line">    noCopy noCopy</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 64-bit value: high 32 bits are counter, low 32 bits are waiter count.</span></span><br><span class="line">    <span class="comment">// 64-bit atomic operations require 64-bit alignment, but 32-bit</span></span><br><span class="line">    <span class="comment">// compilers do not ensure it. So we allocate 12 bytes and then use</span></span><br><span class="line">    <span class="comment">// the aligned 8 bytes in them as state.</span></span><br><span class="line">    state1 [<span class="number">12</span>]<span class="keyword">byte</span></span><br><span class="line">    sema   <span class="keyword">uint32</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wg *WaitGroup)</span> <span class="title">Add</span><span class="params">(delta <span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(wg *WaitGroup)</span> <span class="title">Done</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(wg *WaitGroup)</span> <span class="title">Wait</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"><span class="keyword">var</span> urls = []<span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="string">"http://www.golang.org/"</span>,</span><br><span class="line">    <span class="string">"http://www.google.com/"</span>,</span><br><span class="line">    <span class="string">"http://www.somestupidname.com/"</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> _, url := <span class="keyword">range</span> urls &#123;</span><br><span class="line">    <span class="comment">// Increment the WaitGroup counter.</span></span><br><span class="line">    wg.Add(<span class="number">1</span>)</span><br><span class="line">    <span class="comment">// Launch a goroutine to fetch the URL.</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(url <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Decrement the counter when the goroutine completes</span></span><br><span class="line">    <span class="keyword">defer</span> wg.Done() </span><br><span class="line">    <span class="comment">// Fetch the URL.</span></span><br><span class="line">    http.Get(url)</span><br><span class="line">    &#125;(url)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Wait for all HTTP fetches to complete.</span></span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
