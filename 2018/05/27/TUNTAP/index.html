@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>TUN/TAP | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="TUNTAPTUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TUN&#x2F;TAP">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/27/TUNTAP/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="TUNTAPTUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://1.bp.blogspot.com/-mnxh0kXQeKI/V10lx7q7H4I/AAAAAAAALYs/i427R0SfAQckApSz3piMDu7LiJnPzzu4gCLcB/s1600/tuntap.png">
+<meta property="og:updated_time" content="2018-05-27T06:07:19.927Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TUN&#x2F;TAP">
+<meta name="twitter:description" content="TUNTAPTUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111">
+<meta name="twitter:image" content="https://1.bp.blogspot.com/-mnxh0kXQeKI/V10lx7q7H4I/AAAAAAAALYs/i427R0SfAQckApSz3piMDu7LiJnPzzu4gCLcB/s1600/tuntap.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-TUNTAP"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      TUN/TAP
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-27T06:05:03.000Z" itemprop="datePublished">
+        May 27, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="TUNTAP"><a href="#TUNTAP" class="headerlink" title="TUNTAP"></a>TUNTAP</h1><p><a href="http://tuntaposx.sourceforge.net/" target="_blank" rel="noopener">TUN/TAP</a> 为我们在 <code>macOS</code> 下面提供了虚拟网络接口（ <code>TUN/TAP</code> ），其本质是字符设备（ <code>character special file</code> ）。因为在 <code>Unix</code> 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。</p>
+<p><img src="https://1.bp.blogspot.com/-mnxh0kXQeKI/V10lx7q7H4I/AAAAAAAALYs/i427R0SfAQckApSz3piMDu7LiJnPzzu4gCLcB/s1600/tuntap.png" alt="TUNTAP"></p>
+<p><code>TUN</code> 模拟网络层设备，它可以操作第3层数据包例如 <code>IP</code> 数据包。 <code>TAP</code> 模拟链路层设备，用于操作第2层数据包例如以太网帧。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> maxDevices = <span class="number">16</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    ErrBusy        = errors.New(<span class="string">"device is already in use"</span>)</span><br><span class="line">	  ErrNotReady    = errors.New(<span class="string">"device is not ready"</span>)</span><br><span class="line">	  ErrExhausted   = errors.New(<span class="string">"no devices are available"</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Interface <span class="keyword">interface</span> &#123;</span><br><span class="line">    Name() <span class="keyword">string</span></span><br><span class="line">    String() <span class="keyword">string</span></span><br><span class="line">    io.ReadWriteCloser</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Tun</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(Interface, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> newTUN(name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Tap</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(Interface, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> newTAP(name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>TUN/TAP</code> 在 <code>/dev</code>目录下，以 <code>/dev/tunX</code> 和 <code>/dev/tapX</code> 的形式存在，<code>X</code> 从0到15。每个字符设备都与同名的网络接口关联。网络接口只有在相应的字符设备被程序打开时才会创建，并且在字符设备关闭时将被删除。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> device <span class="keyword">struct</span> &#123;</span><br><span class="line">    n <span class="keyword">string</span></span><br><span class="line">    f *os.File</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *device)</span> <span class="title">Name</span><span class="params">()</span> <span class="title">string</span></span> &#123; <span class="keyword">return</span> d.n &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *device)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123; <span class="keyword">return</span> d.n &#125;</span><br></pre></td></tr></table></figure>
+<p>新创建设备时，我们像正常打开文件一样使用 <code>TUN</code> 或者 <code>TAP</code> 设备，如果设备已经被占用，则报 <code>ErrBusy</code> 错误。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newDevice</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(Interface, error)</span></span> &#123;</span><br><span class="line">    file, err := os.OpenFile(name, os.O_EXCL|os.O_RWWR, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> isBusy(err) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, ErrBusy</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> &amp;device&#123;n: name, f: file&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isBusy</span><span class="params">(err error)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> perr, ok := err.(*os.PathError); ok &#123;</span><br><span class="line">        <span class="keyword">if</span> code, ok := perr.Err.(syscall.Errno); ok &#123;</span><br><span class="line">            <span class="keyword">if</span> code == <span class="number">0x10</span> || code == <span class="number">0x11</span> &#123;</span><br><span class="line">                <span class="comment">// device busy || exclusive lock</span></span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>tunX</code> 是 <code>IP</code> 隧道设备，可用于与内核交换 <code>IP</code> 数据包。使用 <code>read()</code> 获取单个数据包，使用 <code>write()</code> 可以将数据包写入 <code>/dev/tunX</code> 设备中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newTUN</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(Interface, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(name) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> i := o; i &lt; maxDevices; i++ &#123;</span><br><span class="line">            iface, err := newDevice(<span class="string">"/dev/tun"</span> + strconv.Itoa(i))</span><br><span class="line">            <span class="keyword">if</span> err == ErrBusy &#123;</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, ErrExhausted</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newDevice(name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>tapX</code> 是 <code>ethertap</code> 设备，为内核的以太网层提供接口。每次从 <code>/dev/tapX</code> 字符设备中读取或写入一个数据包。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newTAP</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(Interface, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(name) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> i := o; i &lt; maxDevices; i++ &#123;</span><br><span class="line">            iface, err := newDevice(<span class="string">"/dev/tap"</span> + strconv.Itoa(i))</span><br><span class="line">            <span class="keyword">if</span> err == ErrBusy &#123;</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, ErrExhausted</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newDevice(name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于字符设备，可以像操作正常文件一样进行读/写操作来向设备写入数据包或者获取数据包。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *device)</span> <span class="title">Read</span><span class="params">(p []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">    n, err := d.f.Read(p)</span><br><span class="line">    <span class="keyword">if</span> isNotReady(err) &#123;</span><br><span class="line">        err = ErrNotReady</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *device)</span> <span class="title">Write</span><span class="params">(p []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">    n, err := d.f.Write(p)</span><br><span class="line">    <span class="keyword">if</span> isNotReady(err) &#123;</span><br><span class="line">        err = ErrNotReady </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isNotReady</span><span class="params">(err error)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> perr, ok := err.(*os.PathError); ok &#123;</span><br><span class="line">        <span class="keyword">if</span> code, ok := perr.Err.(syscall.Errno); ok &#123;</span><br><span class="line">            <span class="keyword">if</span> code == <span class="number">0x05</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *device)</span> <span class="title">Close</span><span class="params">()</span> <span class="title">error</span></span> &#123; </span><br><span class="line">    <span class="keyword">return</span> d.f.Close() </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
