@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Shredder &amp; Gluer | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Shredder &amp;amp; Gluer有时候我们需要向服务器上传一个很大的文件，但是无奈网络不稳定，再加上使用的软件不支持断点续传，经常会出现文件上传到一半出错，无奈只能从头再来，可以说是非常烦恼了。还有的时候服务器明确规定了单次上传文件的大小，手头又没有啥好的软件可以帮助我们进行文件的分割和合并操作，只好自己写一个。 要是一个人被砍了头，手，脚，再把这几个肢体合并起来大概率这人也是废了（在医学">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shredder &amp; Gluer">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/28/Shredder-Gluer/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Shredder &amp;amp; Gluer有时候我们需要向服务器上传一个很大的文件，但是无奈网络不稳定，再加上使用的软件不支持断点续传，经常会出现文件上传到一半出错，无奈只能从头再来，可以说是非常烦恼了。还有的时候服务器明确规定了单次上传文件的大小，手头又没有啥好的软件可以帮助我们进行文件的分割和合并操作，只好自己写一个。 要是一个人被砍了头，手，脚，再把这几个肢体合并起来大概率这人也是废了（在医学">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-28T04:01:48.833Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Shredder &amp; Gluer">
+<meta name="twitter:description" content="Shredder &amp;amp; Gluer有时候我们需要向服务器上传一个很大的文件，但是无奈网络不稳定，再加上使用的软件不支持断点续传，经常会出现文件上传到一半出错，无奈只能从头再来，可以说是非常烦恼了。还有的时候服务器明确规定了单次上传文件的大小，手头又没有啥好的软件可以帮助我们进行文件的分割和合并操作，只好自己写一个。 要是一个人被砍了头，手，脚，再把这几个肢体合并起来大概率这人也是废了（在医学">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Shredder-Gluer"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Shredder &amp; Gluer
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-28T03:38:22.000Z" itemprop="datePublished">
+        May 28, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Shredder-amp-Gluer"><a href="#Shredder-amp-Gluer" class="headerlink" title="Shredder &amp; Gluer"></a>Shredder &amp; Gluer</h1><p>有时候我们需要向服务器上传一个很大的文件，但是无奈网络不稳定，再加上使用的软件不支持断点续传，经常会出现文件上传到一半出错，无奈只能从头再来，可以说是非常烦恼了。还有的时候服务器明确规定了单次上传文件的大小，手头又没有啥好的软件可以帮助我们进行文件的分割和合并操作，只好自己写一个。</p>
+<p>要是一个人被砍了头，手，脚，再把这几个肢体合并起来大概率这人也是废了（在医学水平没有极大进步的情况下），但是对于一个文件来说则不同，无论什么格式的文件，其实本质上都是一大堆字节，如果我们在固定的地方进行切割，最后再在被切割的地方合并的话，这个文件还是可以被正常使用的。</p>
+<h2 id="Get-Basic-Info"><a href="#Get-Basic-Info" class="headerlink" title="Get Basic Info"></a>Get Basic Info</h2><p>在对文件切割之前，我们需要获得文件的基本信息，即文件的大小或者说是字节数，还需要决定切割后每个单位的大小，知道了这两个参数之后，就可以算出所有分割块的数量了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">f, err := os.Open(<span class="string">"some_very_big_file"</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(err)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">defer</span> f.Close()</span><br><span class="line">fileInfo, err := f.Stat()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(err)</span><br><span class="line">&#125;</span><br><span class="line">fileSize := fileInfo.Size()</span><br><span class="line">partSize := <span class="number">1</span> &lt;&lt; <span class="number">28</span></span><br><span class="line">concurrency := <span class="keyword">int</span>(fileSize / <span class="keyword">int64</span>(partSize))</span><br><span class="line"><span class="keyword">if</span> remainder := fileSize % <span class="keyword">int64</span>(partSize); remainder != <span class="number">0</span> &#123;</span><br><span class="line">    concurrency++</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Shredder"><a href="#Shredder" class="headerlink" title="Shredder"></a>Shredder</h2><p>利用 <code>io.NewSectionReader</code> 可以读取文件特定偏移的数据，然后利用<code>buffo.NewReader</code> 来缓冲读数据，利用 <code>bufio.NewWriter</code> 来缓冲写数据提高效率，最后利用 <code>io.Copy(bw, br)</code> 将文件特定部分复制到新文件中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">wg.Add(concurrency)</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; concurrency; i++ &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        sr := io.NewSectionReader(f, <span class="keyword">int64</span>(i * partSize), <span class="keyword">int64</span>(partSize))</span><br><span class="line">        br := bufio.NewReader(sr)</span><br><span class="line">        partFile, err := os.Create(<span class="string">"partFile_"</span> + strconv.Itoa(i))</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="built_in">panic</span>(err)</span><br><span class="line">        &#125;</span><br><span class="line">        bw := bufio.NewWriter(partFile)</span><br><span class="line">        io.Copy(bw, br)</span><br><span class="line">    &#125;(i)</span><br><span class="line">&#125;</span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
+<h2 id="Gluer"><a href="#Gluer" class="headerlink" title="Gluer"></a>Gluer</h2><p>合并与分割互为逆操作，因为我们对上面分割后的文件采取了顺序命名操作，所以可以根据编号的顺序，利用 <code>Seek</code> 方法指定合并文件的写偏移地址，通过 <code>bufio.NewReader</code> 对分割文件进行缓冲读操作，同理利用 <code>bufio.NewWriter</code> 对合并文件进行缓冲写操作，通过 <code>io.Copy(bw, br)</code> 将分割文件放入最终合并文件的正确位置。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">matches, err := filepath.Glob(<span class="string">"partFile_*"</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(err)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">mergedFile, err := os.Create(<span class="string">"mergedFile"</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(err)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> _, v := <span class="keyword">range</span> matches &#123;</span><br><span class="line">    ss := strings.Split(v, <span class="string">"_"</span>)</span><br><span class="line">    i, err := strconv.Atoi(ss[<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line">    mergedFile.Seek(<span class="keyword">int64</span>(i * partSize), os.SEEK_SET)</span><br><span class="line">    f, err := os.Open(v)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line">    br := bufio.NewReader(f)</span><br><span class="line">    bw := bufio.NewWriter(mergedFile)</span><br><span class="line">    io.Copy(bw, br)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
