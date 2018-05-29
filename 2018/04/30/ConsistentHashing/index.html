@@ -14,7 +14,7 @@
 <meta property="og:description" content="Consistent Hashing比如说我们现在有3台服务器用于存储kv值，分别是 {s1, s2, s3} ，而我们用的哈希策略非常简单，例如 h(x) = ( x^2 + 3 * x + 2 ) % 3 ，也就是说当k=1时，对应的v值会被存放在s1上，但如果业务量增加，我们又需要增加一个服务器来均衡负载，此时哈希策略就变成 h(x) = ( x^2 + 3 * x + 2 ) % 4，那按">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://dajh2p2mfq4ra.cloudfront.net/assets/site-images/system_design/consistent_hashing_virtual.jpg">
-<meta property="og:updated_time" content="2018-05-15T12:03:25.393Z">
+<meta property="og:updated_time" content="2018-05-15T12:03:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Connection Hashing">
 <meta name="twitter:description" content="Consistent Hashing比如说我们现在有3台服务器用于存储kv值，分别是 {s1, s2, s3} ，而我们用的哈希策略非常简单，例如 h(x) = ( x^2 + 3 * x + 2 ) % 3 ，也就是说当k=1时，对应的v值会被存放在s1上，但如果业务量增加，我们又需要增加一个服务器来均衡负载，此时哈希策略就变成 h(x) = ( x^2 + 3 * x + 2 ) % 4，那按">
@@ -54,7 +54,7 @@
         W
       </span>
     
-      <span class="b">
+      <span class="w">
         h
       </span>
     
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
