@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Protocol Multiplexer | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Protocol Multiplexer假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Protocol Multiplexer">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/29/ProtocolMultiplexer/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Protocol Multiplexer假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-29T13:22:16.080Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Protocol Multiplexer">
+<meta name="twitter:description" content="Protocol Multiplexer假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-ProtocolMultiplexer"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Protocol Multiplexer
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-29T11:50:23.000Z" itemprop="datePublished">
+        May 29, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Protocol-Multiplexer"><a href="#Protocol-Multiplexer" class="headerlink" title="Protocol Multiplexer"></a>Protocol Multiplexer</h1><p>假设我们要实现一个 <code>RPC</code> 框架并且每个客户端与服务器只维护一根 <code>TCP</code> 连接，但客户端可能会同时发出很多 <code>RPC</code> 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 <code>TCP</code> 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待 <code>I/O</code> ，为了提高 <code>CPU</code> 的利用率，我们可以采用多路复用的方法。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ProtocolMux <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// Init initializes the mux to manage messages to the given service.</span></span><br><span class="line">    Init(Service)</span><br><span class="line">    <span class="comment">// Call makes a request with the given message and returns the reply.</span></span><br><span class="line">    <span class="comment">// Multiple goroutines may call Call concurrently.</span></span><br><span class="line">    Call(Msg) Msg</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Service</code> 接口仅仅指明了服务需要实现的接口，这些服务实际就是对网络库的封装，可以是 <code>TCP</code> 或者 <code>UDP</code> ，<code>Send</code> 和 <code>Recv</code> 方法不能在并发条件下使用，并发使用可能会导致数据竞争。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Service <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// ReadTag returns the muxing identifier in the request or reply message.</span></span><br><span class="line">    <span class="comment">// Multiple goroutines may call ReadTag concurrently.</span></span><br><span class="line">    ReadTag(Msg) <span class="keyword">int64</span></span><br><span class="line">    <span class="comment">// Send sends a request message to the remote service.</span></span><br><span class="line">    <span class="comment">// Send must not be called concurrently with itself.</span></span><br><span class="line">    Send(Msg)</span><br><span class="line">    <span class="comment">// Recv waits for and returns a reply mesasge from the remote service.</span></span><br><span class="line">    <span class="comment">// Recv must not be called concurrently with itself.</span></span><br><span class="line">    Recv(Msg)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实现多路复用的核心就在于使用 <code>pending</code> 这个 <code>map</code> 来存储还未收到答复的请求，每一个请求都有自己独一无二的标签（例如请求的序列号），每个标签对应一个答复，答复用通道 <code>chan Msg</code> 来表示，当收到该标签对应的答复时，该通道返回结果（ <code>&lt;-done</code> ），这样就可以保证请求和答复一一对应，而不用关心接收消息先后顺序的问题了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mux <span class="keyword">struct</span> &#123;</span><br><span class="line">    srv     Service</span><br><span class="line">    send    <span class="keyword">chan</span> Msg</span><br><span class="line">    mu      sync.Mutex</span><br><span class="line">    pending <span class="keyword">map</span>[<span class="keyword">int64</span>]<span class="keyword">chan</span>&lt;- Msg</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mux)</span> <span class="title">Init</span><span class="params">(srv Service)</span></span> &#123;</span><br><span class="line">    m.srv = srv</span><br><span class="line">    m.pending = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int64</span>]<span class="keyword">chan</span> Msg)</span><br><span class="line">    <span class="keyword">go</span> m.sendLoop()</span><br><span class="line">    <span class="keyword">go</span> m.recvLoop()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>sendLoop</code> 负责消息的发送，而 <code>recvLoop</code> 则会对接受到的答复进行判断标签操作，并将 <code>pending</code> 中这个标签对应的通道取出，然后向这个通道发消息从而告知对应的 <code>Call</code> 函数该请求已经处理完。这两个方法就是复用机制的体现，因为它们底层只使用一个连接来处理多个请求。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mux)</span> <span class="title">sendLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> args := <span class="keyword">range</span> m.send &#123;</span><br><span class="line">        m.srv.Send(args)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mux)</span> <span class="title">recvLoop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        reply := m.srv.Recv()</span><br><span class="line">        tag := m.srv.Tag(reply)</span><br><span class="line">   </span><br><span class="line">        m.mu.Lock()</span><br><span class="line">        done := m.pending[tag]</span><br><span class="line">        m.mu.Unlock()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> done == <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="built_in">panic</span>(<span class="string">"unexpected reply"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        done &lt;- reply</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于 <code>Call</code> 方法，整个调用过程是阻塞的，先通过 <code>ReadTag</code> 获取 <code>Msg</code> 的标签，并新建一个通道 <code>done := make(chan Msg, 1)</code> ，作为将来事件完成时的通知。并将该通道存储到 <code>pending</code> 中，通过 <code>m.send &lt;- args</code> 将消息发送到 <code>send</code> 中，<code>sendLoop</code> 会执行真正的发送操作，最后阻塞，等待结果返回（ <code>&lt;-done</code> ）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mux)</span> <span class="title">Call</span><span class="params">(args Msg)</span> <span class="params">(reply Msg)</span></span> &#123;</span><br><span class="line">    tag := m.srv.ReadTag(args)</span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> Msg, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    m.mu.Lock()</span><br><span class="line">    <span class="keyword">if</span> m.pending[tag] != <span class="literal">nil</span> &#123;</span><br><span class="line">        m.mu.Unlock()</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">"mux: duplicate call tag"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    m.pending[tag] = done</span><br><span class="line">    m.mu.Unlock()</span><br><span class="line">    </span><br><span class="line">    m.send &lt;- args</span><br><span class="line">    <span class="keyword">return</span> &lt;-done</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
