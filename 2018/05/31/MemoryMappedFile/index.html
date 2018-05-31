@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Memory Mapped File | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Memory Mapped File内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Memory Mapped File">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/05/31/MemoryMappedFile/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Memory Mapped File内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://www.tutorialsdaddy.com/wp-content/uploads/2016/11/linux-mmap.png">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/2187/3161/products/450ba4cc5f96d682fde154a5e569ebf4_1024x.png?v=1520446011">
+<meta property="og:updated_time" content="2018-05-31T12:01:30.567Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Memory Mapped File">
+<meta name="twitter:description" content="Memory Mapped File内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操">
+<meta name="twitter:image" content="http://www.tutorialsdaddy.com/wp-content/uploads/2016/11/linux-mmap.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-MemoryMappedFile"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Memory Mapped File
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-05-31T11:05:38.000Z" itemprop="datePublished">
+        May 31, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Memory-Mapped-File"><a href="#Memory-Mapped-File" class="headerlink" title="Memory Mapped File"></a>Memory Mapped File</h1><p>内存映射文件( <code>memory mapped file</code> )与磁盘上的文件存在直接的对应关系。内存映射 <code>I/O</code> 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 <code>read()</code> 或 <code>write()</code> 系统调用的情况下执行 <code>I/O</code> 操作 。</p>
+<p><img src="http://www.tutorialsdaddy.com/wp-content/uploads/2016/11/linux-mmap.png" alt="mmap"></p>
+<h2 id="mmap-amp-munmap"><a href="#mmap-amp-munmap" class="headerlink" title="mmap &amp; munmap"></a>mmap &amp; munmap</h2><p><code>mmap</code> 系统调用将文件或设备映射到内存中，当调用成功时，它会返回映射内存的起始地址。第一个参数 <code>addr</code> 表示文件要映射到内存中的虚拟地址，一般都为 <code>NULL</code> ，表示由内核决定合适的映射地址。第二个参数 <code>len</code> 指定映射的大小（以字节为单位），通常情况下，内核创建的映射内存的大小是内存页面大小的整数倍。第三个参数 <code>prot</code> 指定访问权限，可以是 <code>PROT_READ</code>，<code>PROT_WRITE</code> ，<code>PROT_EXEC</code> 。第四个参数 <code>flags</code> 可以是 <code>MAP_PRIVATE</code>，<code>MAP_SHARED</code> 。第五个参数 <code>fd</code> 标识映射文件的文件描述符。第六个参数 <code>offset</code> 指定了文件映射的起点。为了映射整个文件，我们将 <code>offset</code> 指定为0，将 <code>len</code> 指定为整个文件的大小。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> *</span><br><span class="line">mmap(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> len, <span class="keyword">int</span> prot, <span class="keyword">int</span> flags, <span class="keyword">int</span> fd, <span class="keyword">off_t</span> offset);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> </span><br><span class="line">munmap(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> len);</span><br></pre></td></tr></table></figure>
+<p>Golang中系统调用参数有些许不同，但本质是一样的。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> syscall</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Mmap</span><span class="params">(fd <span class="keyword">int</span>, offset <span class="keyword">int64</span>, length <span class="keyword">int</span>, prot <span class="keyword">int</span>, flags <span class="keyword">int</span>)</span> <span class="params">(data []<span class="keyword">byte</span>, err error)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">Munmap</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(err error)</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="GPIO"><a href="#GPIO" class="headerlink" title="GPIO"></a>GPIO</h2><p>当然了，如果光介绍 <code>mmap</code> 这个系统调用就太无聊了，我们下面来看一下 <code>mmap</code> 能帮助我们干什么事情，如果你玩树莓派的话，我们可以用 <code>mmap</code> 来写一个 <code>GPIO</code> 驱动。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/2187/3161/products/450ba4cc5f96d682fde154a5e569ebf4_1024x.png?v=1520446011" alt="RasberryPi"></p>
+<p>在树莓派的 <code>/dev</code> 目录下存在 <code>mem</code> 和 <code>gpiomem</code> 这两个文件。通过 <code>mmap</code> <code>/dev/gpiomem</code> 文件我们可以在没有 <code>root</code> 权限的情况下访问 <code>GPIO</code> 寄存器。打开 <code>/dev/gpiomem</code> 设备文件并使用 <code>mmap()</code> 函数可将 <code>GPIO</code> 寄存器映射到进程内存空间中去。<code>/dev/mem</code> 代表整个系统的内存空间。<code>/dev/gpiomem</code> 仅允许访问 <code>GPIO</code> 外设寄存器， <code>/dev/mem</code> 允许访问所有外设寄存器以及所有内存，相对来说更加危险。为了保护内存空间，最好使用 <code>/dev/gpiomem</code> 而非 <code>/dev/mem</code> 来控制 <code>GPIO</code> 寄存器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">          Rev 2 and 3 Raspberry Pi </span><br><span class="line">+-----+---------+----------+---------+-----+</span><br><span class="line">| BCM |   Name  | Physical | Name    | BCM |</span><br><span class="line">+-----+---------+----++----+---------+-----+ </span><br><span class="line">|     |    3.3v |  1 || 2  | 5v      |     |</span><br><span class="line">|   2 |   SDA 1 |  3 || 4  | 5v      |     | </span><br><span class="line">|   3 |   SCL 1 |  5 || 6  | 0v      |     |</span><br><span class="line">|   4 | GPIO  7 |  7 || 8  | TxD     | 14  |</span><br><span class="line">|     |      0v |  9 || 10 | RxD     | 15  | </span><br><span class="line">|  17 | GPIO  0 | 11 || 12 | GPIO  1 | 18  | </span><br><span class="line">|  27 | GPIO  2 | 13 || 14 | 0v      |     |</span><br><span class="line">|  22 | GPIO  3 | 15 || 16 | GPIO  4 | 23  |</span><br><span class="line">|     |    3.3v | 17 || 18 | GPIO  5 | 24  |  </span><br><span class="line">|  10 |    MOSI | 19 || 20 | 0v      |     |  </span><br><span class="line">|   9 |    MISO | 21 || 22 | GPIO  6 | 25  | </span><br><span class="line">|  11 |    SCLK | 23 || 24 | CE0     | 8   |</span><br><span class="line">|     |      0v | 25 || 26 | CE1     | 7   | </span><br><span class="line">|   0 |   SDA 0 | 27 || 28 | SCL 0   | 1   | </span><br><span class="line">|   5 | GPIO 21 | 29 || 30 | 0v      |     |</span><br><span class="line">|   6 | GPIO 22 | 31 || 32 | GPIO 26 | 12  |</span><br><span class="line">|  13 | GPIO 23 | 33 || 34 | 0v      |     |</span><br><span class="line">|  19 | GPIO 24 | 35 || 36 | GPIO 27 | 16  |</span><br><span class="line">|  26 | GPIO 25 | 37 || 38 | GPIO 28 | 20  |</span><br><span class="line">|     |      0v | 39 || 40 | GPIO 29 | 21  |</span><br><span class="line">+-----+---------+----++----+---------+-----+</span><br></pre></td></tr></table></figure>
+<p>如果通过 <code>/dev/mem</code> 访问 <code>GPIO</code> 外设寄存器，那么我们需要确定其内存中的基地址，我们通过读取 <code>/proc/device-tree/soc/ranges</code> 来确定基地址。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    bcm2835Base = <span class="number">0x20000000</span></span><br><span class="line">    gpioOffset  = <span class="number">0x200000</span></span><br><span class="line">    memLength = <span class="number">4096</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> gpioBase <span class="keyword">int64</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    memLock sync.Mutex</span><br><span class="line">    gpioMem  []<span class="keyword">byte</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    base := getBase()</span><br><span class="line">    gpioBase = base + gpioOffset </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getBase</span><span class="params">()</span> <span class="params">(base <span class="keyword">int64</span>)</span></span> &#123;</span><br><span class="line">    base = bcm2835Base</span><br><span class="line">    ranges, err := os.Open(<span class="string">"/proc/device-tree/soc/ranges"</span>)</span><br><span class="line">    <span class="keyword">defer</span> ranges.Close()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    b := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">4</span>)</span><br><span class="line">    n, err := ranges.ReadAt(b, <span class="number">4</span>)</span><br><span class="line">    <span class="keyword">if</span> n != <span class="number">4</span> || err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    buf := bytes.NewReader(b)</span><br><span class="line">    <span class="keyword">var</span> out <span class="keyword">uint32</span></span><br><span class="line">    err = binary.Read(buf, binary.BigEndian, &amp;out)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">int64</span>(out)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> <code>Open</code> 函数通过映射 <code>/dev/mem</code> 文件来将 <code>GPIO</code> 寄存器映射到内存中，这样以来我们就可以通过直接改变 <code>gpioMem</code> 的值来操控 <code>GPIO</code> 寄存器了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Open</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// Open fd for rw mem access; try dev/mem first (need root)</span></span><br><span class="line">    file, err := os.OpenFile(<span class="string">"/dev/mem"</span>, os.O_RDWR|os.O_SYNC, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> os.IsPermission(err) &#123;</span><br><span class="line">        <span class="comment">// try gpiomem otherwise (some extra functions like clock and pwm setting wont work)</span></span><br><span class="line">        file, err = os.OpenFile(<span class="string">"/dev/gpiomem"</span>, os.O_RDWR|os.O_SYNC, <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// FD can be closed after memory mapping</span></span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line"></span><br><span class="line">    memLock.Lock()</span><br><span class="line">    <span class="keyword">defer</span> memLock.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Memory map GPIO registers to slice</span></span><br><span class="line">    gpioMem, err = syscall.Mmap(</span><br><span class="line">        <span class="keyword">int</span>(file.Fd()),</span><br><span class="line">        gpioBase,</span><br><span class="line">        memLength,</span><br><span class="line">        syscall.PROT_READ|syscall.PROT_WRITE,</span><br><span class="line">        syscall.MAP_SHARED,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Close</code> 函数使用 <code>syscall.Munmap</code> 系统调用来解除内存映射。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Close</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    memLock.Lock()</span><br><span class="line">    <span class="keyword">defer</span> memLock.Unlock()</span><br><span class="line">    <span class="keyword">if</span> err := syscall.Munmap(mem); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
