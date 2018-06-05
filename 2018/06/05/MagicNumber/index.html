@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Magic Number | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Magic Number微笑.jpg，这里年轻人们聊天时经常使用的说法，但是！作为一个严谨的程序员，我们能不能通过文件的后缀来判断这个文件的类型呢？例如看到电脑上存在“微笑.jpg”这个文件，通过后缀 jpg 来判断它就是一个 JPEG 文件呢，答案肯定是否定的，因为文件名可以被轻松篡改，例如这个文件本来是“微笑.gif”，有人想不开就将它改成“微笑.jpg”，虽然没有什么影响，但是可以说明一个问">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Magic Number">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/05/MagicNumber/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Magic Number微笑.jpg，这里年轻人们聊天时经常使用的说法，但是！作为一个严谨的程序员，我们能不能通过文件的后缀来判断这个文件的类型呢？例如看到电脑上存在“微笑.jpg”这个文件，通过后缀 jpg 来判断它就是一个 JPEG 文件呢，答案肯定是否定的，因为文件名可以被轻松篡改，例如这个文件本来是“微笑.gif”，有人想不开就将它改成“微笑.jpg”，虽然没有什么影响，但是可以说明一个问">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-05T09:03:33.090Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Magic Number">
+<meta name="twitter:description" content="Magic Number微笑.jpg，这里年轻人们聊天时经常使用的说法，但是！作为一个严谨的程序员，我们能不能通过文件的后缀来判断这个文件的类型呢？例如看到电脑上存在“微笑.jpg”这个文件，通过后缀 jpg 来判断它就是一个 JPEG 文件呢，答案肯定是否定的，因为文件名可以被轻松篡改，例如这个文件本来是“微笑.gif”，有人想不开就将它改成“微笑.jpg”，虽然没有什么影响，但是可以说明一个问">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-MagicNumber"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Magic Number
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-05T08:27:07.000Z" itemprop="datePublished">
+        Jun 5, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Magic-Number"><a href="#Magic-Number" class="headerlink" title="Magic Number"></a>Magic Number</h1><p>微笑.jpg，这里年轻人们聊天时经常使用的说法，但是！作为一个严谨的程序员，我们能不能通过文件的后缀来判断这个文件的类型呢？例如看到电脑上存在“微笑.jpg”这个文件，通过后缀 <code>jpg</code> 来判断它就是一个 <code>JPEG</code> 文件呢，答案肯定是否定的，因为文件名可以被轻松篡改，例如这个文件本来是“微笑.gif”，有人想不开就将它改成“微笑.jpg”，虽然没有什么影响，但是可以说明一个问题，我们不能通过文件后缀来判断文件的类型。</p>
+<p>如果不使用文件后缀，我们应该如何判断文件的类型呢，答案就是我们今天要讨论的<code>Magic Number</code> ，即魔术数，因为文件的本质就是字节数组，所以在一般的操作系统中，对于特定类型的文件，其开头的几个字节都是相同的，例如对于 <code>JPEG</code> 格式的文件，开头的字节都是 <code>\xff\xd8\xff</code> ，我们可以通过读取文件开头的字节来确定文件的类型，这种方法准确性更高。</p>
+<p>下面我们准备一个魔术数到类型的字典，注意，这里只列举了几个例子，还可以按照这样的格式增加字典项。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> magicNumber = <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span> &#123;</span><br><span class="line">    <span class="string">"\xff\xd8\xff"</span>:      <span class="string">"image/jpeg"</span>,</span><br><span class="line">    <span class="string">"\x89PNG\r\n\x1a\n"</span>: <span class="string">"image/png"</span>,</span><br><span class="line">    <span class="string">"GIF87a"</span>:            <span class="string">"image/gif"</span>,</span><br><span class="line">    <span class="string">"GIF89a"</span>:            <span class="string">"image/gif"</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getFileType</span><span class="params">(incipit []<span class="keyword">byte</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    incipitStr := <span class="keyword">string</span>(incipit)</span><br><span class="line">    <span class="keyword">for</span> magic, mime := <span class="keyword">range</span> magicNumber &#123;</span><br><span class="line">        <span class="keyword">if</span> strings.HasPrefix(incipitStr, magic) &#123;</span><br><span class="line">            <span class="keyword">return</span> mime</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>真正匹配格式的逻辑比较简单，遍历 <code>magicNumber</code> 这个 <code>map</code> ，判断每个 <code>key</code> 是不是某个字符串的前缀，因为魔术数符合前缀编码的特点，即任何一个编码都不是另一个编码的前缀，所以我们能保证判断文件类型时，不会有二义。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    filepath := os.Args[<span class="number">1</span>]</span><br><span class="line">    file, err := os.Open(filepath)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line"></span><br><span class="line">    buff := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">512</span>)</span><br><span class="line">    _, err = file.Read(buff)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    file.Seek(<span class="number">0</span>, os.SEEK_SET)</span><br><span class="line">    typ := getFileType(buff)</span><br><span class="line">    fmt.Println(typ)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
