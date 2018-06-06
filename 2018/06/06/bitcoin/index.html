@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>bitcoin | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="bitcoin如果有时光机的话，我要做的第一件事情肯定就是穿梭回过去买比特币：），算了，不意淫了，还是学习要紧，虽然再也不能靠买比特币一夜暴富了，但是自己按照比特币实现一个山寨比特币的能力还是有的，比特币可以说是现在大红大紫的区块链的始祖，要全部了解它的原理可能还是要埋头啃个几个月的（并不简单）。 虽然比特币交易确认时间长，消耗资源多，但依旧无法掩盖其作为区块链始祖的光环。  Block &amp;amp">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bitcoin">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/06/bitcoin/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="bitcoin如果有时光机的话，我要做的第一件事情肯定就是穿梭回过去买比特币：），算了，不意淫了，还是学习要紧，虽然再也不能靠买比特币一夜暴富了，但是自己按照比特币实现一个山寨比特币的能力还是有的，比特币可以说是现在大红大紫的区块链的始祖，要全部了解它的原理可能还是要埋头啃个几个月的（并不简单）。 虽然比特币交易确认时间长，消耗资源多，但依旧无法掩盖其作为区块链始祖的光环。  Block &amp;amp">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*_RY4v9D5-BOVMzFMr8Dk4A.png">
+<meta property="og:updated_time" content="2018-06-06T14:30:06.903Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="bitcoin">
+<meta name="twitter:description" content="bitcoin如果有时光机的话，我要做的第一件事情肯定就是穿梭回过去买比特币：），算了，不意淫了，还是学习要紧，虽然再也不能靠买比特币一夜暴富了，但是自己按照比特币实现一个山寨比特币的能力还是有的，比特币可以说是现在大红大紫的区块链的始祖，要全部了解它的原理可能还是要埋头啃个几个月的（并不简单）。 虽然比特币交易确认时间长，消耗资源多，但依旧无法掩盖其作为区块链始祖的光环。  Block &amp;amp">
+<meta name="twitter:image" content="https://cdn-images-1.medium.com/max/1600/1*_RY4v9D5-BOVMzFMr8Dk4A.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-bitcoin"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      bitcoin
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-06T14:19:02.000Z" itemprop="datePublished">
+        Jun 6, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="bitcoin"><a href="#bitcoin" class="headerlink" title="bitcoin"></a>bitcoin</h1><p>如果有时光机的话，我要做的第一件事情肯定就是穿梭回过去买比特币：），算了，不意淫了，还是学习要紧，虽然再也不能靠买比特币一夜暴富了，但是自己按照比特币实现一个山寨比特币的能力还是有的，比特币可以说是现在大红大紫的区块链的始祖，要全部了解它的原理可能还是要埋头啃个几个月的（并不简单）。</p>
+<p>虽然比特币交易确认时间长，消耗资源多，但依旧无法掩盖其作为区块链始祖的光环。</p>
+<p><img src="https://cdn-images-1.medium.com/max/1600/1*_RY4v9D5-BOVMzFMr8Dk4A.png" alt="bitcoin"></p>
+<h2 id="Block-amp-BlockChain"><a href="#Block-amp-BlockChain" class="headerlink" title="Block &amp; BlockChain"></a>Block &amp; BlockChain</h2><p>比特币中有两个重要的基本概念，区块和区块链，如果将区块想象成珍珠，那么区块链就是将这些珍珠都串起来的珍珠项链，这个珍珠项链没有尽头，新加入的珍珠和次新的珍珠彼此靠近，并通过某种关系紧密联系在一起，牢不可破。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Block <span class="keyword">struct</span> &#123;</span><br><span class="line">    idx        <span class="keyword">int</span></span><br><span class="line">    timestamp  <span class="keyword">string</span></span><br><span class="line">    hash       <span class="keyword">string</span></span><br><span class="line">    prevHash   <span class="keyword">string</span></span><br><span class="line">    difficulty <span class="keyword">int</span></span><br><span class="line">    nonce      <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> BlockChain <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.Mutex</span><br><span class="line">    blocks []Block</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bc *BlockChain)</span> <span class="title">AddBlock</span><span class="params">(block Block)</span></span> &#123;</span><br><span class="line">    bc.Lock()</span><br><span class="line">    <span class="keyword">defer</span> bc.Unlock()</span><br><span class="line">    bc.blocks = <span class="built_in">append</span>(bc.blocks, block)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> blockchain BlockChain</span><br></pre></td></tr></table></figure>
+<h2 id="Proof-of-Work"><a href="#Proof-of-Work" class="headerlink" title="Proof of Work"></a>Proof of Work</h2><p>生成区块的过程就相当于打磨珍珠的过程，只有符合要求的珍珠才能最终被加入到珍珠项链中去，那么话说回来生成区块的过程是怎么样的呢，对于一个特定的区块，需要不断改变其中一个值（nonce），这里的 <code>nonce</code> 值从0开始逐渐递增，然后计算特定 <code>nonce</code> 对应的区块哈希值，只有哈希值符合相应的要求之后，才能说这个区块是有效的，才能被加入到区块链中，生成区块的过程也被叫做挖矿。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">generateBlock</span><span class="params">(oldBlock Block, difficulty <span class="keyword">int</span>)</span> <span class="title">Block</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> newBlock Block</span><br><span class="line"></span><br><span class="line">    newBlock.idx = oldBlock.idx + <span class="number">1</span></span><br><span class="line">    newBlock.timestamp = time.Now().String()</span><br><span class="line">    newBlock.prevHash = oldBlock.hash</span><br><span class="line">	  newBlock.difficulty = diff</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; ; i++ &#123;</span><br><span class="line">        hex := fmt.Sprintf(<span class="string">"%x"</span>, i)</span><br><span class="line">        newBlock.nonce = hex</span><br><span class="line">        <span class="keyword">if</span> !isHashValid(calculateHash(newBlock), newBlock.difficulty) &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            fmt.Println(calculateHash(newBlock), <span class="string">" work done!"</span>)</span><br><span class="line">            newBlock.Hash = calculateHash(newBlock)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newBlock</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">calculateHash</span><span class="params">(block Block)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    record := strconv.Itoa(block.idx) + block.timestamp + block.prevHash + block.difficulty + block.nonce</span><br><span class="line">    h := sha256.New()</span><br><span class="line">    h.Write([]<span class="keyword">byte</span>(record))</span><br><span class="line">    hashed := h.Sum(<span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">return</span> hex.EncodeToString(hashed)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么什么样的区块才是有效的呢，简单来说就是对于一个哈希值，其开头部分都是0就可以了（0越多，难度越高）。像这种，找到答案很困难但验证答案却非常轻松的算法就是 <code>Proof of Work</code> 的精髓。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isHashValid</span><span class="params">(hash <span class="keyword">string</span>, difficulty <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    prefix := strings.Repeat(<span class="string">"0"</span>, difficulty)</span><br><span class="line">    <span class="keyword">return</span> strings.HasPrefix(hash, prefix)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="一个难度逐渐递增的区块链"><a href="#一个难度逐渐递增的区块链" class="headerlink" title="一个难度逐渐递增的区块链"></a>一个难度逐渐递增的区块链</h2><p>下面实现了一个难度逐渐递增的区块链，运行时就会发现产生区块的时间间隔越来越长，因为 <code>CPU</code> 需要经过更多的计算才能找到符合条件的哈希值。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    difficulty := <span class="number">1</span></span><br><span class="line">    genesisBlock := Block&#123;&#125;</span><br><span class="line">    genesisBlock = Block&#123;</span><br><span class="line">        idx:        <span class="number">0</span>, </span><br><span class="line">        timestamp:  time.Now().String(), </span><br><span class="line">        hash:       calculateHash(genesisBlock),</span><br><span class="line">        prevHash:   <span class="string">""</span>, </span><br><span class="line">        difficulty: difficulty, </span><br><span class="line">        nonce:      <span class="string">""</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    blockchain.AddBlock(genesisBlock)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> block Block</span><br><span class="line">    block = genesisBlock</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        block = generateBlock(block, diff)</span><br><span class="line">        difficulty++</span><br><span class="line">        blockchain.AddBlock(block)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
