@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>RSS | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="RSSfetcher12345678910111213141516171819202122232425262728type Item struct &amp;#123;    Title, Channel, GUID string&amp;#125;type Fetcher interface &amp;#123;    Fetch() (items []Item, next time.Time, err error)&amp;">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSS">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/04/23/RSS/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="RSSfetcher12345678910111213141516171819202122232425262728type Item struct &amp;#123;    Title, Channel, GUID string&amp;#125;type Fetcher interface &amp;#123;    Fetch() (items []Item, next time.Time, err error)&amp;">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-07T15:19:24.507Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RSS">
+<meta name="twitter:description" content="RSSfetcher12345678910111213141516171819202122232425262728type Item struct &amp;#123;    Title, Channel, GUID string&amp;#125;type Fetcher interface &amp;#123;    Fetch() (items []Item, next time.Time, err error)&amp;">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-RSS"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      RSS
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-04-23T13:50:37.000Z" itemprop="datePublished">
+        Apr 23, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="RSS"><a href="#RSS" class="headerlink" title="RSS"></a>RSS</h1><h2 id="fetcher"><a href="#fetcher" class="headerlink" title="fetcher"></a>fetcher</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Item <span class="keyword">struct</span> &#123;</span><br><span class="line">    Title, Channel, GUID <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Fetcher <span class="keyword">interface</span> &#123;</span><br><span class="line">    Fetch() (items []Item, next time.Time, err error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Fetch</span><span class="params">(domain <span class="keyword">string</span>)</span> <span class="title">Fetcher</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;rssFetcher&#123;channel: domain&#125;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> rssFetcher <span class="keyword">struct</span> &#123;</span><br><span class="line">    channel <span class="keyword">string</span></span><br><span class="line">    items   []Item</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *rssFetcher)</span> <span class="title">Fetch</span><span class="params">()</span> <span class="params">(items []Item, next time.Time, err error)</span></span> &#123;</span><br><span class="line">    now := time.Now()</span><br><span class="line">    next = now.Add(time.Duration(rand.Intn(<span class="number">5</span>)) * <span class="number">500</span> * time.Millisecond)</span><br><span class="line">	  item := Item&#123;</span><br><span class="line">        Channel: f.channel,</span><br><span class="line">        Title:   fmt.Sprintf(<span class="string">"Item %d"</span>, <span class="built_in">len</span>(f.items)),</span><br><span class="line">    &#125;</span><br><span class="line">    item.GUID = item.Channel + <span class="string">"/"</span> + item.Title</span><br><span class="line">    f.items = <span class="built_in">append</span>(f.items, item)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="subscription"><a href="#subscription" class="headerlink" title="subscription"></a>subscription</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Subscription <span class="keyword">interface</span> &#123;</span><br><span class="line">    Updates() &lt;-<span class="keyword">chan</span> Item <span class="comment">// stream of Items</span></span><br><span class="line">    Close() error         <span class="comment">// close the stream</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Subscribe</span><span class="params">(fetcher Fetcher)</span> <span class="title">Subscription</span></span> &#123;</span><br><span class="line">    s := &amp;sub&#123;</span><br><span class="line">        fetcher: fetcher,</span><br><span class="line">        updates: <span class="built_in">make</span>(<span class="keyword">chan</span> Item),</span><br><span class="line">        closing: <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">chan</span> error),</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">go</span> s.loop()</span><br><span class="line">    <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> sub <span class="keyword">struct</span> &#123;</span><br><span class="line">    fetcher Fetcher</span><br><span class="line">    updates <span class="keyword">chan</span> Item</span><br><span class="line">    closing <span class="keyword">chan</span> <span class="keyword">chan</span> error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *sub)</span> <span class="title">Updates</span><span class="params">()</span> &lt;-<span class="title">chan</span> <span class="title">Item</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> s.updates</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *sub)</span> <span class="title">Close</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    errc := <span class="built_in">make</span>(<span class="keyword">chan</span> error)</span><br><span class="line">    s.closing &lt;- errc</span><br><span class="line">    <span class="keyword">return</span> &lt;-errc</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *sub)</span> <span class="title">loop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">const</span> maxPending = <span class="number">10</span></span><br><span class="line">    <span class="keyword">type</span> fetchResult <span class="keyword">struct</span> &#123;</span><br><span class="line">        fetched []Item</span><br><span class="line">        next    time.Time</span><br><span class="line">        err     error</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> fetchDone <span class="keyword">chan</span> fetchResult</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> pending []Item</span><br><span class="line">    <span class="keyword">var</span> next time.Time</span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line">    <span class="keyword">var</span> seen = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> fetchDeplay time.Duration</span><br><span class="line">        <span class="keyword">if</span> now := time.Now(); next.After(now) &#123;</span><br><span class="line">            fetchDelay = next.Sub(now)</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">var</span> startFetch &lt;-<span class="keyword">chan</span> time.Time</span><br><span class="line">        <span class="keyword">if</span> fetchDone == <span class="literal">nil</span> &amp;&amp; <span class="built_in">len</span>(pending) &lt; maxPending &#123;</span><br><span class="line">            startFetch = time.After(fetchDelay)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> first Item</span><br><span class="line">        <span class="keyword">var</span> updates <span class="keyword">chan</span> Item</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(pending) &gt; <span class="number">0</span> &#123;</span><br><span class="line">            first = pending[<span class="number">0</span>]</span><br><span class="line">            updates = s.updates</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> errc := &lt;-s.closing:</span><br><span class="line">            errc &lt;- err</span><br><span class="line">            <span class="built_in">close</span>(s.updates)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">case</span> &lt;-startFetch:</span><br><span class="line">            fetchDone = <span class="built_in">make</span>(<span class="keyword">chan</span> fetchResult, <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">                fetched, next, err := s.fetcher.Fetch()</span><br><span class="line">                fetchDone &lt;- fetchResult&#123;fetched, next, err&#125;</span><br><span class="line">            &#125;()</span><br><span class="line">        <span class="keyword">case</span> result := &lt;-fetchDone:</span><br><span class="line">            fetchDone = <span class="literal">nil</span></span><br><span class="line">            fetched := result.fetched</span><br><span class="line">            next, err = result.next, result.err</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                next = time.Now().Add(<span class="number">10</span> * time.second)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">for</span> _, item := <span class="keyword">range</span> fetched &#123;</span><br><span class="line">                <span class="keyword">if</span> !seen[item.GUID] &#123;</span><br><span class="line">                    pending = <span class="built_in">append</span>(pending, item)</span><br><span class="line">                    seen[item.GUID] = <span class="literal">true</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">case</span> updates &lt;- first:</span><br><span class="line">            pending = pending[<span class="number">1</span>:]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> merge <span class="keyword">struct</span> &#123;</span><br><span class="line">    subs    []Subscription</span><br><span class="line">    updates <span class="keyword">chan</span> Item</span><br><span class="line">    quit    <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    errs    <span class="keyword">chan</span> error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Merge</span><span class="params">(subs ...Subscription)</span> <span class="title">Subscription</span></span> &#123;</span><br><span class="line">    m := &amp;merge&#123;</span><br><span class="line">        subs:    subs,</span><br><span class="line">        updates: <span class="built_in">make</span>(<span class="keyword">chan</span> Item),</span><br><span class="line">        quit:    <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;),</span><br><span class="line">        errs:    <span class="built_in">make</span>(<span class="keyword">chan</span> error),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _, sub := <span class="keyword">range</span> subs &#123;</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(s Subscription)</span></span> &#123;</span><br><span class="line">            <span class="keyword">for</span> &#123;</span><br><span class="line">                <span class="keyword">var</span> it Item</span><br><span class="line">                <span class="keyword">select</span> &#123;</span><br><span class="line">                <span class="keyword">case</span> it = &lt;-s.Updates():</span><br><span class="line">                <span class="keyword">case</span> &lt;-m.quit:</span><br><span class="line">                    m.errs &lt;- s.Close()</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">select</span> &#123;</span><br><span class="line">                <span class="keyword">case</span> m.updates &lt;- it:</span><br><span class="line">                <span class="keyword">case</span> &lt;-m.quit:</span><br><span class="line">                    m.errs &lt;- s.Close()</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;(sub)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> m</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *merge)</span> <span class="title">Updates</span><span class="params">()</span> &lt;-<span class="title">chan</span> <span class="title">Item</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> m.updates</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *merge)</span> <span class="title">Close</span><span class="params">()</span> <span class="params">(err error)</span></span> &#123;</span><br><span class="line">    <span class="built_in">close</span>(m.quit)</span><br><span class="line">    <span class="keyword">for</span> _ = <span class="keyword">range</span> m.subs &#123;</span><br><span class="line">        <span class="keyword">if</span> e := &lt;-m.errs; e != <span class="literal">nil</span> &#123;</span><br><span class="line">            err = e</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">close</span>(m.updates)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    merged := Merge(</span><br><span class="line">        Subscribe(Fetch(<span class="string">"blog.goland.org"</span>)),</span><br><span class="line">        Subscribe(Fetch(<span class="string">"gooog.blogspot.com"</span>)),</span><br><span class="line">        Subscribe(Fetch(<span class="string">"gers.blogspot.com"</span>)))</span><br><span class="line"></span><br><span class="line">    time.AfterFunc(<span class="number">3</span>*time.Second, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"Merged subsription closed. Errors: "</span>, merged.Close())</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">for</span> it := <span class="keyword">range</span> merged.Updates() &#123;</span><br><span class="line">        fmt.Println(it.Channel, it.Title)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
