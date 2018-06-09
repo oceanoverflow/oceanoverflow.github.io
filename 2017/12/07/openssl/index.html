@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>openssl | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="openssl下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="openssl">
+<meta property="og:url" content="https://oceanoverflow.github.io/2017/12/07/openssl/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="openssl下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-09T15:23:20.263Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="openssl">
+<meta name="twitter:description" content="openssl下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-openssl"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      openssl
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2017-12-07T05:17:05.000Z" itemprop="datePublished">
+        Dec 7, 2017
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h1><p>下面我们来看一下如何使用 <code>openssl</code> 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。</p>
+<h2 id="生成公钥-私钥密钥对"><a href="#生成公钥-私钥密钥对" class="headerlink" title="生成公钥/私钥密钥对"></a>生成公钥/私钥密钥对</h2><p><code>$ ssh-keygen -t ecdsa -C &quot;foo@bar.cn&quot;</code></p>
+<p>如果想要使用其他签名方式如 <code>RSA</code> 进行签名，可以将上述命令中的<code>ecdsa</code> 替换成 <code>rsa</code> 。使用上述命令默认在 <code>.ssh/</code> 目录下生成两个文件。</p>
+<ul>
+<li><p>~/.ssh/id_ecdsa：这是你的私钥，私钥信息不能被泄露，如果别人拿到了你的私钥，别人就可以伪装成你。</p>
+</li>
+<li><p>~/.ssh/id_ecdsa.pub：这是你的公钥，公钥可以被大众知晓，你可以将公钥发布在网站上，便于其他人使用公钥对文件进行验证操作，一般来说私钥默认为 <code>chmod 600</code> ，而公钥默认为 <code>chmod 644</code> 。</p>
+</li>
+</ul>
+<h2 id="生成PKCS8版本的公钥"><a href="#生成PKCS8版本的公钥" class="headerlink" title="生成PKCS8版本的公钥"></a>生成PKCS8版本的公钥</h2><p>一般用 <code>openssl</code> 工具生成的公钥（ <code>id_ecdsa.pub</code> ）的格式并不是非常友好，如果你想要将你的公钥颁布在你的网站上以便于他人进行验证的话，可以使用另一种格式的公钥，使用以下命令生成 <code>PKCS8</code> 版本。</p>
+<p><code>$ ssh-keygen -e -f ~/.ssh/id_ecdsa.pub -m PKCS8 &gt; ~/.ssh/id_ecdsa.pub.pkcs8</code></p>
+<h2 id="使用私钥对文件进行签名"><a href="#使用私钥对文件进行签名" class="headerlink" title="使用私钥对文件进行签名"></a>使用私钥对文件进行签名</h2><p>如果你有一个需要被签名的文件为 <code>foo.txt</code> ，可以使用以下命令对文件进行签名。</p>
+<p><code>$ openssl dgst -sha256 -sign ~/.ssh/id_ecdsa foo.txt &gt; foo.txt.sig</code></p>
+<p><code>-sha256</code> 代表你使用 <code>sha256</code> 来生成信息摘要，生成的签名保存在 <code>foo.txt.sig</code> 中，可以使用 <code>hexdump</code> 来查看签名的内容。</p>
+<h2 id="使用公钥对文件签名进行验证"><a href="#使用公钥对文件签名进行验证" class="headerlink" title="使用公钥对文件签名进行验证"></a>使用公钥对文件签名进行验证</h2><p>在使用公钥对文件进行验证之前，你需要有 <code>pkcs8</code> 格式的公钥，及需要被验证的文件（ <code>foo.txt</code> ）及该文件的签名（ <code>foo.txt.sig</code> ），还需要指定与签名时相同的哈希算法（ <code>sha256</code> ）来对文件进行验证。</p>
+<p><code>$ openssl dgst -sha256 -verify ~/.ssh/id_ecdsa.pub.pkcs8 -signature foo.txt.sign foo.txt</code></p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
