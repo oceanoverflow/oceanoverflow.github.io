@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Chat Chat Chat | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Chat Chat Chat承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chat Chat Chat">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/11/ChatChatChat/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Chat Chat Chat承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-11T07:10:20.087Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chat Chat Chat">
+<meta name="twitter:description" content="Chat Chat Chat承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-ChatChatChat"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Chat Chat Chat
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-11T07:09:34.000Z" itemprop="datePublished">
+        Jun 11, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Chat-Chat-Chat"><a href="#Chat-Chat-Chat" class="headerlink" title="Chat Chat Chat"></a>Chat Chat Chat</h1><p>承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。</p>
+<p>为了让聊天不那么 <code>gay</code> ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 <code>localhost:8080</code> ，例如使用 <code>netcat</code> 通过 <code>nc localhost 8080</code> 命令连接聊天程序服务器，服务器会根据你的性别匹配异性聊天。</p>
+<p>在实现方面，为了达到异性相互聊天的目标，我们创建两个通道，分别是 <code>boy</code> 通道和 <code>girl</code> 通道，并通过 <code>net.Listen</code> 方法监听 <code>8080</code> 端口，对于每个连接我们起一个 <code>goroutine</code> 进行匹配操作。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> boy = <span class="built_in">make</span>(<span class="keyword">chan</span> io.ReadWriteCloser)</span><br><span class="line"><span class="keyword">var</span> girl = <span class="built_in">make</span>(<span class="keyword">chan</span> io.ReadWriteCloser)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    l, err := net.Listen(<span class="string">"tcp"</span>, <span class="string">"localhost:8080"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        c, err := l.Accept()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Println(err)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">go</span> match(c)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>match</code> 方法会首先询问你的性别，如果是男生则匹配女生聊天，反之亦然。如果当前只有一个男生连进来，程序会执行第一个 <code>select</code> 中的 <code>case boy &lt;- c:</code> 条件，由于 <code>boy</code> 通道是 <code>unbuffered channel</code> ，直到有女生进来之前该操作都会阻塞。如果此时进来一个女生，程序会执行第二个<code>select</code> 操作，由于 <code>girl</code> 通道也是 <code>unbuffered channel</code> ，所以<code>case girl &lt;- c:</code> 语句也会阻塞，但此时 <code>case p := &lt;-boy:</code> 会被执行，这时候就可以通过 <code>chat</code> 方法让两个 <code>net.Conn</code> 相互交流了。<code>match</code> 方法实现的逻辑就达到了异性交流的目的了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">match</span><span class="params">(c io.ReadWriteCloser)</span></span> &#123;</span><br><span class="line">    fmt.Fprint(c, <span class="string">"Are you a boy or a girl? "</span>)</span><br><span class="line">    <span class="keyword">var</span> sex <span class="keyword">string</span></span><br><span class="line">    fmt.Fscanln(c, &amp;sex)</span><br><span class="line">    <span class="keyword">if</span> strings.HasPrefix(<span class="string">"boy"</span>, sex) &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> boy &lt;- c: </span><br><span class="line">        <span class="keyword">case</span> p := &lt;-girl:</span><br><span class="line">            chat(p, c)</span><br><span class="line">        &#125;     </span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> strings.HasPrefix(<span class="string">"girl"</span>, sex) &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> girl &lt;- c:</span><br><span class="line">        <span class="keyword">case</span> p := &lt;-boy:</span><br><span class="line">            chat(p, c)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的 <code>chat</code> 方法依赖 <code>cp</code> 方法 ，该方法封装了 <code>io.Copy</code> 方法，主要就是为了当任意一方结束聊天时发送一个 <code>err</code> 到我们的 <code>errc</code> ，以关闭双方的连接。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">cp</span><span class="params">(w io.Writer, r io.Reader, errc <span class="keyword">chan</span>&lt;- error)</span></span> &#123;</span><br><span class="line">    _, err := io.Copy(w, r)</span><br><span class="line">    errc &lt;- err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>chat</code> 方法通过两个 <code>goroutine</code> ，<code>go cp(a, b, errc)</code>  和 <code>go cp(b, a, errc)</code> 使a和b这两个 <code>net.Conn</code> 相互发送消息，如果任意一方结束聊天， <code>errc</code> 通道就会返回一个 <code>error</code> 值，a和b就会被关闭，此时聊天结束。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">chat</span><span class="params">(a, b io.ReadWriteCloser)</span></span> &#123;</span><br><span class="line">    fmt.Fprintln(a, <span class="string">"Found one! say hi"</span>)</span><br><span class="line">    fmt.Fprintln(b, <span class="string">"Found one! say hi"</span>)</span><br><span class="line">    errc := <span class="built_in">make</span>(<span class="keyword">chan</span> error, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> cp(a, b, errc) </span><br><span class="line">    <span class="keyword">go</span> cp(b, a, errc)</span><br><span class="line">    <span class="keyword">if</span> err := &lt;- errc; err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(err)</span><br><span class="line">    &#125;</span><br><span class="line">    a.Close()</span><br><span class="line">    b.Close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
