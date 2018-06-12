@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Calculate 24 | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Calculate 24算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Calculate 24">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/12/Calculate24/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Calculate 24算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Exp-tree-ex-11.svg/500px-Exp-tree-ex-11.svg.png">
+<meta property="og:updated_time" content="2018-06-12T07:01:19.287Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Calculate 24">
+<meta name="twitter:description" content="Calculate 24算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Exp-tree-ex-11.svg/500px-Exp-tree-ex-11.svg.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Calculate24"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Calculate 24
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-12T06:53:49.000Z" itemprop="datePublished">
+        Jun 12, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Calculate-24"><a href="#Calculate-24" class="headerlink" title="Calculate 24"></a>Calculate 24</h1><p>算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。</p>
+<h2 id="expression-tree"><a href="#expression-tree" class="headerlink" title="expression tree"></a>expression tree</h2><p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Exp-tree-ex-11.svg/500px-Exp-tree-ex-11.svg.png" alt="ExpressionTree"></p>
+<p>我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ <code>val</code> ），非叶子结点存储运算符 <code>op</code> （ <code>+，-，*，/</code> ）及运算结果（ <code>val = l.val op r.val</code> ）。每个节点都有指向其左子节点（ <code>l</code> ）和右子节点（ <code>r</code> ）的指针，叶节点中这两个指针均为空。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> node <span class="keyword">struct</span> &#123;</span><br><span class="line">    l    *node</span><br><span class="line">    r    *node</span><br><span class="line">    op   <span class="keyword">rune</span></span><br><span class="line">    val  <span class="keyword">float64</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *node)</span> <span class="title">set</span><span class="params">(l, r *node, op <span class="keyword">rune</span>)</span></span> &#123;</span><br><span class="line">    n.l  = l</span><br><span class="line">    n.r  = r</span><br><span class="line">    n.op = op</span><br><span class="line">    <span class="keyword">switch</span> op &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'+'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val + n.r.val)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'-'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val - n.r.val)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'*'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val * n.r.val)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'/'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val / n.r.val)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *node)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n.op != <span class="keyword">rune</span>(<span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> fmt.Sprintf(<span class="string">" %c "</span>, n.op)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%d"</span>, <span class="keyword">int</span>(n.val))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="build-tree"><a href="#build-tree" class="headerlink" title="build tree"></a>build tree</h2><p>由于存在运算优先级的原因，所以在运算数和运算符都相同的情况下当其运算顺序不同时得出的表达式树的形态也不同，例如 <code>(1 + 8) * (7 - 13)</code>  与 <code>1 + 8 * 7 - 13</code> 的运算顺序是不同的，<code>(1 + 8) * (7 - 13)</code>  对应的是下面第一棵树的形态， <code>1 + 8 * 7 - 13</code> 对应的是下面第四棵树的形态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">    x               x               x                x               x</span><br><span class="line">   / \             / \             / \              / \             / \</span><br><span class="line">  x   x           x   x           x   x            x   x           x   x</span><br><span class="line"> / \ / \             / \             / \          / \             / \</span><br><span class="line">x  x x  x           x   x           x   x        x   x           x   x</span><br><span class="line">                   / \                 / \          / \         / \</span><br><span class="line">                  x   x               x   x        x   x       x   x</span><br></pre></td></tr></table></figure>
+<p>为了得出所有的可能结果，我们需要构建所有不同形态的表达式树，<code>buildAllTrees</code> 利用递归方法来建树，例如给定 <code>3，4，5，6</code> 这四个数，可以构建出上面5种形态的树。 <code>3，4，5，6</code> 作为参数传入，然后将数组分割为两个部分，例如上面的 <code>3，4，5，6</code> 可以分割为 <code>3</code> 和 <code>4，5，6</code> 或者 <code>3，4</code> 和 <code>5，6</code> 或者 <code>3，4，5</code> 和 <code>6</code> ，然后对这两个部分分别再进行递归建树操作，当数组长度为1时也就是当 <code>len(s) == 1</code> 作为递归函数退出的条件，此时返回一个叶节点，按照这样的方式最终可以得到所有可能形态的树的根节点。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">buildAllTrees</span><span class="params">(s []<span class="keyword">int</span>)</span> []*<span class="title">node</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(s) == <span class="number">1</span> &#123;</span><br><span class="line">       tree := &amp;node&#123;result: <span class="keyword">float64</span>(s[<span class="number">0</span>])&#125;</span><br><span class="line">       <span class="keyword">return</span> []*node&#123;tree&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    treelist := []*node&#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(s); i++ &#123;</span><br><span class="line">        left := s[:i]</span><br><span class="line">        right := s[i:]</span><br><span class="line">        leftTrees := buildAllTrees(left)</span><br><span class="line">        rightTrees := buildAllTrees(right)</span><br><span class="line">        <span class="keyword">for</span> _, l := <span class="keyword">range</span> leftTrees &#123;</span><br><span class="line">            <span class="keyword">for</span> _, r := <span class="keyword">range</span> rightTrees &#123;</span><br><span class="line">                combinedTree := build(l, r)</span><br><span class="line">                treelist = <span class="built_in">append</span>(treelist, combinedTree...)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> treelist</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为存在四种运算符，例如利用 <code>a</code> 和 <code>b</code> 这两个节点构建树的时候，可以有 <code>a+b</code> ， <code>a-b</code> ， <code>a*b</code> ， <code>a/b</code> 这四种可能，所以要分别列举。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">build</span><span class="params">(l, r *node)</span> []*<span class="title">node</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> list []*node</span><br><span class="line">    tree1 := &amp;node&#123;&#125;</span><br><span class="line">    tree1.set(l, r, <span class="string">'+'</span>)</span><br><span class="line">    list = <span class="built_in">append</span>(list, tree1)</span><br><span class="line">    tree2 := &amp;node&#123;&#125;</span><br><span class="line">    tree2.set(l, r, <span class="string">'-'</span>)</span><br><span class="line">    list = <span class="built_in">append</span>(list, tree2)</span><br><span class="line">    tree3 := &amp;node&#123;&#125;</span><br><span class="line">    tree3.set(l, r, <span class="string">'*'</span>)</span><br><span class="line">    list = <span class="built_in">append</span>(list, tree3)</span><br><span class="line">    <span class="keyword">if</span> r.result != <span class="number">0.0</span> &#123;</span><br><span class="line">        tree4 := &amp;node&#123;&#125;</span><br><span class="line">        tree4.set(l, r, <span class="string">'/'</span>)</span><br><span class="line">        list = <span class="built_in">append</span>(list, tree4)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> list</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以通过中序遍历表达式树来遍历输出构建的表达式，由于上面我们定义了每个节点的 <code>String</code> 方法，如果节点为运算符，则输出其 <code>op</code> 的值，如果节点为叶结点，则输出其 <code>val</code> 值。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">in</span><span class="params">(root *node)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> n.op != <span class="keyword">rune</span>(<span class="number">0</span>) &#123;</span><br><span class="line">        fmt.Print(<span class="string">"("</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    in(root.l)</span><br><span class="line">    fmt.Print(n.String())</span><br><span class="line">    in(root.r)</span><br><span class="line">    <span class="keyword">if</span> n.op != <span class="keyword">rune</span>(<span class="number">0</span>) &#123;</span><br><span class="line">        fmt.Print(<span class="string">")"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="permutation"><a href="#permutation" class="headerlink" title="permutation"></a>permutation</h2><p>上面的方法是对一个数组其固定的顺序构建表达式树，例如 <code>3，4，5，6</code> 。为了获得所有的运算表达式，我们需要对数组的所有排列组合进行表达式树的构建，例如对 <code>6，5，4，3</code> ，<code>5，6，4，3</code> 这样的排列组合构建表达式树。也就是说除了树形态不同的这点区别之外，还要注意叶结点值存储顺序不同的带来的可能（可能会导致重复）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Perm</span><span class="params">(a []<span class="keyword">int</span>, f <span class="keyword">func</span>([]<span class="keyword">int</span>)</span>)</span> &#123;</span><br><span class="line">    perm(a, f, <span class="number">0</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">perm</span><span class="params">(a []<span class="keyword">int</span>, f <span class="keyword">func</span>([]<span class="keyword">int</span>)</span>, <span class="title">i</span> <span class="title">int</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> i &gt; <span class="built_in">len</span>(a) &#123;</span><br><span class="line">        f(a)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    perm(a, f, i+<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> j := i + <span class="number">1</span>; j &lt; <span class="built_in">len</span>(a); j++ &#123;</span><br><span class="line">        a[i], a[j] = a[j], a[i]</span><br><span class="line">        perm(a, f, i+<span class="number">1</span>)</span><br><span class="line">        a[i], a[j] = a[j], a[i]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="main"><a href="#main" class="headerlink" title="main"></a>main</h2><p>在主函数中我们每隔五秒钟获得一个随机的扑克牌数字，然后对于该组数字所有的排列组合分别构建表达式树，对每棵构建好的树判断其根节点的值是否接近于24（由于涉及到除法操作，所以有小数点），如果接近，则将其表达式通过中序遍历输出，这样就可以得出一组数字所有24点的可能了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        s := rand24()</span><br><span class="line">        fmt.Println(s)</span><br><span class="line">        Perm(s, <span class="function"><span class="keyword">func</span><span class="params">(a []<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">            treelist := buildAllTrees(a)</span><br><span class="line">            <span class="keyword">for</span> _, root := <span class="keyword">range</span> treelist &#123;</span><br><span class="line">                <span class="keyword">if</span> math.Abs(<span class="number">24</span>-tree.result) &lt; <span class="number">0.000001</span> &#123;</span><br><span class="line">                    in(root)</span><br><span class="line">                    fmt.Println()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        time.Sleep(<span class="number">5</span> * time.Second)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">rand24</span><span class="params">()</span> <span class="params">(r []<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    rand.Seed(time.Now().UnixNano())</span><br><span class="line"></span><br><span class="line">    club    := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>&#125;</span><br><span class="line">    heart   := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>&#125;</span><br><span class="line">    spade   := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>&#125;</span><br><span class="line">    diamond := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> all []<span class="keyword">int</span></span><br><span class="line">    all = <span class="built_in">append</span>(all, spade...)</span><br><span class="line">    all = <span class="built_in">append</span>(all, heart...)</span><br><span class="line">    all = <span class="built_in">append</span>(all, diamond...)</span><br><span class="line">    all = <span class="built_in">append</span>(all, club...)</span><br><span class="line"></span><br><span class="line">    r = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">    exist = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">bool</span>)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">4</span>; i++ &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            x := rand.Int() % <span class="built_in">len</span>(all)</span><br><span class="line">            <span class="keyword">if</span> !exist[x] &#123;</span><br><span class="line">                exist[x] = <span class="literal">true</span></span><br><span class="line">                r[i] = all[x]</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
