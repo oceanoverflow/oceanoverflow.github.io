@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Snappy | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="SnappySnappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Snappy">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/15/Snappy/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="SnappySnappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-15T09:03:56.608Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Snappy">
+<meta name="twitter:description" content="SnappySnappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Snappy"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Snappy
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-15T09:00:01.000Z" itemprop="datePublished">
+        Jun 15, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Snappy"><a href="#Snappy" class="headerlink" title="Snappy"></a>Snappy</h1><p><code>Snappy</code> 是 <code>Google</code> 开发的压缩和解压缩的库，最初使用 <code>C++</code> 编写，后来又造了一个 <code>golang</code> 版本的轮子。由于目前该压缩算法还没有放到 <code>go</code> 的标准库中去，所以需要通过 <code>go get -u github.com/golang/snappy</code> 安装。</p>
+<p>与其他常见的压缩算法相比，<code>Snappy</code> 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同时最大限度地提高压缩和解压缩的速度。</p>
+<p><code>Snappy</code> 对数据处理速度上做了很大的优化，但它并不是没有缺点，相对于其他算法来说，<code>Snappy</code> 压缩得到的文件体积会更大一点。如果你更在意压缩速度而不是压缩比的话，<code>Snappy</code> 可能会是一个很好的选择。</p>
+<h2 id="compression"><a href="#compression" class="headerlink" title="compression"></a>compression</h2><p>下面，我们对比一下 <code>Snappy</code> 压缩算法和其他两种常见的压缩算法（ <code>zlib</code> 和 <code>gzip</code> ）的性能。首先，我们定一个 <code>Compressor</code> 接口，并使 <code>Zlib</code> ，<code>Gzip</code> 和 <code>Snappy</code> 这三个结构体均实现它。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Zlib <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="keyword">type</span> Gzip <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="keyword">type</span> Snappy <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Compressor <span class="keyword">interface</span> &#123;</span><br><span class="line">    Compress(io.Writer, io.Reader) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="zlib"><a href="#zlib" class="headerlink" title="zlib"></a>zlib</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(_ *Zlib)</span> <span class="title">Compress</span><span class="params">(w io.Writer, r io.Reader)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    zw, err := zlib.NewWriterLevel(w, zlib.BestSpeed)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> zw.Close()</span><br><span class="line"></span><br><span class="line">    _, err = io.Copy(zw, r)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="gzip"><a href="#gzip" class="headerlink" title="gzip"></a>gzip</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(_ *Gzip)</span> <span class="title">Compress</span><span class="params">(w io.Writer, r io.Reader)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    gw, err := gzip.NewWriterLevel(w, gzip.BestSpeed)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> gw.Close()</span><br><span class="line"></span><br><span class="line">    _, err = io.Copy(gw, r)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="snappy"><a href="#snappy" class="headerlink" title="snappy"></a>snappy</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(_ *Snappy)</span> <span class="title">compress</span><span class="params">(w io.Writer, r io.Reader)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    sw := snappy.NewBufferedWriter(w)</span><br><span class="line">    <span class="keyword">defer</span> sw.Close()</span><br><span class="line"></span><br><span class="line">    _, err := io.Copy(sw, r)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="performance"><a href="#performance" class="headerlink" title="performance"></a>performance</h2><p>对于压缩的性能，可以从压缩比和压缩时间这两点进行衡量。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f, err := os.Open(<span class="string">"somebigfile"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fGzip, _ := os.Create(<span class="string">"gzip"</span>)</span><br><span class="line">    fZlib, _ := os.Create(<span class="string">"zlib"</span>)</span><br><span class="line">    fSnappy, _ := os.Create(<span class="string">"snappy"</span>)</span><br><span class="line"></span><br><span class="line">    cs := <span class="keyword">map</span>[compressor]io.Writer&#123;</span><br><span class="line">        &amp;Gzip&#123;&#125;:   fGzip,</span><br><span class="line">        &amp;Zlib&#123;&#125;:   fZlib,</span><br><span class="line">        &amp;Snappy&#123;&#125;: fSnappy,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> c, v := <span class="keyword">range</span> cs &#123;</span><br><span class="line">        t := time.Now()</span><br><span class="line">        err := c.compress(v, f)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            fmt.Println(err)</span><br><span class="line">        &#125;</span><br><span class="line">        d := time.Since(t)</span><br><span class="line">        fmt.Printf(<span class="string">"method: %s, time spend: %.02f, ratio: %.05f%%\n"</span>, </span><br><span class="line">        v.Name(), </span><br><span class="line">        d.Seconds(), </span><br><span class="line">        compressionRatio(f, v))</span><br><span class="line">        f.Seek(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">compressionRatio</span><span class="params">(f1, f2 *os.File)</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">    f1s, _ := f1.Stat()</span><br><span class="line">    f1size := f1s.Size()</span><br><span class="line">    f2s, _ := f2.Stat()</span><br><span class="line">    f2size := f2s.Size()</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">float64</span>(f2size) / <span class="keyword">float64</span>(f1size) * <span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Snappy</code> 在速度上来说比 <code>zlib</code> 和 <code>gzip</code> 快得多，但文件相对要大 <code>20%</code> 到 <code>100%</code>。在 <code>64</code> 位模式的 <code>Core i7</code> 处理器上，<code>Snappy</code> 可以达到 <code>250~500</code> 兆每秒的压缩速度，可以说是非常惊人了。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ go run main.go</span><br><span class="line">method:   gzip, time spend: 8.38s, ratio:  7.576%</span><br><span class="line">method:   zlib, time spend: 9.13s, ratio:  7.576%</span><br><span class="line">method: snappy, time spend: 1.96s, ratio: 18.813%</span><br></pre></td></tr></table></figure>
+<p>相比其他的压缩库，<code>Snappy</code> 能在保持特定的压缩率下拥有惊人的压缩速度，压缩普通文本文件的速度是其他库的 <code>1.5-1.7</code> 倍，HTML能达到 <code>2-4</code> 倍，但是对于 <code>JPEG</code>、<code>PNG</code> 以及其他的已压缩的数据，压缩速度不会有明显改善。</p>
+
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
