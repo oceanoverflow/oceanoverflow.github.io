@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Pipeline | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="io.Pipe() 在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type messa">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pipeline">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/19/Pipeline/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="io.Pipe() 在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type messa">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://insideenergy.org/wp-content/uploads/2017/05/DAPL-Pipeline-2-1170x775.jpg">
+<meta property="og:updated_time" content="2018-06-19T08:38:42.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pipeline">
+<meta name="twitter:description" content="io.Pipe() 在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type messa">
+<meta name="twitter:image" content="http://insideenergy.org/wp-content/uploads/2017/05/DAPL-Pipeline-2-1170x775.jpg">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Pipeline"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Pipeline
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-19T08:39:47.000Z" itemprop="datePublished">
+        Jun 19, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="io-Pipe"><a href="#io-Pipe" class="headerlink" title="io.Pipe()"></a>io.Pipe()</h1><p><img src="http://insideenergy.org/wp-content/uploads/2017/05/DAPL-Pipeline-2-1170x775.jpg" alt="pipeline"></p>
+<p>在介绍 <code>io.Pipe</code> 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 <code>POST</code> 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 <code>json</code> 格式的数据，并将该数据暂时存储在 <code>buf</code> 中，最后利用 <code>http.Post</code> 发送该请求，轻松愉快。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> message <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span></span><br><span class="line">    Age  <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    m := &amp;message&#123;Name: <span class="string">"yiyangyi"</span>, Age: <span class="number">23</span>&#125;</span><br><span class="line">    <span class="keyword">var</span> buf bytes.Buffer</span><br><span class="line">    err := json.NewEncoder(&amp;buf).Encode(m)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    resp, err := http.Post(<span class="string">"example.com"</span>, <span class="string">"application/json"</span>, &amp;buf)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)     </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line">    </span><br><span class="line">    b, err := ioutil.ReadAll(resp.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(<span class="keyword">string</span>(b))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是，上面的代码存在一个问题，就是我们需要分配一个缓存区（ <code>bytes.Buffer</code> ）存储编码后的数据，为了节省内存，能不能通过一个方法来避免此部分内存的分配呢，解决方法就是我们今天的主角——<code>io.Pipe</code> 。</p>
+<p><code>io.Pipe</code> 执行后会得到一个 <code>PipeReader</code> 和 <code>PipeWriter</code> ，当程序向<code>PipeWriter</code> 中写入数据时，<code>PipeReader</code> 可以同步地收到这部分消息，根据这个特性，我们将 <code>PipeWriter</code> 代替 <code>bytes.Buffer</code> 作为参数 (它们同为 <code>io.Writer</code> ) 传入 <code>json.NewEncoder</code> 中，当我们 <code>Encode</code> 数据时，会直接向 <code>PipeWriter</code> 写入数据，此时 <code>Pipe</code> 的另一边，<code>PipeReader</code> 可以马上收到数据，利用 <code>io.Pipe</code> 我们就避免了中间非必要缓存的分配。</p>
+<p>由于使用 <code>io.Pipe</code> 发送和接收数据是一个同步的过程 (类似于 <code>unbuffered channel</code> )，所以需要让发送和接收在两个 <code>goroutine</code> 中进行，如果它们存在于一个 <code>goroutine</code> 中，会导致程序死锁。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> message <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span></span><br><span class="line">    Age  <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    pr, pw := io.Pipe()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;       </span><br><span class="line">        m := &amp;message&#123;Name: <span class="string">"yiyangyi"</span>, Age: <span class="number">23</span>&#125;</span><br><span class="line">        err := json.NewEncoder(pw).Encode(m)</span><br><span class="line">        pw.CloseWithError(err)</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    resp, err := http.Post(<span class="string">"example.com"</span>, <span class="string">"application/json"</span>, pr)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)     </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line"></span><br><span class="line">    b, err := ioutil.ReadAll(resp.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(<span class="keyword">string</span>(b))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
