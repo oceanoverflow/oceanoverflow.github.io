@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>grep | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="grep最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="grep">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/20/grep/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="grep最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-20T06:07:36.957Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="grep">
+<meta name="twitter:description" content="grep最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-grep"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      grep
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-20T06:07:24.000Z" itemprop="datePublished">
+        Jun 20, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h1><p>最近看到 <code>golang</code> 语法中一个非常有趣的基本组合 <code>chan chan</code> ，为了加深自己的理解，想多看几个使用案例，于是去 <code>$GOPATH</code> 下面的文件去找，但是一个个文件找肯定不现实，于是借助 <code>grep</code> 帮我们进行搜索，<code>grep</code> 的使用非常简单，但是如果在不了解 <code>grep</code> 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 <code>grep</code> 的使用和 <code>golang</code> 版本的简单实现吧。</p>
+<h2 id="usr-bin-grep"><a href="#usr-bin-grep" class="headerlink" title="/usr/bin/grep"></a>/usr/bin/grep</h2><p><code>grep</code> 命令的基本语法如下所示。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ grep <span class="string">'chan'</span> file</span><br><span class="line">$ grep <span class="string">'chan chan'</span> file1 file2</span><br><span class="line">$ grep [option] <span class="string">'chan chan'</span> file1 file2</span><br></pre></td></tr></table></figure>
+<p>除了列出文件名之外，我们还可以使用通配符搜索当前目录中所有文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grep <span class="string">'chan chan'</span> *</span><br></pre></td></tr></table></figure>
+<h3 id="search-sub-directories-recursively-using-grep"><a href="#search-sub-directories-recursively-using-grep" class="headerlink" title="search sub directories recursively using grep"></a>search sub directories recursively using grep</h3><p>使用 <code>grep</code> 加上 <code>-r</code> 或者 <code>-R</code> 选项可以递归搜索当前目录下的所有文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ grep -r <span class="string">'chan chan'</span> *</span><br><span class="line">$ grep -R <span class="string">'chan chan'</span> *</span><br></pre></td></tr></table></figure>
+<h3 id="examples"><a href="#examples" class="headerlink" title="examples"></a>examples</h3><p>例如，以下命令将会输出当前目录中所有文件及其所有子目录中包含单词 <code>chan chan</code>  的每一行。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grep -r <span class="string">'chan chan'</span> *</span><br></pre></td></tr></table></figure>
+<h2 id="my-own-grep"><a href="#my-own-grep" class="headerlink" title="my own grep"></a>my own grep</h2><p>如果要自己实现，在不考虑性能的情况下， 只需要实现两个功能，一是文件夹的递归遍历，二就是模式匹配，下面我们实现一个最简单的 <code>grep</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    haystack = flag.String(<span class="string">"path"</span>, <span class="string">""</span>, <span class="string">"file path to search in"</span>)</span><br><span class="line">    needle = flag.String(<span class="string">"search"</span>, <span class="string">""</span>, <span class="string">"search string to look for"</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    flag.Parse()</span><br><span class="line">    fi, err := os.Stat(*haystack)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> fi.Mode().IsDir() &#123;</span><br><span class="line">        *haystack = strings.TrimRight(*haystack, <span class="string">"/"</span>) + <span class="string">"/"</span></span><br><span class="line">        dfs(*haystack, *needle)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        log.Fatal(<span class="string">"path must be a dir"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="depth-first-search"><a href="#depth-first-search" class="headerlink" title="depth first search"></a>depth first search</h3><p>我们利用深度优先搜索来遍历相关文件，如果当前对应的 <code>path</code> 为目录（ <code>file.Mode().IsDir()</code> ），则递归调用搜索方法，如果 <code>path</code> 为普通文件（ <code>file.Mode().IsRegular()</code> ），则利用下面的 <code>grep</code> 方法扫描该文件。直到所有文件均被遍历。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dfs</span><span class="params">(path, search <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    files, err := ioutil.ReadDir(path)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> _, file := <span class="keyword">range</span> files &#123;</span><br><span class="line">        fullpath := path + file.Name(<span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span> file.Mode().IsDir() &#123;</span><br><span class="line">            dfs(fullpath+<span class="string">"/"</span>, search)</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> file.Mode().IsRegular() &#123;</span><br><span class="line">            grep(fullpath, search)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="grep-individual-using-scanner"><a href="#grep-individual-using-scanner" class="headerlink" title="grep individual using scanner"></a>grep individual using scanner</h3><p>对于每一个 <code>fullpath</code> 对应的文件，我们利用 <code>bufio.NewScanner</code> 构建一个扫描仪，并进行逐行扫描，然后判断要搜索的文字（ <code>search</code> ）是否存在于该行中，如果存在（ <code>strings.Contains</code> ），则在命令行中输出。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">grep</span><span class="params">(fullpath, search <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    f, err := os.Open(fullpath)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    scanner := bufio.NewScanner(f)</span><br><span class="line">    <span class="keyword">for</span> scanner.Scan() &#123;</span><br><span class="line">        line := scanner.Text()</span><br><span class="line">        <span class="keyword">if</span> strings.Contains(line, search) &#123;</span><br><span class="line">            fmt.Println(fullpath, <span class="string">" "</span>, line)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
