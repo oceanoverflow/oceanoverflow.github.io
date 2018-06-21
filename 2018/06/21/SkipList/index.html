@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Skip List | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Skip List跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leve">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Skip List">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/21/SkipList/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Skip List跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leve">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://ds055uzetaobb.cloudfront.net/image_optimizer/968e3d82130f4bfa9a1574b1537c840a1787c919.png">
+<meta property="og:updated_time" content="2018-06-21T12:55:10.283Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Skip List">
+<meta name="twitter:description" content="Skip List跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leve">
+<meta name="twitter:image" content="https://ds055uzetaobb.cloudfront.net/image_optimizer/968e3d82130f4bfa9a1574b1537c840a1787c919.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="b">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-SkipList"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Skip List
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-21T12:53:24.000Z" itemprop="datePublished">
+        Jun 21, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Skip-List"><a href="#Skip-List" class="headerlink" title="Skip List"></a>Skip List</h1><p>跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。</p>
+<p><img src="https://ds055uzetaobb.cloudfront.net/image_optimizer/968e3d82130f4bfa9a1574b1537c840a1787c919.png" alt="SkipList"></p>
+<p>利用跳表可以构建 <code>kv</code> 数据库的索引，例如 <code>leveldb</code> 中的索引就是利用跳表来构建的，跳表相对其他索引数据结构例如红黑树，b树等有实现相对简单，但查询效率高的特点，其空间复杂度为 <code>O(n)</code> ，时间复杂度为 <code>O(logn)</code> 。</p>
+<h2 id="跳表的组成元素"><a href="#跳表的组成元素" class="headerlink" title="跳表的组成元素"></a>跳表的组成元素</h2><p>与链表类似，跳表也是由一系列节点组成，每个节点我们用 <code>Element</code> 结构体表示，每个节点会存储一个 <code>kv</code> 对， 除了 <code>kv</code> 对之外，还包含一个 <code>elementNode</code> 结构体，该结构体其实就是一个指针数组，在单向链表中，指针有且只有一个，在跳表中，可以存在多个指向后续节点的指针，用于遍历时加速跳跃使用，这个指针数组是跳表的核心，使用 <code>next []*Element</code> 表示。</p>
+<p>在表示完跳表的基本元素之后，我们还需要考虑一个完整跳表的数据结构，类与普通的链表类似，我们需要一个跳表头，这里用 <code>elementNode</code> 表示，由于跳表在构建时新元素的高度是不确定的，所以我们需要一个 <code>rand.Source</code> 帮助我们决定元素的高度，并限制高度小于最高高度 <code>maxLevel</code> ，这里整个跳表的质量与随机性有相当大的关系，构建得到的跳表随机性越强，搜索速度越快。</p>
+<p>还有我们需要 <code>prevNodesCache []*elementNode</code> 来存储被查找节点的之前的节点，这个刚开始理解起来有一点复杂，因为被查找节点每一层的前一个元素都是不同的，每一个之前的元素可以用一个 <code>*elementNode</code> 来表示，由于每个节点可能存在多层指针，所以这里用一个数组来表示 <code>[]*elementNode</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> elementNode <span class="keyword">struct</span> &#123;</span><br><span class="line">    next []*Element</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Element <span class="keyword">struct</span> &#123;</span><br><span class="line">    elementNode</span><br><span class="line">    key   <span class="keyword">float64</span></span><br><span class="line">    value <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SkipList <span class="keyword">struct</span> &#123;</span><br><span class="line">    elementNode</span><br><span class="line">    maxLevel       <span class="keyword">int</span></span><br><span class="line">    Length         <span class="keyword">int</span></span><br><span class="line">    randSource     rand.Source</span><br><span class="line">    mutex          sync.RWMutex</span><br><span class="line">    prevNodesCache []*elementNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(maxLevel <span class="keyword">int</span>)</span> *<span class="title">SkipList</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> maxLevel &lt; <span class="number">1</span> || maxLevel &gt; <span class="number">64</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">"max level should be less than 64 and greater than 1"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &amp;SkipList&#123;</span><br><span class="line">        elementNode: elementNode&#123;next: <span class="built_in">make</span>([]*Element, maxLevel)&#125;,</span><br><span class="line">        maxLevel: maxLevel,</span><br><span class="line">        randSource: rand.New(rand.NewSource(time.Now().UnixNano())),</span><br><span class="line">        prevNodesCache: <span class="built_in">make</span>([]*elementNode, maxLevel),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="跳表的基本操作"><a href="#跳表的基本操作" class="headerlink" title="跳表的基本操作"></a>跳表的基本操作</h2><p>在插入和删除特定节点时，我们需要获取该节点之前的所有元素节点， <code>getPrevElementNodes</code> 从跳表的头节点（ <code>list.elementNode</code> ）出发，并从最高层开始，确定 <code>key</code> 对应的元素在该层对应的前一个<code>elementNode</code> ，然后存储在 <code>prevNodesCache</code> 中（ <code>prevs[i] = prev</code> ），这样一直查找直到最底层。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(list *SkipList)</span> <span class="title">getPrevElementNodes</span><span class="params">(key <span class="keyword">float64</span>)</span> []*<span class="title">elementNode</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> prev *elementNode = &amp;list.elementNode</span><br><span class="line">    <span class="keyword">var</span> next *Element</span><br><span class="line"></span><br><span class="line">    prevs := list.prevNodesCache</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := list.maxLevel - <span class="number">1</span>; i &gt;=<span class="number">0</span>; i-- &#123;</span><br><span class="line">        next = prev.next[i]</span><br><span class="line">        <span class="keyword">for</span> next != <span class="literal">nil</span> &amp;&amp; key &gt; next.key &#123;</span><br><span class="line">            prev = &amp;next.elementNode</span><br><span class="line">            next = next.next[i]</span><br><span class="line">        &#125;</span><br><span class="line">        prevs[i] = prev</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> prevs</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(list *SkipList)</span> <span class="title">randLevel</span><span class="params">()</span> <span class="params">(level <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> list.randSource.Intn(list.maxLevel)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Get"><a href="#Get" class="headerlink" title="Get"></a>Get</h3><p><code>Get</code> 方法的本质就是一个走楼梯的过程，但是这里每个阶梯的高度和宽度并非确定，开始从楼梯的最高层出发（ <code>i := list.maxLevel - 1</code> ），每次对前方同一层的阶梯（ <code>next = prev.next[i]</code> ）进行试探，如果前方阶梯不为空（ <code>next != nil</code> ），且符合特定要求（ <code>key &gt; next.key</code> ）则继续在这一层走，否则直接进入下一层（ <code>i--</code> ），直到找到为止，最后判断此阶梯不为空（ <code>next != nil</code> ）且该阶梯保存的值和要找的值相同时，返回该阶梯。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(list *SkipList)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">float64</span>)</span> *<span class="title">Element</span></span> &#123;</span><br><span class="line">    list.mutex.Lock()</span><br><span class="line">    <span class="keyword">defer</span> list.mutex.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> prev *elementNode = &amp;list.elementNode</span><br><span class="line">    <span class="keyword">var</span> next *Element</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := list.maxLevel - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">        next = prev.next[i]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> next != <span class="literal">nil</span> &amp;&amp; key &gt; next.key &#123;</span><br><span class="line">            prev = &amp;next.elementNode</span><br><span class="line">            next = next.next[i]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> next != <span class="literal">nil</span> &amp;&amp; next.key &lt;= key &#123;</span><br><span class="line">        <span class="keyword">return</span> next</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h3><p><code>Set</code> 方法需要使用之前的 <code>getPrevElementNodes</code> 来获取对应 <code>key</code> 之前的元素，如果该元素对应的 <code>key</code> 已经存在，则改变其 <code>value</code> 之后返回，如果不存在，则构建一个新的节点，然后将自己之前的节点的指针和自己之后节点的指针相连，使其前节点指向自己，使自己指向后面的节点。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(list *SkipList)</span> <span class="title">Set</span><span class="params">(key <span class="keyword">float64</span>, value <span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">Element</span></span> &#123;</span><br><span class="line">    list.mutex.Lock()</span><br><span class="line">    <span class="keyword">defer</span> list.mutex.Unlock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> element *Element</span><br><span class="line">    prevs := list.getPrevElementNodes(key)</span><br><span class="line">    <span class="keyword">if</span> element = prevs[<span class="number">0</span>].next[<span class="number">0</span>]; element != <span class="literal">nil</span> &amp;&amp; element.key &lt;= key &#123;</span><br><span class="line">        element.value = value</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    element = &amp;Element &#123;</span><br><span class="line">        elementNode: elementNode&#123;</span><br><span class="line">            next: <span class="built_in">make</span>([]*Element, list.randLevel()),</span><br><span class="line">            key: key,</span><br><span class="line">            value: value,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="keyword">range</span> element.next &#123;</span><br><span class="line">        element.next[i] = prevs[i].next[i]</span><br><span class="line">        prevs[i].next[i] = element</span><br><span class="line">    &#125;</span><br><span class="line">    list.Length++</span><br><span class="line">    <span class="keyword">return</span> element</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h3><p><code>Remove</code> 方法也需要使用 <code>getPrevElementNodes</code> 方法，使自己前面的节点不指向该元素而是指向该元素后面的元素。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(list *SkipList)</span> <span class="title">Remove</span><span class="params">(key <span class="keyword">float64</span>)</span> *<span class="title">Element</span></span> &#123;</span><br><span class="line">    list.mutex.Lock()</span><br><span class="line">    <span class="keyword">defer</span> list.mutex.Unlock()</span><br><span class="line">    prevs := list.getPrevElementNodes(key)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> element := prevs[<span class="number">0</span>].next[<span class="number">0</span>]; element != <span class="literal">nil</span> &amp;&amp; element.key &lt;= key &#123;</span><br><span class="line">        <span class="keyword">for</span> k, v := <span class="keyword">range</span> element.next &#123;</span><br><span class="line">            prevs[k].next[k] = v</span><br><span class="line">        &#125;</span><br><span class="line">        list.Length--</span><br><span class="line">        <span class="keyword">return</span> element</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
