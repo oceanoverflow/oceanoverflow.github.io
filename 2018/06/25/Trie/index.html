@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Trie | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Trie假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Trie">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/25/Trie/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="Trie假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*f89l46VKjKPgnecqOw4V_w.png">
+<meta property="og:updated_time" content="2018-06-25T14:28:16.173Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Trie">
+<meta name="twitter:description" content="Trie假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的">
+<meta name="twitter:image" content="https://cdn-images-1.medium.com/max/1600/1*f89l46VKjKPgnecqOw4V_w.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Trie"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Trie
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-25T14:25:54.000Z" itemprop="datePublished">
+        Jun 25, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <h1 id="Trie"><a href="#Trie" class="headerlink" title="Trie"></a>Trie</h1><p>假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 <code>Trie</code> 树， <code>Trie</code> 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的字符串等场景。</p>
+<p><img src="https://cdn-images-1.medium.com/max/1600/1*f89l46VKjKPgnecqOw4V_w.png" alt="trie"></p>
+<h2 id="data-structure"><a href="#data-structure" class="headerlink" title="data structure"></a>data structure</h2><p><code>Trie</code> 是一棵R叉树，可以用于保存大量的字符串，每棵树都有一个根节点（ <code>root</code> ）。非叶节点存储一个 <code>rune</code> ，除了指向父节点的指针 <code>parent</code> 之外，并还包含一系列子节点 <code>children</code> ，使用 <code>map</code> 来存储。叶节点标志着一个字符串的结束，其 <code>term</code> 标记为 <code>true</code> ，叶节点中还可以存储一些元数据（ <code>meta</code> ），来表示该字符串的含义。从根节点开始一直到叶节点就可以形成一个完整的字符串。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    val      <span class="keyword">rune</span></span><br><span class="line">    term     <span class="keyword">bool</span></span><br><span class="line">    depth    <span class="keyword">int</span></span><br><span class="line">    meta     <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    parent   *Node</span><br><span class="line">    children <span class="keyword">map</span>[<span class="keyword">rune</span>]*Node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Trie <span class="keyword">struct</span> &#123;</span><br><span class="line">    root *Node</span><br><span class="line">    size <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">()</span> *<span class="title">Trie</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Trie&#123;</span><br><span class="line">        root: &amp;Node&#123;depth: <span class="number">0</span>, children: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">rune</span>]*Node)&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="helper-function"><a href="#helper-function" class="headerlink" title="helper function"></a>helper function</h2><p>为了方便后面的搜索操作，我们需要实现两个 <code>helper function</code> ，第一个就是计算一个字符串的掩码，例如对 <code>apple</code> 计算掩码时，分别对’a’，’p’，’p’，’l’，’e’ 这几个 <code>rune</code> 进行位运算，最后返回一个 <code>uint64</code> ，该掩码在搜索中起着非常重要的作用，因为每个节点都会存储一个掩码（ <code>mask</code> ），我们可以利用该掩码判断该节点及后续字节点存储了什么字符。<code>findNode</code> 方法帮助我们搜索 <code>runes</code> 字符数组中最后一个字符在树中对应的节点。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">maskruneslice</span><span class="params">(rs []<span class="keyword">rune</span>)</span> <span class="title">uint64</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> m <span class="keyword">uint64</span></span><br><span class="line">    <span class="keyword">for</span> _, r := <span class="keyword">range</span> rs &#123;</span><br><span class="line">        m |= <span class="keyword">uint64</span>(<span class="number">1</span>) &lt;&lt; <span class="keyword">uint64</span>(r-<span class="string">'a'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">findNode</span><span class="params">(node *Node, runes []<span class="keyword">rune</span>)</span> *<span class="title">Node</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(runes) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> node</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    n, ok := node.Children()[runes[<span class="number">0</span>]]</span><br><span class="line">    <span class="keyword">if</span> !ok &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> nrunes []<span class="keyword">rune</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(runes) &gt; <span class="number">1</span> &#123;</span><br><span class="line">        nrunes = runes[<span class="number">1</span>:]</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        nrunes = runes[<span class="number">0</span>:<span class="number">0</span>]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> findNode(n, nrunes)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Basic-Operation"><a href="#Basic-Operation" class="headerlink" title="Basic Operation"></a>Basic Operation</h2><p><code>Trie</code> 树的基本操作有三个，<code>Add</code> ，<code>Find</code> 和 <code>Del</code> 。</p>
+<p><code>Add</code> 方法将 <code>key</code> 字符串加入到树中。对于每一个要加入树中的字符串中的 <code>rune</code> ， 我们构造一个节点，如果相应的 <code>rune</code> 已经存在，此时只需要更新其 <code>mask</code> 值，如果该 <code>rune</code> 不存在，则构建一个中间节点 <code>node = node.NewChild(r, bitmask, nil, false)</code> ，在所有中间节点都构建完毕之后，我们构建一个叶节点结束 <code>Add</code> 操作，叶节点的 <code>val</code> 值设为 <code>nul</code> ，<code>term</code> 为 <code>true</code> ，并存储相应的元数据 <code>meta</code> 。 </p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nul = <span class="number">0x0</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Trie)</span> <span class="title">Add</span><span class="params">(key <span class="keyword">string</span>, meta <span class="keyword">interface</span>)</span> *<span class="title">Node</span></span> &#123;</span><br><span class="line">    t.size++</span><br><span class="line">    runes := []<span class="keyword">rune</span>(key)</span><br><span class="line">    bitmask := maskruneslice(runes)</span><br><span class="line">    node := t.root</span><br><span class="line">    node.mask |= bitmask</span><br><span class="line">    <span class="keyword">for</span> i := <span class="keyword">range</span> runes &#123;</span><br><span class="line">        r := runes[i]</span><br><span class="line">        bitmask := maskruneslice(runes[i:])</span><br><span class="line">        <span class="keyword">if</span> n, ok := node.children[r]; ok &#123;</span><br><span class="line">            node = n</span><br><span class="line">            node.mask |= bitmask</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            node = node.NewChild(r, bitmask, <span class="literal">nil</span>, <span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    node = node.NewChild(nul, <span class="number">0</span>, meta, <span class="literal">true</span>)</span><br><span class="line">    <span class="keyword">return</span> node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *Node)</span> <span class="title">NewChild</span><span class="params">(val <span class="keyword">rune</span>, bitmask <span class="keyword">uint64</span>, meta <span class="keyword">interface</span>&#123;&#125;, term <span class="keyword">bool</span>)</span> *<span class="title">Node</span></span> &#123;</span><br><span class="line">    node := &amp;Node&#123;</span><br><span class="line">        val: val,</span><br><span class="line">        bitmask: bitmask,</span><br><span class="line">        term: term,</span><br><span class="line">        meta: meta,</span><br><span class="line">        parent: n,</span><br><span class="line">        children: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">rune</span>]*Node),</span><br><span class="line">        depth: n.depth + <span class="number">1</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    n.children[val] = node</span><br><span class="line">    n.mask |= bitmask</span><br><span class="line">    <span class="keyword">return</span> node</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Find</code> 方法判断一个特定的字符串是否出现在该树中，我们先通过 <code>findNode</code> 找到相应的 <code>node</code> ，<code>Find</code> 方法用于查找一个完整的字符串，例如我们要查找 <code>app</code> ，但树中只有 <code>apple</code> 这个字符串，所以 <code>findNode</code> 调用时应该返回说不存在 <code>app</code> 这个字符串。当查找 <code>app</code> 这个字符串时，<code>findNode</code> 方法会返回最后一个 <code>p</code> 对应的节点，但这并不说明 <code>app</code> 存在于树中，我们还需要判断该节点是否为叶节点 <code>node.term == true</code> ，如果不是叶节点，则返回 <code>nil</code> 。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Trie)</span> <span class="title">Find</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="params">(*Node, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">    node := findNode(t.Root(), []<span class="keyword">rune</span>(key))</span><br><span class="line">    <span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    node, ok := node.Children()[nul]</span><br><span class="line">    <span class="keyword">if</span> !ok || !node.term &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> node, <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Remove</code> 方法同样通过 <code>findNode</code> 方法找到相应的节点，然后从该节点向根节点的方向依次删除相应的 <code>rune</code> ，主要目的是为了更新每个中间节点的<code>mask</code> 值。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Trie)</span> <span class="title">Remove</span><span class="params">(key <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> (</span><br><span class="line">        i <span class="keyword">int</span></span><br><span class="line">        rs = []<span class="keyword">rune</span>(key)</span><br><span class="line">        node = findNode(t.Root(), []<span class="keyword">rune</span>(key))</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    t.size--</span><br><span class="line">    <span class="keyword">for</span> n := node.Parent(); p != <span class="literal">nil</span>; n = n.Parent() &#123;</span><br><span class="line">        i++</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(n.Children()) &gt; <span class="number">1</span> &#123;</span><br><span class="line">            r := rs[<span class="built_in">len</span>(rs)-i]</span><br><span class="line">            n.RemoveChild(r)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *Node)</span> <span class="title">RemoveChild</span><span class="params">(r <span class="keyword">rune</span>)</span></span> &#123;</span><br><span class="line">    <span class="built_in">delete</span>(n.children, r)</span><br><span class="line">    <span class="keyword">for</span> nd := n.parent; nd != <span class="literal">nil</span>; nd = nd.parent &#123;</span><br><span class="line">        nd.mask ^= nd.mask</span><br><span class="line">        nd.mask |= <span class="keyword">uint64</span>(<span class="number">1</span>) &lt;&lt; <span class="keyword">uint64</span>(nd.val - <span class="string">'a'</span>)</span><br><span class="line">        <span class="keyword">for</span> _, c := <span class="keyword">range</span> nd.children &#123;</span><br><span class="line">            nd.mask |= c.mask</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Collect"><a href="#Collect" class="headerlink" title="Collect"></a>Collect</h2><p>有时候我们搜索单词的时候只记得该单词的前缀，例如我们要搜索 <code>append</code> 这个单词，但是我们只记得 <code>app</code> 这个前缀，我们可以使用 <code>collect</code> 方法帮我们收集所有 <code>app</code> 开头的单词，换句话说就是特定节点下面所有可能的叶节点的集合，开始收集时我们构造一个队列，该队列中仅有 <code>node</code> 一个节点，然后使用广度优先搜索的方式（层序遍历），首先将队列中的第一个节点出队，然后将该节点所有的子节点加入该队列中，如果节点为叶节点，则从该叶节点开始一直向上遍历到根节点的下一层节点（ <code>p.depth == 1</code> ），直到完成所有单词的收集为止。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">collect</span><span class="params">(node *Node)</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> (</span><br><span class="line">        keys []<span class="keyword">string</span></span><br><span class="line">        n    *Node</span><br><span class="line">        i    <span class="keyword">int</span></span><br><span class="line">    )</span><br><span class="line">    nodes := []*Node&#123;node&#125;</span><br><span class="line">    <span class="keyword">for</span> l := <span class="built_in">len</span>(nodes); l != <span class="number">0</span>; l = <span class="built_in">len</span>(nodes) &#123;</span><br><span class="line">        i := l - <span class="number">1</span></span><br><span class="line">        n = nodes[i]</span><br><span class="line">        nodes = nodes[:i]</span><br><span class="line">        <span class="keyword">for</span> _, c := <span class="keyword">range</span> n.children &#123;</span><br><span class="line">            nodes = <span class="built_in">append</span>(nodes, c)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> n.term &#123;</span><br><span class="line">            word := <span class="string">""</span></span><br><span class="line">            <span class="keyword">for</span> p := n.parent; p.depth != <span class="number">0</span>; p = p.parent &#123;</span><br><span class="line">                word = <span class="keyword">string</span>(p.val) + word</span><br><span class="line">            &#125;</span><br><span class="line">            keys = <span class="built_in">append</span>(keys, word)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> keys</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Fuzzy-Collect"><a href="#Fuzzy-Collect" class="headerlink" title="Fuzzy Collect"></a>Fuzzy Collect</h2><p>除了比较准确的前缀匹配之外，有时候我们可能还需要模糊匹配，再举 <code>append</code> 这个单词为例子，我们可能只记得这个单词包含了 <code>apd</code> 这样的模式，使用 <code>Trie</code> 树我们可以非常轻松地实现模糊匹配功能，<code>fuzzycollect</code> 同样利用层序遍历，在每一个循环开始时，对队列中的第一个节点进行出队操作，如果相应的掩码不包含在正在遍历的节点中 <code>(p.node.mask &amp; m) != m</code> ，说明其后面的节点中不包含所有 <code>partial</code> 中包含的 <code>rune</code> 值，直接进入下一个循环 ，如果 <code>p.idx == len(partial)</code> ，说明我们找到了与 <code>partial</code> 相匹配的一个单词，此时进行 <code>collect</code> 操作 。最后同样需要将该节点的子节点加入队列中以进行下一轮的层序遍历。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> potentialSubtree <span class="keyword">struct</span> &#123;</span><br><span class="line">    idx <span class="keyword">int</span></span><br><span class="line">    node *Node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fuzzycollect</span><span class="params">(node *Node, partial []<span class="keyword">rune</span>)</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> (</span><br><span class="line">        m    <span class="keyword">uint64</span></span><br><span class="line">        i    <span class="keyword">int</span></span><br><span class="line">        p    potentialSubtree</span><br><span class="line">        keys []<span class="keyword">string</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    potential := []potentialSubtree&#123;potentialSubtree&#123;<span class="number">0</span>, node&#125;&#125;</span><br><span class="line">    <span class="keyword">for</span> l := <span class="built_in">len</span>(potential); l &gt; <span class="number">0</span>; l = <span class="built_in">len</span>(potential) &#123;</span><br><span class="line">        i := l - <span class="number">1</span></span><br><span class="line">        p = potential[i]</span><br><span class="line">        potential = potential[:i]</span><br><span class="line">        m = maskruneslice(partial[p.idx:])</span><br><span class="line">        <span class="keyword">if</span> (p.node.mask &amp; m) != m &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> p.node.val == partial[p.idx] &#123;</span><br><span class="line">            p.idx++</span><br><span class="line">            <span class="keyword">if</span> p.idx == <span class="built_in">len</span>(partial) &#123;</span><br><span class="line">                keys = <span class="built_in">append</span>(keys, collect(p.node)...)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> _, c := <span class="keyword">range</span> p.node.children &#123;</span><br><span class="line">            potential = <span class="built_in">append</span>(potential, potentialSubtree&#123;node: c, idx: p.idx&#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> keys</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="search"><a href="#search" class="headerlink" title="search"></a>search</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ByKeys []<span class="keyword">string</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a ByKeys)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span>           &#123; <span class="keyword">return</span> <span class="built_in">len</span>(a) &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a ByKeys)</span> <span class="title">Swap</span><span class="params">(i, j <span class="keyword">int</span>)</span></span>      &#123; a[i], a[j] = a[j], a[i] &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a ByKeys)</span> <span class="title">Less</span><span class="params">(i, j <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123; <span class="keyword">return</span> <span class="built_in">len</span>(a[i]) &lt; <span class="built_in">len</span>(a[j]) &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Trie)</span> <span class="title">HasKeysWithPrefix</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    node := findNode(t.Root(), []<span class="keyword">rune</span>(key))</span><br><span class="line">    <span class="keyword">return</span> node != <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Trie)</span> <span class="title">FuzzySearch</span><span class="params">(pre <span class="keyword">string</span>)</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    keys := fuzzycollect(t.Root(), []<span class="keyword">rune</span>(pre))</span><br><span class="line">    sort.Sort(ByKeys(keys))</span><br><span class="line">    <span class="keyword">return</span> keys</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Trie)</span> <span class="title">PrefixSearch</span><span class="params">(pre <span class="keyword">string</span>)</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    node := findNode(t.Root(), []<span class="keyword">rune</span>(pre))</span><br><span class="line">    <span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> collect(node)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Trie)</span> <span class="title">Keys</span><span class="params">()</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> t.PrefixSearch(<span class="string">""</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
