@@ -5,18 +5,18 @@
   
   <title>crontab | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="crontab事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。 所以，这种周期">
+  <meta name="description" content="事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。 所以，这种周期性，性质类似，">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="crontab">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/30/Crontab/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="crontab事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。 所以，这种周期">
+<meta property="og:description" content="事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。 所以，这种周期性，性质类似，">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:39:30.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:38.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="crontab">
-<meta name="twitter:description" content="crontab事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。 所以，这种周期">
+<meta name="twitter:description" content="事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。 所以，这种周期性，性质类似，">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="crontab"><a href="#crontab" class="headerlink" title="crontab"></a>crontab</h1><p>事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。</p>
+    <p>事情的经过是这样子的，室友最近要做一个阿里的项目，大概就是利用软件工程结合机器学习对代码缺陷进行预测分析，现在正处于数据分析阶段，每天都会到github上拉一大堆项目，然后用写好的代码啪啪啪分析一通，一般来说代码都要跑很久，一般都是12小时左右才能出结果，而且等它跑完还要继续跑剩下一个项目，但是作为程序员，这样的体力活自然应该自动化处理啦，毕竟越厉害的程序员是越懒的。</p>
 <p>所以，这种周期性，性质类似，但是需要大量重复劳动的工作可以写成自动化脚本再结合 <code>crontab</code> 来解决。<code>crontab</code> 就是为了周期性定时执行任务而生的，再也不用盯着电脑屏幕等结果跑完啦，感觉是现在搞AI的人的必备良药呢。</p>
 <p><code>crontab</code> 的语法还是挺简单的，但是咋一看还是一脸懵逼的，其实关于<code>crontab</code> 只要掌握一点就可以使用它了，就是关于时间语法的定义，因为 <code>crontab</code> 就是为了定时执行任务而存在的，所以它有自己的一套语法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ * * * * * command_to_execute</span><br><span class="line">  | | | | |</span><br><span class="line">  | | | | +- day of week (0 - 7) where sunday is 0 and 7</span><br><span class="line">  | | | +--- month (1 - 12)</span><br><span class="line">  | | +----- day (1 - 31)</span><br><span class="line">  | +------- hour (0 - 23)</span><br><span class="line">  +--------- minute (0 - 59)</span><br></pre></td></tr></table></figure>

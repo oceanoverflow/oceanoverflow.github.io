@@ -5,18 +5,18 @@
   
   <title>Finite State Machine | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="实现一个有限状态机在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和clo">
+  <meta name="description" content="在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和closed，我们将门关">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Finite State Machine">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/25/FSM/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="实现一个有限状态机在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和clo">
+<meta property="og:description" content="在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和closed，我们将门关">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T12:03:07.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:40.495Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Finite State Machine">
-<meta name="twitter:description" content="实现一个有限状态机在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和clo">
+<meta name="twitter:description" content="在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。 以门的开启和关闭举例，一扇门拥有两种状态（state），open和closed，我们将门关">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="实现一个有限状态机"><a href="#实现一个有限状态机" class="headerlink" title="实现一个有限状态机"></a>实现一个有限状态机</h1><p>在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。</p>
+    <p>在实际工程代码当中，常常会用到有限状态机(Finite-state Machine. FSM)，例如在p2p网络中一个节点可能拥有多种状态，有限状态机可以用于表示有限个状态及所有可能的状态之间转移的情况。利用有限状态机就可以轻松地解决节点在不同状态之间转移的情况。这种编程模型可以避免丑陋的switch语句。</p>
 <p>以门的开启和关闭举例，一扇门拥有两种状态（state），open和closed，我们将门关上，那它的状态就由open转移到closed，这里我们将open称为初始状态，将closed称为目标状态，分别用src和dst表示。而导致状态转移的动作我们称它为事件（event），状态的转移都是由特定事件触发的。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> EventDesc <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span> </span><br><span class="line">    Src []<span class="keyword">string</span> </span><br><span class="line">    Dst <span class="keyword">string</span>  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Events []EventDesc</span><br></pre></td></tr></table></figure>
 <p>这里Name表示触发状态转移的事件名称，Src是状态转移过程中的初始状态，注意到它是一个数组，因为可以有多个不同的初始状态转移到同一个目标状态，而Dst是状态转移过程中的目标状态。上面的结构体就代表了有限状态机中触发状态转移的事件，可以把它理解成一个导火索，有了它，有限状态机才在不同的状态之间跳跃。</p>

@@ -5,19 +5,19 @@
   
   <title>Trie | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Trie假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的">
+  <meta name="description" content="假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的字符串等">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Trie">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/25/Trie/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Trie假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的">
+<meta property="og:description" content="假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的字符串等">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/1600/1*f89l46VKjKPgnecqOw4V_w.png">
-<meta property="og:updated_time" content="2018-06-25T14:28:16.173Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:30.860Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Trie">
-<meta name="twitter:description" content="Trie假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的">
+<meta name="twitter:description" content="假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 Trie 树， Trie 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的字符串等">
 <meta name="twitter:image" content="https://cdn-images-1.medium.com/max/1600/1*f89l46VKjKPgnecqOw4V_w.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Trie"><a href="#Trie" class="headerlink" title="Trie"></a>Trie</h1><p>假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 <code>Trie</code> 树， <code>Trie</code> 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的字符串等场景。</p>
+    <p>假设我们要实现一个类似于有道词典这样的字典，开始时使用哈希表来存储键值对，后来在实现前缀搜索，模糊匹配等相关功能时，发现使用哈希表作为底层存储的数据结构有一个致命的缺点，基于哈希表的前缀搜索，模糊匹配实现难度非常之大，所以决定换一种数据结构来存储数据。下面我们来介绍一下 <code>Trie</code> 树， <code>Trie</code> 树也叫字典树，它非常适合我们上面说的场景，作为一种树形结构，还经常被用于统计，排序和保存大量的字符串等场景。</p>
 <p><img src="https://cdn-images-1.medium.com/max/1600/1*f89l46VKjKPgnecqOw4V_w.png" alt="trie"></p>
 <h2 id="data-structure"><a href="#data-structure" class="headerlink" title="data structure"></a>data structure</h2><p><code>Trie</code> 是一棵R叉树，可以用于保存大量的字符串，每棵树都有一个根节点（ <code>root</code> ）。非叶节点存储一个 <code>rune</code> ，除了指向父节点的指针 <code>parent</code> 之外，并还包含一系列子节点 <code>children</code> ，使用 <code>map</code> 来存储。叶节点标志着一个字符串的结束，其 <code>term</code> 标记为 <code>true</code> ，叶节点中还可以存储一些元数据（ <code>meta</code> ），来表示该字符串的含义。从根节点开始一直到叶节点就可以形成一个完整的字符串。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    val      <span class="keyword">rune</span></span><br><span class="line">    term     <span class="keyword">bool</span></span><br><span class="line">    depth    <span class="keyword">int</span></span><br><span class="line">    meta     <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    parent   *Node</span><br><span class="line">    children <span class="keyword">map</span>[<span class="keyword">rune</span>]*Node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Trie <span class="keyword">struct</span> &#123;</span><br><span class="line">    root *Node</span><br><span class="line">    size <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">()</span> *<span class="title">Trie</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Trie&#123;</span><br><span class="line">        root: &amp;Node&#123;depth: <span class="number">0</span>, children: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">rune</span>]*Node)&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

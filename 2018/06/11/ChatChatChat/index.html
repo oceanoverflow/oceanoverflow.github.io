@@ -5,18 +5,18 @@
   
   <title>Chat Chat Chat | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Chat Chat Chat承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊">
+  <meta name="description" content="承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊天程序服务器，服务器会根据你">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Chat Chat Chat">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/11/ChatChatChat/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Chat Chat Chat承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊">
+<meta property="og:description" content="承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊天程序服务器，服务器会根据你">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-11T07:10:20.087Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:07.665Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chat Chat Chat">
-<meta name="twitter:description" content="Chat Chat Chat承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊">
+<meta name="twitter:description" content="承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。 为了让聊天不那么 gay ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 localhost:8080 ，例如使用 netcat 通过 nc localhost 8080 命令连接聊天程序服务器，服务器会根据你">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Chat-Chat-Chat"><a href="#Chat-Chat-Chat" class="headerlink" title="Chat Chat Chat"></a>Chat Chat Chat</h1><p>承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。</p>
+    <p>承认吧，你肯定也会有深夜寂寞时特别想找人聊天但翻遍朋友圈，却还是没有发现合适的人的时候，今天我们就来写一个随机配对聊天程序，解决广大单身狗寂寞时想要找人聊天的需求吧。</p>
 <p>为了让聊天不那么 <code>gay</code> ，我们的聊天程序会让异性匹配聊天，用户通过客户端连接到聊天程序服务器 <code>localhost:8080</code> ，例如使用 <code>netcat</code> 通过 <code>nc localhost 8080</code> 命令连接聊天程序服务器，服务器会根据你的性别匹配异性聊天。</p>
 <p>在实现方面，为了达到异性相互聊天的目标，我们创建两个通道，分别是 <code>boy</code> 通道和 <code>girl</code> 通道，并通过 <code>net.Listen</code> 方法监听 <code>8080</code> 端口，对于每个连接我们起一个 <code>goroutine</code> 进行匹配操作。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> boy = <span class="built_in">make</span>(<span class="keyword">chan</span> io.ReadWriteCloser)</span><br><span class="line"><span class="keyword">var</span> girl = <span class="built_in">make</span>(<span class="keyword">chan</span> io.ReadWriteCloser)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    l, err := net.Listen(<span class="string">"tcp"</span>, <span class="string">"localhost:8080"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        c, err := l.Accept()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Println(err)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">go</span> match(c)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

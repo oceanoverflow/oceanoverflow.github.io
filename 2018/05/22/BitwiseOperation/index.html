@@ -5,18 +5,18 @@
   
   <title>Bitwise Operation | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Bitwise Operation在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。 一般网络协议的头部通过指定特定比特来表示特定的意思，还有在很多 low-level 的系统编程中，位运算也非常常见。所以，位运算可以说是程序员的必备">
+  <meta name="description" content="在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。 一般网络协议的头部通过指定特定比特来表示特定的意思，还有在很多 low-level 的系统编程中，位运算也非常常见。所以，位运算可以说是程序员的必备技能了，下面让我们来看几种基本的位">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bitwise Operation">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/22/BitwiseOperation/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Bitwise Operation在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。 一般网络协议的头部通过指定特定比特来表示特定的意思，还有在很多 low-level 的系统编程中，位运算也非常常见。所以，位运算可以说是程序员的必备">
+<meta property="og:description" content="在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。 一般网络协议的头部通过指定特定比特来表示特定的意思，还有在很多 low-level 的系统编程中，位运算也非常常见。所以，位运算可以说是程序员的必备技能了，下面让我们来看几种基本的位">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-04T07:42:12.640Z">
+<meta property="og:updated_time" content="2018-06-26T08:43:55.749Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bitwise Operation">
-<meta name="twitter:description" content="Bitwise Operation在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。 一般网络协议的头部通过指定特定比特来表示特定的意思，还有在很多 low-level 的系统编程中，位运算也非常常见。所以，位运算可以说是程序员的必备">
+<meta name="twitter:description" content="在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。 一般网络协议的头部通过指定特定比特来表示特定的意思，还有在很多 low-level 的系统编程中，位运算也非常常见。所以，位运算可以说是程序员的必备技能了，下面让我们来看几种基本的位">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Bitwise-Operation"><a href="#Bitwise-Operation" class="headerlink" title="Bitwise Operation"></a>Bitwise Operation</h1><p>在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。</p>
+    <p>在计算机刚出现时的远古年代（其实也就几十年）， CPU ，内存和网络带宽都是非常珍贵的资源，在处理或者发送数据时，为了尽可能地节约资源，程序员都需要尽可能控制数据的大小，例如布尔值能用一个比特表示就绝不使用一个字节。</p>
 <p>一般网络协议的头部通过指定特定比特来表示特定的意思，还有在很多 <code>low-level</code> 的系统编程中，位运算也非常常见。所以，位运算可以说是程序员的必备技能了，下面让我们来看几种基本的位运算吧。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> op <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> BitwiseOperation <span class="keyword">interface</span> &#123;</span><br><span class="line">    AND(<span class="keyword">byte</span>, <span class="keyword">byte</span>) <span class="keyword">byte</span></span><br><span class="line">    ANDNOT(<span class="keyword">byte</span>, <span class="keyword">byte</span>) <span class="keyword">byte</span></span><br><span class="line">    OR(<span class="keyword">byte</span>, <span class="keyword">byte</span>) <span class="keyword">byte</span></span><br><span class="line">    XOR(<span class="keyword">byte</span>. <span class="keyword">byte</span>) <span class="keyword">byte</span> </span><br><span class="line">    NOT(<span class="keyword">byte</span>) <span class="keyword">byte</span>  </span><br><span class="line">    SHIFT_LEFT(<span class="keyword">byte</span>, <span class="keyword">uint</span>) <span class="keyword">byte</span></span><br><span class="line">    SHIFT_RIGHT(<span class="keyword">byte</span>, <span class="keyword">uint</span>) <span class="keyword">byte</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="amp-AND"><a href="#amp-AND" class="headerlink" title="&amp; (AND)"></a>&amp; (AND)</h2><p><code>AND</code> 运算符可以有选择性地将数的某位清零，除此之外，还可以检测数的奇偶性（1 &amp; a == 1）。</p>

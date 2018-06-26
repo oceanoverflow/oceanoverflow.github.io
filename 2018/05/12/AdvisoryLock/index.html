@@ -5,18 +5,18 @@
   
   <title>Advisory Lock | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Advisory Lock很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .p">
+  <meta name="description" content="很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .pid 文件，并试着向这个文">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Advisory Lock">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/12/AdvisoryLock/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Advisory Lock很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .p">
+<meta property="og:description" content="很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .pid 文件，并试着向这个文">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:33:27.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:43:48.448Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Advisory Lock">
-<meta name="twitter:description" content="Advisory Lock很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .p">
+<meta name="twitter:description" content="很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。 那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 .pid 结尾的文件，并向这个文件上加一个建议性锁（ advisory lock ），这样如果有第二个这个的进程起来，它会试着去打开这个 .pid 文件，并试着向这个文">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Advisory-Lock"><a href="#Advisory-Lock" class="headerlink" title="Advisory Lock"></a>Advisory Lock</h1><p>很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。</p>
+    <p>很多时候，在操作系统中，对于特定应用，我们只希望起一个进程实例，但是操作系统并没有限制同一个应用进程的个数，也就是说，在每个应用运行前，我们需要检测进程是否存在。</p>
 <p>那么如何检测进程是否已经存在了呢，我们可以在进程启动时，生成一个以 <code>.pid</code> 结尾的文件，并向这个文件上加一个建议性锁（ <code>advisory lock</code> ），这样如果有第二个这个的进程起来，它会试着去打开这个 <code>.pid</code> 文件，并试着向这个文件加建议性锁，但由于先起来的进程已经加过锁了，所以第二个进程就没有办法再加锁了，第二个进程知道自己不是第一个起起来的，所以就选择退出。</p>
 <p>等等，刚才说的建议性锁又是什么呢，建议性锁就好像人们指定的一系列规则， 例如交通法规建议人们红灯停，绿灯行，这里的红绿灯就是一个建议性锁，但是总有不听话的人不遵守这些规则，也就是说无视建议性锁的存在。建议性锁并不是强制性的，进程可以选择不去遵守它。</p>
 <p>上面进程的例子就是这样，第二个进程如果观测到文件已经上锁了，如果它不是恶意进程，那么它会选择尊重规则选择退出。</p>

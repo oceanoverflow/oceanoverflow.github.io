@@ -5,18 +5,18 @@
   
   <title>Job Dispatcher | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Job Dispatcher当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 Job Dispatcher 模型。 我们把处理任务的服务器称为 Worker ，而把分配任务的服务器称为Dispatcher 或者 Master 。">
+  <meta name="description" content="当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 Job Dispatcher 模型。 我们把处理任务的服务器称为 Worker ，而把分配任务的服务器称为Dispatcher 或者 Master 。Dispatcher 负责给">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Job Dispatcher">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/13/JobDispatcher/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Job Dispatcher当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 Job Dispatcher 模型。 我们把处理任务的服务器称为 Worker ，而把分配任务的服务器称为Dispatcher 或者 Master 。">
+<meta property="og:description" content="当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 Job Dispatcher 模型。 我们把处理任务的服务器称为 Worker ，而把分配任务的服务器称为Dispatcher 或者 Master 。Dispatcher 负责给">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-30T05:40:07.359Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:26.597Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Job Dispatcher">
-<meta name="twitter:description" content="Job Dispatcher当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 Job Dispatcher 模型。 我们把处理任务的服务器称为 Worker ，而把分配任务的服务器称为Dispatcher 或者 Master 。">
+<meta name="twitter:description" content="当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 Job Dispatcher 模型。 我们把处理任务的服务器称为 Worker ，而把分配任务的服务器称为Dispatcher 或者 Master 。Dispatcher 负责给">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Job-Dispatcher"><a href="#Job-Dispatcher" class="headerlink" title="Job Dispatcher"></a>Job Dispatcher</h1><p>当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 <code>Job Dispatcher</code> 模型。</p>
+    <p>当处理大量计算密集型任务时，为了提高工作效率，常常会引入多台服务器同时进行处理，但是不同的服务器之间并不清楚自己该处理哪个任务，也就是说服务器自己并不能保证自己处理的任务和别人的任务是不一样的。为了解决上述问题，我们引入 <code>Job Dispatcher</code> 模型。</p>
 <p>我们把处理任务的服务器称为 <code>Worker</code> ，而把分配任务的服务器称为<code>Dispatcher</code> 或者 <code>Master</code> 。<code>Dispatcher</code> 负责给当前处于空闲状态的 <code>Worker</code> 分配任务 （ <code>Job</code> ），当其处理完分配的任务之后，为了不让自己的 <code>CPU</code> 闲置，<code>Worker</code> 会通知 <code>Dispather</code> 自己是可用的（ <code>available</code> ） ，然后 <code>Dispatcher</code> 就可以继续向 <code>Worker</code> 分配任务，直到所有任务全都完成。这样的模型非常 <code>scalable</code> ，引入的 <code>Worker</code> 数量越多，任务完成得越快。</p>
 <h2 id="Worker"><a href="#Worker" class="headerlink" title="Worker"></a>Worker</h2><p>一个任务我们用结构体 <code>Job</code> 来表示，现在对于此结构体中有什么我们并不关心，这个需要由业务逻辑具体定义。</p>
 <p> <code>Worker</code> 中有三个 <code>channel</code> ，分别用于暂停，接收任务和通知 <code>Dispatcher</code> 任务完成用的。</p>

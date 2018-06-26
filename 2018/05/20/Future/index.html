@@ -5,18 +5,18 @@
   
   <title>Future | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="FutureFuture 是 java 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在golang 中我们可以利用 goroutine ， chan 机制和 for select 轻松实现类似的功能。 其实 Future 的本质就是异步计算的结果，我们用 item interface{} 来放置 Future 的结果，通过读取 trig">
+  <meta name="description" content="Future 是 java 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在golang 中我们可以利用 goroutine ， chan 机制和 for select 轻松实现类似的功能。 其实 Future 的本质就是异步计算的结果，我们用 item interface{} 来放置 Future 的结果，通过读取 triggered">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Future">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/20/Future/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="FutureFuture 是 java 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在golang 中我们可以利用 goroutine ， chan 机制和 for select 轻松实现类似的功能。 其实 Future 的本质就是异步计算的结果，我们用 item interface{} 来放置 Future 的结果，通过读取 trig">
+<meta property="og:description" content="Future 是 java 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在golang 中我们可以利用 goroutine ， chan 机制和 for select 轻松实现类似的功能。 其实 Future 的本质就是异步计算的结果，我们用 item interface{} 来放置 Future 的结果，通过读取 triggered">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-20T06:05:42.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:44.589Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Future">
-<meta name="twitter:description" content="FutureFuture 是 java 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在golang 中我们可以利用 goroutine ， chan 机制和 for select 轻松实现类似的功能。 其实 Future 的本质就是异步计算的结果，我们用 item interface{} 来放置 Future 的结果，通过读取 trig">
+<meta name="twitter:description" content="Future 是 java 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在golang 中我们可以利用 goroutine ， chan 机制和 for select 轻松实现类似的功能。 其实 Future 的本质就是异步计算的结果，我们用 item interface{} 来放置 Future 的结果，通过读取 triggered">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h1><p><code>Future</code> 是 <code>java</code> 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在<code>golang</code> 中我们可以利用 <code>goroutine</code> ， <code>chan</code> 机制和 <code>for select</code> 轻松实现类似的功能。</p>
+    <p><code>Future</code> 是 <code>java</code> 中比较常见的并发编程解决方案，它采用异步的方式，尽可能减少运行时代码阻塞，很大程度上提高了程序的运行效率，在<code>golang</code> 中我们可以利用 <code>goroutine</code> ， <code>chan</code> 机制和 <code>for select</code> 轻松实现类似的功能。</p>
 <p>其实 <code>Future</code> 的本质就是异步计算的结果，我们用 <code>item interface{}</code> 来放置 <code>Future</code> 的结果，通过读取 <code>triggered</code> 的值来判断异步计算是否已经返回。</p>
 <p><code>New</code> 方法用于构造 <code>Future</code> 任务，它通过监听 <code>Completer</code> 通道来获取异步执行的结果，如果监听超时，则停止监听，返回错误。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Future <span class="keyword">struct</span> &#123;</span><br><span class="line">    triggered <span class="keyword">bool</span></span><br><span class="line">    item      <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    err       error</span><br><span class="line">    lock      sync.Mutex</span><br><span class="line">    wg        sync.WaitGroup</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Completer &lt;-<span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(completer Completer, timeout time.Duration)</span> *<span class="title">Future</span></span> &#123;</span><br><span class="line">    f := &amp;Future&#123;&#125;</span><br><span class="line">    f.wg.Add(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> listen(f, completer, timeout)</span><br><span class="line">    <span class="keyword">return</span> f</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

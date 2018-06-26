@@ -5,18 +5,18 @@
   
   <title>Event Timer | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Event Timer还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一">
+  <meta name="description" content="还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一个 &amp;lt;- cha">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Event Timer">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/27/EventTimer/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Event Timer还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一">
+<meta property="og:description" content="还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一个 &amp;lt;- cha">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T12:01:31.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:22.065Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Event Timer">
-<meta name="twitter:description" content="Event Timer还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一">
+<meta name="twitter:description" content="还记得我们在 EventProcessEngine 里讲过的 Event Manager 吗，我们这里要实现的 Event Timer 其实和那个是有点耦合的，本篇博客与EventProcessEngine 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。 关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 Timer 结构体里包含一个 &amp;lt;- cha">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Event-Timer"><a href="#Event-Timer" class="headerlink" title="Event Timer"></a>Event Timer</h1><p>还记得我们在 <a href="EventProcessEngine.md">EventProcessEngine</a> 里讲过的 <code>Event Manager</code> 吗，我们这里要实现的 <code>Event Timer</code> 其实和那个是有点耦合的，本篇博客与<a href="EventProcessEngine.md">EventProcessEngine</a> 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。</p>
+    <p>还记得我们在 <a href="EventProcessEngine.md">EventProcessEngine</a> 里讲过的 <code>Event Manager</code> 吗，我们这里要实现的 <code>Event Timer</code> 其实和那个是有点耦合的，本篇博客与<a href="EventProcessEngine.md">EventProcessEngine</a> 是姊妹篇，如果没有看过的小伙伴建议先看上一篇再来看这一篇。</p>
 <p>关于定时器，golang的标准库已经提供了一个免费的解决方案给我们了 。标准库里的 <code>Timer</code> 结构体里包含一个 <code>&lt;- chan Time</code> 通道，在经历过一定的时间后，该通道就会返回，这样就达到了倒计时的目的，当然还有一个 <code>Reset</code> 方法用于重置我们的定时器。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Timer <span class="keyword">struct</span> &#123;</span><br><span class="line">    C &lt;- <span class="keyword">chan</span> Time</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AfterFunc</span><span class="params">(d Duration, f <span class="keyword">func</span>()</span>) *<span class="title">Timer</span> </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">NewTimer</span><span class="params">(d Duration)</span> *<span class="title">Timer</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(t *Timer)</span> <span class="title">Reset</span><span class="params">(d Duration)</span> <span class="title">bool</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(t *Timer)</span> <span class="title">Stop</span><span class="params">()</span> <span class="title">bool</span></span></span><br></pre></td></tr></table></figure>
 <p>那么为什么要实现一个自己的定时器呢，当然是觉得官方提供的不够用啦。</p>

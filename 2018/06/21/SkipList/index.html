@@ -5,19 +5,19 @@
   
   <title>Skip List | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Skip List跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leve">
+  <meta name="description" content="跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leveldb 中的索引就">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Skip List">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/21/SkipList/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Skip List跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leve">
+<meta property="og:description" content="跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leveldb 中的索引就">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://ds055uzetaobb.cloudfront.net/image_optimizer/968e3d82130f4bfa9a1574b1537c840a1787c919.png">
-<meta property="og:updated_time" content="2018-06-21T12:55:10.283Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:54.101Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Skip List">
-<meta name="twitter:description" content="Skip List跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leve">
+<meta name="twitter:description" content="跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。  利用跳表可以构建 kv 数据库的索引，例如 leveldb 中的索引就">
 <meta name="twitter:image" content="https://ds055uzetaobb.cloudfront.net/image_optimizer/968e3d82130f4bfa9a1574b1537c840a1787c919.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Skip-List"><a href="#Skip-List" class="headerlink" title="Skip List"></a>Skip List</h1><p>跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。</p>
+    <p>跳表是一种建立在普通链表基础上的概率数据结构，为什么说是概率呢，因为跳表会根据概率在原始链表上构建后续的链表层，每个额外的链表层包含的元素数量更少，但每个元素都是原始链表中已经拥有的，这使得跳表在搜索时不用像链表一样一个一个元素的寻找，而是跳过一些元素，这就是跳表名字的由来，正是因为略过了一些元素，所以大大增加了搜索的速度。</p>
 <p><img src="https://ds055uzetaobb.cloudfront.net/image_optimizer/968e3d82130f4bfa9a1574b1537c840a1787c919.png" alt="SkipList"></p>
 <p>利用跳表可以构建 <code>kv</code> 数据库的索引，例如 <code>leveldb</code> 中的索引就是利用跳表来构建的，跳表相对其他索引数据结构例如红黑树，b树等有实现相对简单，但查询效率高的特点，其空间复杂度为 <code>O(n)</code> ，时间复杂度为 <code>O(logn)</code> 。</p>
 <h2 id="跳表的组成元素"><a href="#跳表的组成元素" class="headerlink" title="跳表的组成元素"></a>跳表的组成元素</h2><p>与链表类似，跳表也是由一系列节点组成，每个节点我们用 <code>Element</code> 结构体表示，每个节点会存储一个 <code>kv</code> 对， 除了 <code>kv</code> 对之外，还包含一个 <code>elementNode</code> 结构体，该结构体其实就是一个指针数组，在单向链表中，指针有且只有一个，在跳表中，可以存在多个指向后续节点的指针，用于遍历时加速跳跃使用，这个指针数组是跳表的核心，使用 <code>next []*Element</code> 表示。</p>

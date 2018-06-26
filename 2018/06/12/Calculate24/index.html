@@ -5,19 +5,19 @@
   
   <title>Calculate 24 | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Calculate 24算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （">
+  <meta name="description" content="算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （ +，-，*，/ ）及运">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Calculate 24">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/12/Calculate24/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Calculate 24算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （">
+<meta property="og:description" content="算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （ +，-，*，/ ）及运">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Exp-tree-ex-11.svg/500px-Exp-tree-ex-11.svg.png">
-<meta property="og:updated_time" content="2018-06-12T07:01:19.287Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:01.357Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Calculate 24">
-<meta name="twitter:description" content="Calculate 24算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （">
+<meta name="twitter:description" content="算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。 expression tree 我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ val ），非叶子结点存储运算符 op （ +，-，*，/ ）及运">
 <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Exp-tree-ex-11.svg/500px-Exp-tree-ex-11.svg.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Calculate-24"><a href="#Calculate-24" class="headerlink" title="Calculate 24"></a>Calculate 24</h1><p>算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。</p>
+    <p>算24点还是挺考验一个人的心算能力的，作为一个数学比较差劲的人，每次和别人玩24点总是会慢一个节拍，可以说是非常伤自尊了。不过虽然心算算不过别人，我们可以写一个自动计算24点的程序和别人比嘛，嘻嘻。</p>
 <h2 id="expression-tree"><a href="#expression-tree" class="headerlink" title="expression tree"></a>expression tree</h2><p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Exp-tree-ex-11.svg/500px-Exp-tree-ex-11.svg.png" alt="ExpressionTree"></p>
 <p>我们可以利用表达式树来确定运算的优先级，进而确定运算的顺序，表达式树属于二叉树，其叶结点存储运算数（ <code>val</code> ），非叶子结点存储运算符 <code>op</code> （ <code>+，-，*，/</code> ）及运算结果（ <code>val = l.val op r.val</code> ）。每个节点都有指向其左子节点（ <code>l</code> ）和右子节点（ <code>r</code> ）的指针，叶节点中这两个指针均为空。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> node <span class="keyword">struct</span> &#123;</span><br><span class="line">    l    *node</span><br><span class="line">    r    *node</span><br><span class="line">    op   <span class="keyword">rune</span></span><br><span class="line">    val  <span class="keyword">float64</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *node)</span> <span class="title">set</span><span class="params">(l, r *node, op <span class="keyword">rune</span>)</span></span> &#123;</span><br><span class="line">    n.l  = l</span><br><span class="line">    n.r  = r</span><br><span class="line">    n.op = op</span><br><span class="line">    <span class="keyword">switch</span> op &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'+'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val + n.r.val)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'-'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val - n.r.val)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'*'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val * n.r.val)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'/'</span>:</span><br><span class="line">        n.val = <span class="keyword">float64</span>(n.l.val / n.r.val)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *node)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n.op != <span class="keyword">rune</span>(<span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> fmt.Sprintf(<span class="string">" %c "</span>, n.op)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%d"</span>, <span class="keyword">int</span>(n.val))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

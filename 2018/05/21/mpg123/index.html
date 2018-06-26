@@ -5,18 +5,18 @@
   
   <title>mpg123 | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="mpg123日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并">
+  <meta name="description" content="日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并没有怎么搞过">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mpg123">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/21/mpg123/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="mpg123日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并">
+<meta property="og:description" content="日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并没有怎么搞过">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-21T11:17:16.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:08.848Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mpg123">
-<meta name="twitter:description" content="mpg123日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并">
+<meta name="twitter:description" content="日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。 写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并没有怎么搞过">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="mpg123"><a href="#mpg123" class="headerlink" title="mpg123"></a>mpg123</h1><p>日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。</p>
+    <p>日常生活中，我们都是使用网易云音乐之类的音乐软件听歌，但是你有没有想过，作为程序员，该如何使用命令行来听（zhuang）歌（bi）呢？今天就让我们来实现这个功能吧。</p>
 <p>写代码，一般需要搞清楚三点，输入，输出和算法。如果使用命令行听歌，输入很明确，肯定是音频数据流，数据一般可以通过网上获取，那么输出呢，肯定就是我们耳朵中听到的声音，这两点都比较简单。关键是处理数据和输出数据的算法，之前并没有怎么搞过音乐格式编码和解码之类的东西，不过不要慌，已经有强大的 <code>mpg123</code> 这个命令行工具帮我们搞定这类事情了。</p>
 <p><code>mpg123</code> 需要额外安装，<code>macOS</code> 用户可以使用 <code>homebrew</code> 进行安装。<code>mpg123</code> 可以帮助我们处理 <code>MPEG 1.0/2.0/2.5</code> 格式的数据流，并使用系统默认的音屏设备播放。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mpg123 [ options ] file-or-URL...</span><br></pre></td></tr></table></figure>

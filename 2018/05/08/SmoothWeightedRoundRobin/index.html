@@ -5,18 +5,18 @@
   
   <title>Weighted Round Robin | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Smooth Weighted Round Robin我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b">
+  <meta name="description" content="我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b: 2, c:1} ，一般来说可以使用加权的轮询算法（">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Weighted Round Robin">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/08/SmoothWeightedRoundRobin/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Smooth Weighted Round Robin我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b">
+<meta property="og:description" content="我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b: 2, c:1} ，一般来说可以使用加权的轮询算法（">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T12:04:29.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:51.690Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Weighted Round Robin">
-<meta name="twitter:description" content="Smooth Weighted Round Robin我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b">
+<meta name="twitter:description" content="我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。 例如服务器的性能比例如下：{a:3, b: 2, c:1} ，一般来说可以使用加权的轮询算法（">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Smooth-Weighted-Round-Robin"><a href="#Smooth-Weighted-Round-Robin" class="headerlink" title="Smooth Weighted Round Robin"></a>Smooth Weighted Round Robin</h1><p>我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。</p>
+    <p>我们在之前的文章中就讲过负载均衡，但是那篇文章中的例子比较简单，仅仅是利用随机算法来进行负载均衡，并没有考虑服务器的实际情况，在很多情况下，服务器的性能可能存在显著差异，这时候如果采用随机算法，那么性能较差的服务器会承受过多的压力，而性能较好的服务器则大部分时间处于空闲状态，系统整体的吞吐量就无法上来。</p>
 <p>例如服务器的性能比例如下：<code>{a:3, b: 2, c:1}</code> ，一般来说可以使用加权的轮询算法（ <code>Weighted Round Robin</code> ）进行负载均衡，但是普通的加权轮询会得出类似这样的序列， <code>a a a b b c</code> ，这样的序列有一个问题，就是它并不够平滑，我们更希望得到像这样的序列 <code>a b a c b a</code> 。也就是说一般的轮询调度在调度的过程中并没有考虑瞬时的情况，所以会导致对某一台服务器的瞬时访问。</p>
 <p>下面我们就来介绍一下平滑版本的加权轮询算法，来解决上述瞬时访问可能出现的问题。我们对每个节点赋予两个权重， <code>Weight</code> ，这是一个较为固定的值，就是前面给出的 <code>{a:3, b: 2, c:1}</code> ，还需要一个 <code>CurrentWeight</code> 来记录当前的权重，初始时均为0，这个权重是在每次选择节点时动态变化的。</p>
 <p>例如现在有三台服务器，其权重比值为 <code>{a:3, b: 2, c:1}</code> ，刚开始时它们的 <code>CurrentWeight</code> 均为0，按照下面的算法，每一回合中各个节点的 <code>CurrentWeight</code> 都会加上它相应的的 <code>Weight</code> ，<code>total</code> 变量则用于记录每一个节点增加的 <code>Weight</code> 的总和，并记录当前权重最高的那一个节点，也就是我们的 <code>best</code> ，在一轮计算之后，再让 <code>best</code> 节点的 <code>CurrentWeight</code> 减去 <code>total</code> 值。</p>

@@ -5,18 +5,18 @@
   
   <title>Leaky Buffer | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Leaky Buffer在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需">
+  <meta name="description" content="在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需要使用内存， 那么它会从">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Leaky Buffer">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/26/LeakyBuffer/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Leaky Buffer在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需">
+<meta property="og:description" content="在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需要使用内存， 那么它会从">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:49:11.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:33.913Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Leaky Buffer">
-<meta name="twitter:description" content="Leaky Buffer在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需">
+<meta name="twitter:description" content="在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 LeakyBuffer 这种编程模型，LeakyBuffer 通常也被叫做 LeakyBucket ，或者说是漏桶模型。LeakyBuffer 维护了固定个数个字节数组（free list），如果我们的程序需要使用内存， 那么它会从">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Leaky-Buffer"><a href="#Leaky-Buffer" class="headerlink" title="Leaky Buffer"></a>Leaky Buffer</h1><p>在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 <code>LeakyBuffer</code> 这种编程模型，<code>LeakyBuffer</code> 通常也被叫做 <code>LeakyBucket</code> ，或者说是漏桶模型。<code>LeakyBuffer</code> 维护了固定个数个字节数组（free list），如果我们的程序需要使用内存， 那么它会从 <code>LeakyBuffer</code> 维护的 <code>freelist</code> 去拿，如果 <code>freelist</code> 中没有了，则再重新make一个，当程序使用完了这段内存，不像通常那么被golang的runtime进行垃圾回收操作，我们把它重新放回 <code>LeakyBuffer</code> 维护的 <code>freelist</code> 中。</p>
+    <p>在科学上网服务中，客户端不断地向shadowsocks服务器发送数据，服务器从网络中读取经过加密的数据然后进行解密操作，为了避免重复的分配内存和释放内存操作，我们引入 <code>LeakyBuffer</code> 这种编程模型，<code>LeakyBuffer</code> 通常也被叫做 <code>LeakyBucket</code> ，或者说是漏桶模型。<code>LeakyBuffer</code> 维护了固定个数个字节数组（free list），如果我们的程序需要使用内存， 那么它会从 <code>LeakyBuffer</code> 维护的 <code>freelist</code> 去拿，如果 <code>freelist</code> 中没有了，则再重新make一个，当程序使用完了这段内存，不像通常那么被golang的runtime进行垃圾回收操作，我们把它重新放回 <code>LeakyBuffer</code> 维护的 <code>freelist</code> 中。</p>
 <p>下面我们来看一下 <code>Leaky Buffer</code> 的实现吧。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> leakyBufferSize = <span class="number">4096</span></span><br><span class="line"><span class="keyword">const</span> maxNum = <span class="number">2048</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LeakyBuffer <span class="keyword">struct</span> &#123;</span><br><span class="line">    bufferSize  <span class="keyword">int</span></span><br><span class="line">    freeList <span class="keyword">chan</span> []<span class="keyword">byte</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>LeakyBuffer</code> 的实现非常简单，它主要维护了两个变量，一就是每个 <code>buffer</code>  的大小，而就是一个 <code>freelist</code> ，真正用于维护我们的内存。</p>

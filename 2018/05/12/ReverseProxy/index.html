@@ -5,19 +5,19 @@
   
   <title>Reverse Proxy | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Reverse Proxy在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的">
+  <meta name="description" content="在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的服务器，让它去处理，业务逻">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Reverse Proxy">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/12/ReverseProxy/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Reverse Proxy在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的">
+<meta property="og:description" content="在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的服务器，让它去处理，业务逻">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Reverse_proxy_h2g2bob.svg/1200px-Reverse_proxy_h2g2bob.svg.png">
-<meta property="og:updated_time" content="2018-05-15T11:57:53.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:48:11.658Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Reverse Proxy">
-<meta name="twitter:description" content="Reverse Proxy在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的">
+<meta name="twitter:description" content="在正常的 HTTP 服务流程中，客户端向服务器发送 HTTP 请求，服务器收到后会向客户端返回一个 HTTP 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 HTTP 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的服务器，让它去处理，业务逻">
 <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Reverse_proxy_h2g2bob.svg/1200px-Reverse_proxy_h2g2bob.svg.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Reverse-Proxy"><a href="#Reverse-Proxy" class="headerlink" title="Reverse Proxy"></a>Reverse Proxy</h1><p>在正常的 <code>HTTP</code> 服务流程中，客户端向服务器发送 <code>HTTP</code> 请求，服务器收到后会向客户端返回一个 <code>HTTP</code> 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 <code>HTTP</code> 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的服务器，让它去处理，业务逻辑服务器处理完之后，会先将答复返回给反向代理服务器，再由反向代理服务器返回给客户端。</p>
+    <p>在正常的 <code>HTTP</code> 服务流程中，客户端向服务器发送 <code>HTTP</code> 请求，服务器收到后会向客户端返回一个 <code>HTTP</code> 答复。但在实际生产环境中，真正处理请求的服务器和客户端之间通常还会引入一个中介，也就是反向代理服务器，在引入了反向代理服务器之后，客户端会先将请求发送给反向代理服务器，反向代理收到该 <code>HTTP</code> 请求后，并不会自己亲自处理该请求，而是将请求转发给真正的处理业务逻辑的服务器，让它去处理，业务逻辑服务器处理完之后，会先将答复返回给反向代理服务器，再由反向代理服务器返回给客户端。</p>
 <p>生活中常见的 <code>NGINX</code> 就常常作为反向代理服务器来使用。那么你可能会问，传统 <code>C/S</code> 模型难道不够好吗，还非要引入一个不知道什么鬼的反向代理来捣乱，引入之后只会把架构变得更复杂，有啥好处？（傲娇状）其实原因很简单，第一反向代理服务器可以当作防火墙来用，它为真正的业务逻辑服务器与外界可能的恶意攻击之间提供了一个屏障，尤其是像银行这种对安全性要求极高的金融机构无论加几个这样的防火墙都不会嫌多。第二点就是它可以提供负载均衡功能，通过使用不同的策略将请求转发给不同的服务器，以达到负载均衡的目的。</p>
 <p>幸运的是，引入反向代理，并不会改变传统的 <code>C/S</code> 编程模型，因为客户端无法感知反向代理服务器的存在，他们只会觉得反向代理服务器就是真正处理业务逻辑的服务器。</p>
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Reverse_proxy_h2g2bob.svg/1200px-Reverse_proxy_h2g2bob.svg.png" alt="Reverse Proxy"></p>

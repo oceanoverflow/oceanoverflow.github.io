@@ -5,18 +5,18 @@
   
   <title>TLS | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="TLS在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保">
+  <meta name="description" content="在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保证传输">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TLS">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/TLS/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="TLS在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保">
+<meta property="og:description" content="在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保证传输">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:43:10.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:37.253Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TLS">
-<meta name="twitter:description" content="TLS在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保">
+<meta name="twitter:description" content="在之前的博客中涉及到的 TCP 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 TLS 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。 TLS 即 Transport Layer Security ，就是为了保证传输">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h1><p>在之前的博客中涉及到的 <code>TCP</code> 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 <code>TLS</code> 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。</p>
+    <p>在之前的博客中涉及到的 <code>TCP</code> 网络编程都是非常不安全的，因为它将我们的数据直接以明文的形式在公网上面传输，如果有恶意第三方的存在，我们传输的数据就可以被捕捉监听甚至修改，从而导致各种各样无法预测的结果，所以，考虑到安全性，我们还是要学一学如果用 <code>TLS</code> 进行网络编程，以提高我们的客户端和服务器之前传输数据的安全性。</p>
 <p><code>TLS</code> 即 <code>Transport Layer Security</code> ，就是为了保证传输层上的数据安全，服务器和客户端会在 <code>handshake</code> 阶段协商出只有两者知晓的一个对称密钥，然后之后的通信就利用这个对称密钥将数据进行加密后进行传输，很幸运的是，在我们使用 <code>TLS</code> 进行网络编程的时候，并不用去关注这些繁杂的细节，因为golang的标准库都已经帮我们封装好了（hooray！）。</p>
 <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>使用 <code>TLS</code> 进行网络编程的时候，我们需要在服务器上放一个证书，证书的话可以使用 <code>openssl</code> 工具来生成，这里作为例子就先生成一个自签名的证书吧。</p>
 <p>要生成一个证书，第一步当然就是生成一个私钥了，这里我们指定使用 <code>RSA</code> 算法生成一个 <code>2048bit</code> 的私钥。</p>

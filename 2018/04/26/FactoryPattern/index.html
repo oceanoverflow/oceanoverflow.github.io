@@ -5,18 +5,18 @@
   
   <title>Factory Pattern | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="工厂模式工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要">
+  <meta name="description" content="工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要点，就可">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Factory Pattern">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/26/FactoryPattern/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="工厂模式工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要">
+<meta property="og:description" content="工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要点，就可">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T12:00:06.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:30.661Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Factory Pattern">
-<meta name="twitter:description" content="工厂模式工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要">
+<meta name="twitter:description" content="工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。 下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要点，就可">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h1><p>工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。</p>
+    <p>工厂模式是设计模式里面的一种，具体点属于创建模式（creational pattern），它提供了一种创建对象的最佳方式。与传统的new来进行初始化对象不同，工厂模式在初始化对象时不会向客户端暴露创建的逻辑，也就减少了出错时到处修改的麻烦，工厂方法虽然稍为增加了程序猿的工作量，但会给系统带来更大的可拓展性和尽量少的修改。</p>
 <p>下面我们来看一下如何使用工厂模式，工厂模式有几个要点，掌握住了几个要点，就可以轻松写代码了。</p>
 <ul>
 <li>Creator: 申明我们的工厂方法，会返回抽象的Product</li>

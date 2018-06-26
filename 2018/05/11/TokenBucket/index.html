@@ -5,19 +5,19 @@
   
   <title>Token Bucket | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Token Bucket学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个">
+  <meta name="description" content="学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个数就不会再增加了。接下来">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Token Bucket">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/11/TokenBucket/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Token Bucket学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个">
+<meta property="og:description" content="学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个数就不会再增加了。接下来">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://community.cambiumnetworks.com/bstrc49894/attachments/bstrc49894/forums_pmp_450/5991/1/TokenBucket.JPG">
-<meta property="og:updated_time" content="2018-05-15T11:42:28.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:33.190Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Token Bucket">
-<meta name="twitter:description" content="Token Bucket学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个">
+<meta name="twitter:description" content="学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ Token Bucket ）这个算法就可以实现速率限制这个功能。 那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个数就不会再增加了。接下来">
 <meta name="twitter:image" content="https://community.cambiumnetworks.com/bstrc49894/attachments/bstrc49894/forums_pmp_450/5991/1/TokenBucket.JPG">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Token-Bucket"><a href="#Token-Bucket" class="headerlink" title="Token Bucket"></a>Token Bucket</h1><p>学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ <code>Token Bucket</code> ）这个算法就可以实现速率限制这个功能。</p>
+    <p>学校里的宽带还是有分三六九等的，如果你钱交的多的，对应带宽自然比较高。但你想过他们是如何限制你的最高带宽的吗？其实用令牌桶（ <code>Token Bucket</code> ）这个算法就可以实现速率限制这个功能。</p>
 <p>那么什么又是令牌桶的，简单的说就是假设你有一个专门用于放令牌的桶，桶的最大容量是有上限的，设为C，而该桶自带一个机制就是每隔固定的一段时间会产生一个令牌，一旦令牌充满了桶，桶中的令牌个数就不会再增加了。接下来是重点，如果你要进行某个需要控制速率的操作，在执行这个操作之前，必须先从桶中拿到这个操作对应的令牌个数，比如规定了操作A需要5个令牌，操作B需要10个令牌，那么如果要执行操作A，则需要从桶中拿出5个令牌，如果桶中的令牌数目不够，就需要等到令牌数量足够时才能进行A操作。由于桶中令牌产生的速率是固定的，而在进行相关操作之前，又必须获得足够数量的令牌，这样就到达了速率限制（ <code>Rate Limiting</code> ）的目的。</p>
 <p>除了速率限制之外，令牌桶算法还具有流量整形（ <code>Traffic Shaping</code> ）的功能，因为令牌桶中的令牌是以恒定的速率产生的，所以一段时间内产生的令牌数量是固定的，如果在某一段时间消耗的令牌数量较多，也就是对应操作的数量很多，那么之后的一段时间的操作数量必定会收到限制，从整体上来看，操作的速率会比较均匀，也就是说流量是以比较均衡的速率向外发送的。</p>
 <p><img src="https://community.cambiumnetworks.com/bstrc49894/attachments/bstrc49894/forums_pmp_450/5991/1/TokenBucket.JPG" alt="Token Bucket"></p>

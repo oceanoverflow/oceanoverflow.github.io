@@ -5,18 +5,18 @@
   
   <title>Snappy | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="SnappySnappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同">
+  <meta name="description" content="Snappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同时最大限度地">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Snappy">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/15/Snappy/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="SnappySnappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同">
+<meta property="og:description" content="Snappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同时最大限度地">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-15T09:03:56.608Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:49.515Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Snappy">
-<meta name="twitter:description" content="SnappySnappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同">
+<meta name="twitter:description" content="Snappy 是 Google 开发的压缩和解压缩的库，最初使用 C++ 编写，后来又造了一个 golang 版本的轮子。由于目前该压缩算法还没有放到 go 的标准库中去，所以需要通过 go get -u github.com/golang/snappy 安装。 与其他常见的压缩算法相比，Snappy 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同时最大限度地">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Snappy"><a href="#Snappy" class="headerlink" title="Snappy"></a>Snappy</h1><p><code>Snappy</code> 是 <code>Google</code> 开发的压缩和解压缩的库，最初使用 <code>C++</code> 编写，后来又造了一个 <code>golang</code> 版本的轮子。由于目前该压缩算法还没有放到 <code>go</code> 的标准库中去，所以需要通过 <code>go get -u github.com/golang/snappy</code> 安装。</p>
+    <p><code>Snappy</code> 是 <code>Google</code> 开发的压缩和解压缩的库，最初使用 <code>C++</code> 编写，后来又造了一个 <code>golang</code> 版本的轮子。由于目前该压缩算法还没有放到 <code>go</code> 的标准库中去，所以需要通过 <code>go get -u github.com/golang/snappy</code> 安装。</p>
 <p>与其他常见的压缩算法相比，<code>Snappy</code> 存在的目的并不是为了获得最大程度的压缩比，正如其名字所言，它旨在保持合理的压缩比的同时最大限度地提高压缩和解压缩的速度。</p>
 <p><code>Snappy</code> 对数据处理速度上做了很大的优化，但它并不是没有缺点，相对于其他算法来说，<code>Snappy</code> 压缩得到的文件体积会更大一点。如果你更在意压缩速度而不是压缩比的话，<code>Snappy</code> 可能会是一个很好的选择。</p>
 <h2 id="compression"><a href="#compression" class="headerlink" title="compression"></a>compression</h2><p>下面，我们对比一下 <code>Snappy</code> 压缩算法和其他两种常见的压缩算法（ <code>zlib</code> 和 <code>gzip</code> ）的性能。首先，我们定一个 <code>Compressor</code> 接口，并使 <code>Zlib</code> ，<code>Gzip</code> 和 <code>Snappy</code> 这三个结构体均实现它。</p>

@@ -5,19 +5,19 @@
   
   <title>gRPC | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="gRPC首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC">
+  <meta name="description" content="首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC 呢，例">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="gRPC">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/25/gRPC/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="gRPC首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC">
+<meta property="og:description" content="首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC 呢，例">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://camo.githubusercontent.com/e4deb67aa41f71d46774f192b05b75be5c3da112/68747470733a2f2f7261772e6769746875622e636f6d2f6875696368656e2f7a6572672f6d61737465722f646f632f7a6572672e706e67">
-<meta property="og:updated_time" content="2018-05-15T12:02:35.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:57.427Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="gRPC">
-<meta name="twitter:description" content="gRPC首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC">
+<meta name="twitter:description" content="首先，在了解 gRPC 之前，要搞清楚什么是 RPC ，RPC ， Remote Procedure Call ，即远程过程调度，它采用 C/S模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，RPC 是分布式系统中非常重要的一个组成部分。 RPC 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 RPC 呢，例">
 <meta name="twitter:image" content="https://camo.githubusercontent.com/e4deb67aa41f71d46774f192b05b75be5c3da112/68747470733a2f2f7261772e6769746875622e636f6d2f6875696368656e2f7a6572672f6d61737465722f646f632f7a6572672e706e67">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC"></a>gRPC</h1><p>首先，在了解 <code>gRPC</code> 之前，要搞清楚什么是 <code>RPC</code> ，<code>RPC</code> ， <code>Remote Procedure Call</code> ，即远程过程调度，它采用 <code>C/S</code>模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，<code>RPC</code> 是分布式系统中非常重要的一个组成部分。</p>
+    <p>首先，在了解 <code>gRPC</code> 之前，要搞清楚什么是 <code>RPC</code> ，<code>RPC</code> ， <code>Remote Procedure Call</code> ，即远程过程调度，它采用 <code>C/S</code>模型，本质就是客户端通过网络向远程计算机程序也就是服务端发送请求服务，远程服务器执行后向客户端返回答复，<code>RPC</code> 是分布式系统中非常重要的一个组成部分。</p>
 <p><code>RPC</code> 和本地方法调用最大的区别就在于程序是否在一个地址空间内执行，那么我们为什么要用到 <code>RPC</code> 呢，例如我们要写一个分布式爬虫的框架，因为自己的笔记本电脑处理能力有限，为了提高爬虫效率，我们租借了几台 <code>8C16G</code> 的高性能服务器帮我们完成任务，这样就可以由客户端发送爬虫指令，具体的粗活累活可以由服务器代替完成，如下面 <code>client</code> 向服务器发送一个 <code>crawl request</code> ，里面包含了我们要爬取的网站的具体信息，在服务器完成任务之后，向 <code>client</code> 返回一个 <code>crawl response</code> ，也就是爬虫的结果。</p>
 <p><img src="https://camo.githubusercontent.com/e4deb67aa41f71d46774f192b05b75be5c3da112/68747470733a2f2f7261772e6769746875622e636f6d2f6875696368656e2f7a6572672f6d61737465722f646f632f7a6572672e706e67" alt="grpc"></p>
 <p>关于 <code>RPC</code> ，不同的语言有不同的解决方案，例如在golang的标准库中就提供了 <code>net/rpc</code> 这个解决方案，虽然这个方法效率很高，但是它的缺点也是比较致命的，就是它仅能在golang程序中使用，而我们今天的主角，<code>gRPC</code> 就是一个跨语言平台的通用高性能 <code>RPC</code> 库，听着是不是很酷炫，下面就让我们来仔细学习一下吧。</p>

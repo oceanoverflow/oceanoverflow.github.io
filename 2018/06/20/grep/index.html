@@ -5,18 +5,18 @@
   
   <title>grep | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="grep最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简">
+  <meta name="description" content="最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简单实现吧">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="grep">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/20/grep/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="grep最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简">
+<meta property="og:description" content="最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简单实现吧">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-20T06:07:36.957Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:51.416Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="grep">
-<meta name="twitter:description" content="grep最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简">
+<meta name="twitter:description" content="最近看到 golang 语法中一个非常有趣的基本组合 chan chan ，为了加深自己的理解，想多看几个使用案例，于是去 $GOPATH 下面的文件去找，但是一个个文件找肯定不现实，于是借助 grep 帮我们进行搜索，grep 的使用非常简单，但是如果在不了解 grep 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 grep 的使用和 golang 版本的简单实现吧">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h1><p>最近看到 <code>golang</code> 语法中一个非常有趣的基本组合 <code>chan chan</code> ，为了加深自己的理解，想多看几个使用案例，于是去 <code>$GOPATH</code> 下面的文件去找，但是一个个文件找肯定不现实，于是借助 <code>grep</code> 帮我们进行搜索，<code>grep</code> 的使用非常简单，但是如果在不了解 <code>grep</code> 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 <code>grep</code> 的使用和 <code>golang</code> 版本的简单实现吧。</p>
+    <p>最近看到 <code>golang</code> 语法中一个非常有趣的基本组合 <code>chan chan</code> ，为了加深自己的理解，想多看几个使用案例，于是去 <code>$GOPATH</code> 下面的文件去找，但是一个个文件找肯定不现实，于是借助 <code>grep</code> 帮我们进行搜索，<code>grep</code> 的使用非常简单，但是如果在不了解 <code>grep</code> 使用的情况下，自己实现一个类似的搜索功能应该也不是很难，今天就让我们来看看 <code>grep</code> 的使用和 <code>golang</code> 版本的简单实现吧。</p>
 <h2 id="usr-bin-grep"><a href="#usr-bin-grep" class="headerlink" title="/usr/bin/grep"></a>/usr/bin/grep</h2><p><code>grep</code> 命令的基本语法如下所示。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ grep <span class="string">'chan'</span> file</span><br><span class="line">$ grep <span class="string">'chan chan'</span> file1 file2</span><br><span class="line">$ grep [option] <span class="string">'chan chan'</span> file1 file2</span><br></pre></td></tr></table></figure>
 <p>除了列出文件名之外，我们还可以使用通配符搜索当前目录中所有文件。</p>

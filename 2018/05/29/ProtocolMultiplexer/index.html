@@ -5,18 +5,18 @@
   
   <title>Protocol Multiplexer | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Protocol Multiplexer假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待">
+  <meta name="description" content="假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待 I/O ，为了提高 CPU 的利用率，我">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Protocol Multiplexer">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/29/ProtocolMultiplexer/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Protocol Multiplexer假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待">
+<meta property="og:description" content="假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待 I/O ，为了提高 CPU 的利用率，我">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-29T13:22:16.080Z">
+<meta property="og:updated_time" content="2018-06-26T08:48:20.507Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Protocol Multiplexer">
-<meta name="twitter:description" content="Protocol Multiplexer假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待">
+<meta name="twitter:description" content="假设我们要实现一个 RPC 框架并且每个客户端与服务器只维护一根 TCP 连接，但客户端可能会同时发出很多 RPC 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 TCP 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待 I/O ，为了提高 CPU 的利用率，我">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Protocol-Multiplexer"><a href="#Protocol-Multiplexer" class="headerlink" title="Protocol Multiplexer"></a>Protocol Multiplexer</h1><p>假设我们要实现一个 <code>RPC</code> 框架并且每个客户端与服务器只维护一根 <code>TCP</code> 连接，但客户端可能会同时发出很多 <code>RPC</code> 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 <code>TCP</code> 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待 <code>I/O</code> ，为了提高 <code>CPU</code> 的利用率，我们可以采用多路复用的方法。</p>
+    <p>假设我们要实现一个 <code>RPC</code> 框架并且每个客户端与服务器只维护一根 <code>TCP</code> 连接，但客户端可能会同时发出很多 <code>RPC</code> 请求，服务器收到请求处理后将结果返还给客户端，现在问题来了，由于只有一根 <code>TCP</code> 连接，客户端收到的结果可能是乱序的，我们该如何将请求和答复对应起来呢，如果采取同步的方法倒是不用担心乱序的问题，但是效率肯定非常低，同步导致系统大部分时间在等待 <code>I/O</code> ，为了提高 <code>CPU</code> 的利用率，我们可以采用多路复用的方法。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ProtocolMux <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// Init initializes the mux to manage messages to the given service.</span></span><br><span class="line">    Init(Service)</span><br><span class="line">    <span class="comment">// Call makes a request with the given message and returns the reply.</span></span><br><span class="line">    <span class="comment">// Multiple goroutines may call Call concurrently.</span></span><br><span class="line">    Call(Msg) Msg</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>Service</code> 接口仅仅指明了服务需要实现的接口，这些服务实际就是对网络库的封装，可以是 <code>TCP</code> 或者 <code>UDP</code> ，<code>Send</code> 和 <code>Recv</code> 方法不能在并发条件下使用，并发使用可能会导致数据竞争。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Service <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// ReadTag returns the muxing identifier in the request or reply message.</span></span><br><span class="line">    <span class="comment">// Multiple goroutines may call ReadTag concurrently.</span></span><br><span class="line">    ReadTag(Msg) <span class="keyword">int64</span></span><br><span class="line">    <span class="comment">// Send sends a request message to the remote service.</span></span><br><span class="line">    <span class="comment">// Send must not be called concurrently with itself.</span></span><br><span class="line">    Send(Msg)</span><br><span class="line">    <span class="comment">// Recv waits for and returns a reply mesasge from the remote service.</span></span><br><span class="line">    <span class="comment">// Recv must not be called concurrently with itself.</span></span><br><span class="line">    Recv(Msg)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

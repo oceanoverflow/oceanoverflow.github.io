@@ -5,19 +5,19 @@
   
   <title>Circuit Breaker | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="CircuitBreaker我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里">
+  <meta name="description" content="我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里无法执行 直到该方法本地超时">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Circuit Breaker">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/09/CircuitBreaker/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="CircuitBreaker我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里">
+<meta property="og:description" content="我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里无法执行 直到该方法本地超时">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://martinfowler.com/bliki/images/circuitBreaker/sketch.png">
-<meta property="og:updated_time" content="2018-05-15T11:35:05.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:11.025Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Circuit Breaker">
-<meta name="twitter:description" content="CircuitBreaker我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里">
+<meta name="twitter:description" content="我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 RPC 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 RPC 是阻塞的，客户端会像执行本地方法一样调用 RPC ，也就是说客户端会阻塞在这里无法执行 直到该方法本地超时">
 <meta name="twitter:image" content="https://martinfowler.com/bliki/images/circuitBreaker/sketch.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="CircuitBreaker"><a href="#CircuitBreaker" class="headerlink" title="CircuitBreaker"></a>CircuitBreaker</h1><p>我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 <code>RPC</code> 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 <code>RPC</code> 是阻塞的，客户端会像执行本地方法一样调用 <code>RPC</code> ，也就是说客户端会阻塞在这里无法执行 直到该方法本地超时，但由于为了得到正确的结果，客户端可能会反复多次调用该 <code>RPC</code> ，由于在这段时间内远程服务器都可能无法恢复正常，所以就会导致客户端一直调用该方法，但却无法得到结果，这样就会导致资源的浪费。</p>
+    <p>我们都知道，如果家中因为启动过多大功率电器而导致电流过大，断路开关就会断开以保护这些电路和电器。在分布式系统中，集群中的某些服务器出现异常还是一件非常正常的事情，如果客户端向这些异常的服务器进行 <code>RPC</code> 请求的话，这些服务器会因为异常而无法向客户端返回远程方法调用的结果，因为一般来说 <code>RPC</code> 是阻塞的，客户端会像执行本地方法一样调用 <code>RPC</code> ，也就是说客户端会阻塞在这里无法执行 直到该方法本地超时，但由于为了得到正确的结果，客户端可能会反复多次调用该 <code>RPC</code> ，由于在这段时间内远程服务器都可能无法恢复正常，所以就会导致客户端一直调用该方法，但却无法得到结果，这样就会导致资源的浪费。</p>
 <p>为了避免上述情况的发生，我们可以在程序设计中借鉴断路开关的模式，也就是允许被保护的函数在规定上限内执行，如果一旦出现错误的次数超过上限，则下次函数再次调用时则直接不让其执行（也就是断路开关直接断开），从而避免系统资源的浪费。但是上述方法存在一个问题，就是一旦总的错误次数超过上限，是不是就说明即使现在远程服务器恢复正常，客户端也无法调用了呢。</p>
 <p>解决上述问题也很简单，通过模仿网络中很常见的 <code>Sliding Window</code> ，也就是移动窗口，允许在一定时间窗口内出现特定上限个错误，如果在该时间窗口内出现错误的次数超过上限，则不再允许该函数执行，直到下一个时间窗口的到来才允许它重新执行。</p>
 <p>下面来设计一个滑动窗口版本的断路开关，我们通过判断一个时间窗口 <code>window</code> 内出现的错误次数 <code>failures</code> 是否超过<code>failureThreshold</code> 来决定断路开关是否应该断开（也就是不让函数继续执行）。</p>

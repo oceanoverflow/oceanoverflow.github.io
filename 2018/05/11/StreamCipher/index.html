@@ -5,18 +5,18 @@
   
   <title>Stream Cipher | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Stream Cipher假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边">
+  <meta name="description" content="假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边加密边传输，远程客户端也可">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Stream Cipher">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/11/StreamCipher/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Stream Cipher假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边">
+<meta property="og:description" content="假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边加密边传输，远程客户端也可">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:56:52.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:47.387Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Stream Cipher">
-<meta name="twitter:description" content="Stream Cipher假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边">
+<meta name="twitter:description" content="假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边加密边传输，远程客户端也可">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Stream-Cipher"><a href="#Stream-Cipher" class="headerlink" title="Stream Cipher"></a>Stream Cipher</h1><p>假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边加密边传输，远程客户端也可以边接收边解密的话，时间效率就可以大幅度提升了。</p>
+    <p>假如我们有一份很重要的文件想要从本地传输到远程客户端，因为并不想让别人看见我们传输的信息，所以需要使用某种手段将传输的数据保护起来，我们可以选择先将文件加密后再进行传输，别人收到之后再进行相应的解密操作。这种方式对于小文件来说问题倒不是很大，但是如果文件体积非常大，本地对文件进行加密和远程对文件进行解密花费的时间就会很长，这样的话时间效率就非常低了，如果我们可以对该文件边加密边传输，远程客户端也可以边接收边解密的话，时间效率就可以大幅度提升了。</p>
 <p>下面我们来引入流加密解决上述问题，流加密有很多模式，例如 <code>CFB</code>，<code>CTR</code> ，<code>OFB</code> 等。而流加密的核心就是异或操作，使用 <code>XORKeyStream</code> 就可以进行加解密了。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cipher</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Stream <span class="keyword">interface</span> &#123;</span><br><span class="line">    XORKeyStream(dst, src []<span class="keyword">byte</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>因为加密解密肯定涉及到读写操作，所以我们用一个结构体 <code>writer</code> 实现 <code>io.Writer</code> 这个接口，里面封装了一个 <code>io.Writer</code> 和 <code>cipher.Stream</code> ，基本的思路就是将数据经过 <code>cipher.Stream</code> 的 <code>XORKeyStream</code> 方法写入 <code>io.Writer</code> 中。这里 <code>buf</code> 作为中间读操作和加密操作的缓存。</p>

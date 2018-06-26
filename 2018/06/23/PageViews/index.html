@@ -5,18 +5,18 @@
   
   <title>Page Views | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Page Views统计网站的页面浏览次数（ Page Views ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。 mutex在统计页面浏览次数时，我们可以使用一个变量 pageView 来表示页面的浏览次数，并用一个 mutex 锁来保护变量存取。 12345678910111213141516var (    pageView">
+  <meta name="description" content="统计网站的页面浏览次数（ Page Views ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。 mutex在统计页面浏览次数时，我们可以使用一个变量 pageView 来表示页面的浏览次数，并用一个 mutex 锁来保护变量存取。 12345678910111213141516var (    pageView int    mut">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Page Views">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/23/PageViews/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Page Views统计网站的页面浏览次数（ Page Views ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。 mutex在统计页面浏览次数时，我们可以使用一个变量 pageView 来表示页面的浏览次数，并用一个 mutex 锁来保护变量存取。 12345678910111213141516var (    pageView">
+<meta property="og:description" content="统计网站的页面浏览次数（ Page Views ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。 mutex在统计页面浏览次数时，我们可以使用一个变量 pageView 来表示页面的浏览次数，并用一个 mutex 锁来保护变量存取。 12345678910111213141516var (    pageView int    mut">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-23T15:09:12.587Z">
+<meta property="og:updated_time" content="2018-06-26T08:48:33.155Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Page Views">
-<meta name="twitter:description" content="Page Views统计网站的页面浏览次数（ Page Views ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。 mutex在统计页面浏览次数时，我们可以使用一个变量 pageView 来表示页面的浏览次数，并用一个 mutex 锁来保护变量存取。 12345678910111213141516var (    pageView">
+<meta name="twitter:description" content="统计网站的页面浏览次数（ Page Views ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。 mutex在统计页面浏览次数时，我们可以使用一个变量 pageView 来表示页面的浏览次数，并用一个 mutex 锁来保护变量存取。 12345678910111213141516var (    pageView int    mut">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Page-Views"><a href="#Page-Views" class="headerlink" title="Page Views"></a>Page Views</h1><p>统计网站的页面浏览次数（ <code>Page Views</code> ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。</p>
+    <p>统计网站的页面浏览次数（ <code>Page Views</code> ）是分析网站的重要参数之一。由于多个用户发送的请求很可能是同时进行的，所以这里涉及到并发操作时对变量的保护问题。</p>
 <h2 id="mutex"><a href="#mutex" class="headerlink" title="mutex"></a>mutex</h2><p>在统计页面浏览次数时，我们可以使用一个变量 <code>pageView</code> 来表示页面的浏览次数，并用一个 <code>mutex</code> 锁来保护变量存取。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    pageView <span class="keyword">int</span></span><br><span class="line">    mutex sync.Mutex</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    mutex.Lock()</span><br><span class="line">    pageView++</span><br><span class="line">    mutex.Unlock()</span><br><span class="line">    fmt.Fprintf(w, <span class="string">"&lt;h1&gt;%v&lt;/h1&gt;"</span>, pageView)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    http.HandleFunc(<span class="string">"/"</span>, handler)</span><br><span class="line">    http.ListenAndServe(<span class="string">"localhost:8080"</span>, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h2><p>除了使用互斥锁来保护变量之外，我们来可以使用 <code>golang</code> 中特有的<code>unbuffered channel</code> 来获取页面浏览次数，我们在 <code>main</code> 函数中起一个 <code>goroutine</code> 来生产递增的 <code>nextID</code> ，每个 <code>nextID &lt;- i</code> 发送操作均会阻塞直到一个 <code>goroutine</code> 启动时通过 <code>&lt;-nextID</code> 来接收，这里因为使用了<code>unbuffered channel</code> ，所以保证了整个过程的原子性。</p>

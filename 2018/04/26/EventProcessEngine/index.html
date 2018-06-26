@@ -5,18 +5,18 @@
   
   <title>Event Process Engine | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="实现一个事件处理引擎在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChang">
+  <meta name="description" content="在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChange 等等，具体的消息">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Event Process Engine">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/26/EventProcessEngine/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="实现一个事件处理引擎在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChang">
+<meta property="og:description" content="在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChange 等等，具体的消息">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:46:39.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:15.070Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Event Process Engine">
-<meta name="twitter:description" content="实现一个事件处理引擎在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChang">
+<meta name="twitter:description" content="在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。 首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 Preprepare ， Prepare ， Commit ， ViewChange 等等，具体的消息">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="实现一个事件处理引擎"><a href="#实现一个事件处理引擎" class="headerlink" title="实现一个事件处理引擎"></a>实现一个事件处理引擎</h1><p>在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。</p>
+    <p>在许多情况下，尤其是在搞一致性算法的时候，如何对事件（Event）集中进行处理就变成了一件很重要的事情，下面，我们来介绍如何写一个简单的事件处理引擎，并且向上层提供一个简单可用（无脑）的API供其他程序员使用。</p>
 <p>首先我们需要明白我们要对各种各样的事件进行处理，例如，在PBFT中，我们的消息类型有 <code>Preprepare</code> ， <code>Prepare</code> ， <code>Commit</code> ， <code>ViewChange</code> 等等，具体的消息类型的定义我们可以使用protobuf来，而无论是什么事件，我们在Golang中我们都可以把它们抽象成一个 <code>interface{}</code> 。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Event <span class="keyword">interface</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
 <p>这里我们定义的 <code>Event</code> 是我们以后围绕着处理的中心，我们继续看。定义完了 <code>Event</code> ，我们还要定义一个 <code>Event</code> 的接受者（Receiver），也就是事物处理的核心。</p>

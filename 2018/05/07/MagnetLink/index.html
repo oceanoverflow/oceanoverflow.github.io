@@ -5,18 +5,18 @@
   
   <title>Magnet Link | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Magnet Link相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面">
+  <meta name="description" content="相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面就是几对键值对了，一般">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Magnet Link">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/07/MagnetLink/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Magnet Link相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面">
+<meta property="og:description" content="相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面就是几对键值对了，一般">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:50:46.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:51.394Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Magnet Link">
-<meta name="twitter:description" content="Magnet Link相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面">
+<meta name="twitter:description" content="相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。 其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 magnet 我们把它称为 scheme 或者说是协议名，就像一般的 http 地址一样，http 也算是一种协议名，紧接着 magnet:? 后面就是几对键值对了，一般">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Magnet-Link"><a href="#Magnet-Link" class="headerlink" title="Magnet Link"></a>Magnet Link</h1><p>相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。</p>
+    <p>相信大部分人都使用过磁力链接来下载过网上的文件吧，但是估计很少人会去关心那稀奇古怪的磁力链接究竟是什么鬼，今天就让我们来解析一下磁力链接，看一下它里面隐藏的信息吧。</p>
 <p>其实类似下面这种看似复杂的链接地址也就是由几个部分组成，开头的 <code>magnet</code> 我们把它称为 <code>scheme</code> 或者说是协议名，就像一般的 <code>http</code> 地址一样，<code>http</code> 也算是一种协议名，紧接着 <code>magnet:?</code> 后面就是几对键值对了，一般键值对之间以 <code>&amp;</code> 符号划分，常见的键有：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">magnet:?xt=urn:btih:0FF55426B9713084FF5229A16D21712B1E6C1625&amp;dn=%e5%8d%97%e5%be%81%e5%8c%97%e6%88%98%20-%206415&amp;tr=http%3a%2f%2ftracker.nexushd.org%2fannounce.php%3fpasskey%3d346ae8170f8427b078512150f3683285</span><br></pre></td></tr></table></figure>
 <ul>

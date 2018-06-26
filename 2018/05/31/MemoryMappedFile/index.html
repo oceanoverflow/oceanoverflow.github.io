@@ -5,20 +5,20 @@
   
   <title>Memory Mapped File | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Memory Mapped File内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操">
+  <meta name="description" content="内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操作 。  mmap &amp;amp; mu">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Memory Mapped File">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/31/MemoryMappedFile/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Memory Mapped File内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操">
+<meta property="og:description" content="内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操作 。  mmap &amp;amp; mu">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://www.tutorialsdaddy.com/wp-content/uploads/2016/11/linux-mmap.png">
 <meta property="og:image" content="https://cdn.shopify.com/s/files/1/2187/3161/products/450ba4cc5f96d682fde154a5e569ebf4_1024x.png?v=1520446011">
-<meta property="og:updated_time" content="2018-05-31T12:01:30.567Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:55.175Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Memory Mapped File">
-<meta name="twitter:description" content="Memory Mapped File内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操">
+<meta name="twitter:description" content="内存映射文件( memory mapped file )与磁盘上的文件存在直接的对应关系。内存映射 I/O 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 read() 或 write() 系统调用的情况下执行 I/O 操作 。  mmap &amp;amp; mu">
 <meta name="twitter:image" content="http://www.tutorialsdaddy.com/wp-content/uploads/2016/11/linux-mmap.png">
   
   
@@ -63,7 +63,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -99,7 +99,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Memory-Mapped-File"><a href="#Memory-Mapped-File" class="headerlink" title="Memory Mapped File"></a>Memory Mapped File</h1><p>内存映射文件( <code>memory mapped file</code> )与磁盘上的文件存在直接的对应关系。内存映射 <code>I/O</code> 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 <code>read()</code> 或 <code>write()</code> 系统调用的情况下执行 <code>I/O</code> 操作 。</p>
+    <p>内存映射文件( <code>memory mapped file</code> )与磁盘上的文件存在直接的对应关系。内存映射 <code>I/O</code> 将磁盘上的文件映射到用户进程地址空间中，这样，当我们从映射内存中获取字节时，会读取文件的相应字节。同样的，当我们将数据存储在映射内存中时，相应的字节会自动写入文件中。这样以来就可以在不使用 <code>read()</code> 或 <code>write()</code> 系统调用的情况下执行 <code>I/O</code> 操作 。</p>
 <p><img src="http://www.tutorialsdaddy.com/wp-content/uploads/2016/11/linux-mmap.png" alt="mmap"></p>
 <h2 id="mmap-amp-munmap"><a href="#mmap-amp-munmap" class="headerlink" title="mmap &amp; munmap"></a>mmap &amp; munmap</h2><p><code>mmap</code> 系统调用将文件或设备映射到内存中，当调用成功时，它会返回映射内存的起始地址。第一个参数 <code>addr</code> 表示文件要映射到内存中的虚拟地址，一般都为 <code>NULL</code> ，表示由内核决定合适的映射地址。第二个参数 <code>len</code> 指定映射的大小（以字节为单位），通常情况下，内核创建的映射内存的大小是内存页面大小的整数倍。第三个参数 <code>prot</code> 指定访问权限，可以是 <code>PROT_READ</code>，<code>PROT_WRITE</code> ，<code>PROT_EXEC</code> 。第四个参数 <code>flags</code> 可以是 <code>MAP_PRIVATE</code>，<code>MAP_SHARED</code> 。第五个参数 <code>fd</code> 标识映射文件的文件描述符。第六个参数 <code>offset</code> 指定了文件映射的起点。为了映射整个文件，我们将 <code>offset</code> 指定为0，将 <code>len</code> 指定为整个文件的大小。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> *</span><br><span class="line">mmap(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> len, <span class="keyword">int</span> prot, <span class="keyword">int</span> flags, <span class="keyword">int</span> fd, <span class="keyword">off_t</span> offset);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> </span><br><span class="line">munmap(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> len);</span><br></pre></td></tr></table></figure>

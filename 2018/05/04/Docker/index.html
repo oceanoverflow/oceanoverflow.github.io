@@ -5,18 +5,18 @@
   
   <title>Docker &amp; Golang | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Docker &amp;amp; Golang还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限">
+  <meta name="description" content="还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限于 java 这个生态系统里面，相比之">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Docker &amp; Golang">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/04/Docker/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Docker &amp;amp; Golang还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限">
+<meta property="og:description" content="还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限于 java 这个生态系统里面，相比之">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:44:49.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:45:02.382Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker &amp; Golang">
-<meta name="twitter:description" content="Docker &amp;amp; Golang还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限">
+<meta name="twitter:description" content="还记得 java 当初响遍大江南北的口号吗，Write one，run anywhere ，到了互联网时代，Docker 这家公司打出了更为牛逼的口号，Build，Ship，and Run Any App，Anywhere ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。java 的跨平台是因为它在不同平台下有不同的 jvm 实现，不过它仅仅局限于 java 这个生态系统里面，相比之">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Docker-amp-Golang"><a href="#Docker-amp-Golang" class="headerlink" title="Docker &amp; Golang"></a>Docker &amp; Golang</h1><p>还记得 <code>java</code> 当初响遍大江南北的口号吗，<code>Write one，run anywhere</code> ，到了互联网时代，<code>Docker</code> 这家公司打出了更为牛逼的口号，<code>Build，Ship，and Run Any App，Anywhere</code> ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。<code>java</code> 的跨平台是因为它在不同平台下有不同的 <code>jvm</code> 实现，不过它仅仅局限于 <code>java</code> 这个生态系统里面，相比之下，<code>Docker</code> 的野心就更大了，它并没有给我们把编程语言给限定死了，它提供了一个与操作系统隔离的环境，可以让我们写任何应用，而且可以在几乎所有平台下跑。</p>
+    <p>还记得 <code>java</code> 当初响遍大江南北的口号吗，<code>Write one，run anywhere</code> ，到了互联网时代，<code>Docker</code> 这家公司打出了更为牛逼的口号，<code>Build，Ship，and Run Any App，Anywhere</code> ，它们两者有类似的地方，都是为了追求各种平台的兼容性和通用性。<code>java</code> 的跨平台是因为它在不同平台下有不同的 <code>jvm</code> 实现，不过它仅仅局限于 <code>java</code> 这个生态系统里面，相比之下，<code>Docker</code> 的野心就更大了，它并没有给我们把编程语言给限定死了，它提供了一个与操作系统隔离的环境，可以让我们写任何应用，而且可以在几乎所有平台下跑。</p>
 <p>具体 <code>Docker</code> 的细节这里就不具体探讨了，网上也有一堆文章，今天我们主要看一下如何使用它，也就是如何将我们的应用打包成一个 <code>Docker</code> 镜像。</p>
 <p>下面我们要实现的是一个用 <code>golang</code> 写的 <code>http</code> 服务器，但是这个服务器并不是跑在裸机上，而是跑在 <code>Docker</code> 容器中的。顺便一提，<code>Docker</code> 也是用 <code>golang</code> 写的哦，是不是感觉很厉害呢。</p>
 <h2 id="书写自己的应用逻辑"><a href="#书写自己的应用逻辑" class="headerlink" title="书写自己的应用逻辑"></a>书写自己的应用逻辑</h2><p>下面定义了我们要实现的 <code>http</code> 服务器的前端，无奈直男不会写 <code>CSS</code> ，就用 <code>HTML</code> 写了一下最基本的提交 <code>FORM</code> 表单的功能。</p>

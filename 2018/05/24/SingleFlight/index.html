@@ -5,18 +5,18 @@
   
   <title>Single Flight | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Single FlightSingleFlight很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后">
+  <meta name="description" content="很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后但还没有返回结果之前，对于之后所有相同的请求，无论">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Single Flight">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/24/SingleFlight/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Single FlightSingleFlight很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后">
+<meta property="og:description" content="很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后但还没有返回结果之前，对于之后所有相同的请求，无论">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-24T06:06:47.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:57.079Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Single Flight">
-<meta name="twitter:description" content="Single FlightSingleFlight很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后">
+<meta name="twitter:description" content="很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。 我们需要实现一种机制，对于特定的请求，在该请求触发之后但还没有返回结果之前，对于之后所有相同的请求，无论">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Single-Flight"><a href="#Single-Flight" class="headerlink" title="Single Flight"></a>Single Flight</h1><h2 id="SingleFlight"><a href="#SingleFlight" class="headerlink" title="SingleFlight"></a>SingleFlight</h2><p>很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。</p>
+    <p>很多人闲来无事就喜欢刷票圈逛微博，所有的消息看完一遍之后，就开启疯狂下拉刷新模式，希望能第一时间看到什么劲爆的消息。对于应用的使用者，这倒没什么，但是如果连续多次下拉刷新操作都分别对应一次服务器请求的话，那么服务器估计就得扑街了，所以我们需要限制在一定时间内同一个请求的数量，以避免无用的请求。</p>
 <p>我们需要实现一种机制，对于特定的请求，在该请求触发之后但还没有返回结果之前，对于之后所有相同的请求，无论多少个，都不会真正触发，而是等待第一个请求返回，然后共用一个结果。</p>
 <p><code>SingleFlight</code> 就可以帮助我们实现上述的要求，我们使用结构体 <code>call</code> 来表示特定请求返回的结果，在 <code>SingleFlight</code> 结构体中使用一个 <code>map</code> 来存储不同的请求结果，也就是一个请求对应一个<code>call</code>，并用锁保护 <code>map</code> 的读写。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> SingleFlight <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.Mutex</span><br><span class="line">    m <span class="keyword">map</span>[<span class="keyword">string</span>]*call</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> call <span class="keyword">struct</span> &#123;</span><br><span class="line">    wg  sync.WaitGroup</span><br><span class="line">    val <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    err error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

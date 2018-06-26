@@ -5,19 +5,19 @@
   
   <title>Pipeline | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="io.Pipe() 在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type messa">
+  <meta name="description" content="在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type message struct">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Pipeline">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/19/Pipeline/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="io.Pipe() 在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type messa">
+<meta property="og:description" content="在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type message struct">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://insideenergy.org/wp-content/uploads/2017/05/DAPL-Pipeline-2-1170x775.jpg">
-<meta property="og:updated_time" content="2018-06-22T07:06:58.590Z">
+<meta property="og:updated_time" content="2018-06-26T08:48:31.242Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Pipeline">
-<meta name="twitter:description" content="io.Pipe() 在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type messa">
+<meta name="twitter:description" content="在介绍 io.Pipe 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 POST 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 json 格式的数据，并将该数据暂时存储在 buf 中，最后利用 http.Post 发送该请求，轻松愉快。 12345678910111213141516171819202122232425type message struct">
 <meta name="twitter:image" content="http://insideenergy.org/wp-content/uploads/2017/05/DAPL-Pipeline-2-1170x775.jpg">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="io-Pipe"><a href="#io-Pipe" class="headerlink" title="io.Pipe()"></a>io.Pipe()</h1><p><img src="http://insideenergy.org/wp-content/uploads/2017/05/DAPL-Pipeline-2-1170x775.jpg" alt="pipeline"></p>
+    <p><img src="http://insideenergy.org/wp-content/uploads/2017/05/DAPL-Pipeline-2-1170x775.jpg" alt="pipeline"></p>
 <p>在介绍 <code>io.Pipe</code> 之前，我们先来看一段非常简单的代码，如果现在需要向服务器发送一个 <code>POST</code> 请求，按流程一步步来，首先构建一个消息结构体，然后将该结构体编码成 <code>json</code> 格式的数据，并将该数据暂时存储在 <code>buf</code> 中，最后利用 <code>http.Post</code> 发送该请求，轻松愉快。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> message <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span></span><br><span class="line">    Age  <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    m := &amp;message&#123;Name: <span class="string">"yiyangyi"</span>, Age: <span class="number">23</span>&#125;</span><br><span class="line">    <span class="keyword">var</span> buf bytes.Buffer</span><br><span class="line">    err := json.NewEncoder(&amp;buf).Encode(m)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    resp, err := http.Post(<span class="string">"example.com"</span>, <span class="string">"application/json"</span>, &amp;buf)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)     </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line">    </span><br><span class="line">    b, err := ioutil.ReadAll(resp.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(<span class="keyword">string</span>(b))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>但是，上面的代码存在一个问题，就是我们需要分配一个缓存区（ <code>bytes.Buffer</code> ）存储编码后的数据，为了节省内存，能不能通过一个方法来避免此部分内存的分配呢，解决方法就是我们今天的主角——<code>io.Pipe</code> 。</p>

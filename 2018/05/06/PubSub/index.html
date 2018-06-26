@@ -5,19 +5,19 @@
   
   <title>PubSub | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="PubSub消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（">
+  <meta name="description" content="消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（算一个 su">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PubSub">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/06/PubSub/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="PubSub消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（">
+<meta property="og:description" content="消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（算一个 su">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://docs.oracle.com/cd/E19575-01/819-3669/images/jms-publishSubscribe.gif">
-<meta property="og:updated_time" content="2018-05-30T05:37:25.042Z">
+<meta property="og:updated_time" content="2018-06-26T08:48:18.224Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PubSub">
-<meta name="twitter:description" content="PubSub消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（">
+<meta name="twitter:description" content="消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ Subscriber ）会订阅某个自己感兴趣的 topic ，一旦发布者（ Publisher ）向这个 topic 发布消息，消息的订阅者就能收到该消息。 这种设计模式的灵感其实就来自于现实生活之中，我们（ Subscriber ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（算一个 su">
 <meta name="twitter:image" content="https://docs.oracle.com/cd/E19575-01/819-3669/images/jms-publishSubscribe.gif">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="PubSub"><a href="#PubSub" class="headerlink" title="PubSub"></a>PubSub</h1><p>消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ <code>Subscriber</code> ）会订阅某个自己感兴趣的 <code>topic</code> ，一旦发布者（ <code>Publisher</code> ）向这个 <code>topic</code> 发布消息，消息的订阅者就能收到该消息。</p>
+    <p>消息的发布和订阅这种设计模式在大型开源项目中还是会经常被使用到的，它的要点是一堆消息订阅者（ <code>Subscriber</code> ）会订阅某个自己感兴趣的 <code>topic</code> ，一旦发布者（ <code>Publisher</code> ）向这个 <code>topic</code> 发布消息，消息的订阅者就能收到该消息。</p>
 <p>这种设计模式的灵感其实就来自于现实生活之中，我们（ <code>Subscriber</code> ）向我们感兴趣的杂志社订阅想要阅读的月刊，那么我们订阅的消息（算一个 <code>subscription</code> ）就会被杂志社（ <code>Publisher</code> ）记录下来，一旦杂志可以上市发行了，杂志社就会主动向我们推送（ <code>Publish</code> ）杂志消息。</p>
 <p><img src="https://docs.oracle.com/cd/E19575-01/819-3669/images/jms-publishSubscribe.gif" alt="PubSub"></p>
 <p>下面我们来实现一个简单的发布者订阅者模型吧。</p>

@@ -5,18 +5,18 @@
   
   <title>GUID | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="GUID在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，">
+  <meta name="description" content="在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，时间戳">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GUID">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/22/GUID/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="GUID在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，">
+<meta property="og:description" content="在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，时间戳">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-22T03:51:22.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:04.624Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GUID">
-<meta name="twitter:description" content="GUID在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，">
+<meta name="twitter:description" content="在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ GUID ）的生成算法。 这里我们的 GUID 共64比特。sequence 部分占12比特，nodeID 占10比特，偏移10比特，时间戳">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="GUID"><a href="#GUID" class="headerlink" title="GUID"></a>GUID</h1><p>在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ <code>GUID</code> ）的生成算法。</p>
+    <p>在点外卖或者网上购物的时候，每个订单中都会有一串独一无二的数字，但是处理订单的服务器肯定不止一台，如何保证多台服务器，也就是说一个计算机集群中，在相互独立的情况下（不沟通自己生成的订单号的信息）不生成相同的订单号码呢，下面我们就来介绍一种全球唯一标识符（ <code>GUID</code> ）的生成算法。</p>
 <p>这里我们的 <code>GUID</code> 共64比特。<code>sequence</code> 部分占12比特，<code>nodeID</code> 占10比特，偏移10比特，时间戳 <code>timestamp</code> 占剩余的42比特，偏移22比特。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------------------------+----------+------------+</span><br><span class="line">|                timestamp                  |nodeIDBits|sequenceBits|</span><br><span class="line">+-------------------------------------------+----------+------------+</span><br></pre></td></tr></table></figure>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    nodeIDBits = <span class="keyword">uint64</span>(<span class="number">10</span>)</span><br><span class="line">    sequenceBits = <span class="keyword">uint64</span>(<span class="number">12</span>)</span><br><span class="line">    nodeIDShift = sequenceBits</span><br><span class="line">    timestampShift = sequenceBits + nodeIDBits</span><br><span class="line">    sequenceMask   = <span class="keyword">int64</span>(<span class="number">-1</span>) ^ (<span class="keyword">int64</span>(<span class="number">-1</span>) &lt;&lt; sequenceBits)</span><br><span class="line"></span><br><span class="line">    twepoch = <span class="keyword">int64</span>(<span class="number">1288834974288</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>

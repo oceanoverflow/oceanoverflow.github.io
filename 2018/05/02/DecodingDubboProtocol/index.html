@@ -5,20 +5,20 @@
   
   <title>Dubbo Protocol | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Decoding Dubbo Protocol之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么">
+  <meta name="description" content="之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么意思，但是如果二者约定同时用两者都会的语言——">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dubbo Protocol">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/DecodingDubboProtocol/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Decoding Dubbo Protocol之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么">
+<meta property="og:description" content="之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么意思，但是如果二者约定同时用两者都会的语言——">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png">
 <meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png">
-<meta property="og:updated_time" content="2018-05-15T11:40:13.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:55.222Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Dubbo Protocol">
-<meta name="twitter:description" content="Decoding Dubbo Protocol之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么">
+<meta name="twitter:description" content="之前看 shadowsocks 源码的时候看过好多遍 SOCKS5 的 RFC ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么意思，但是如果二者约定同时用两者都会的语言——">
 <meta name="twitter:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png">
   
   
@@ -63,7 +63,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -99,7 +99,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Decoding-Dubbo-Protocol"><a href="#Decoding-Dubbo-Protocol" class="headerlink" title="Decoding Dubbo Protocol"></a>Decoding Dubbo Protocol</h1><p>之前看 <code>shadowsocks</code> 源码的时候看过好多遍 <code>SOCKS5</code> 的 <code>RFC</code> ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么意思，但是如果二者约定同时用两者都会的语言——英语进行交流，那么两者就可以正常交流下去了，因为两者协议了一套规则，可以相互理解的规则（这里的规则就是英语）。</p>
+    <p>之前看 <code>shadowsocks</code> 源码的时候看过好多遍 <code>SOCKS5</code> 的 <code>RFC</code> ，看的一脸懵逼，不知道这些奇奇怪怪的网络协议究竟该如何理解，后来才发现网络协议也并没有那么神秘，无非就是为了让两台计算机使用网络进行通信时能互相理解对方而设定的一系列规则而已。就好像一个中国人和一个法国人聊天，法国人讲法语，而中国人用中文，他们自然很难理解对方究竟要表达什么意思，但是如果二者约定同时用两者都会的语言——英语进行交流，那么两者就可以正常交流下去了，因为两者协议了一套规则，可以相互理解的规则（这里的规则就是英语）。</p>
 <p>一般来说要是想自己定义一套网络协议，首先需要做的事情就是定义这个协议中特定位置的字段分别代表什么含义，例如下图中的 <code>Dubbo</code> 协议，它就规定了一个报文中各个字段代表的含义，如下面第一个字节和第二个字节合在一起就叫做一个 <code>Magic Number</code> ，以此类推。</p>
 <p><img src="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/dubbo-protocol.png" alt="Dubbo"></p>
 <p>所以，解析网络协议的本质就是去解析一个字节数组，并将它包含的数据转换成特定的含义的过程，下面我们就以解析 <code>Dubbo</code> 协议为例，来看一下如何正确地读取字节数组中的信息，在这之前，我们先了解一下golang标准库中的两个函数。</p>

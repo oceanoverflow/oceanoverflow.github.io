@@ -5,18 +5,18 @@
   
   <title>openssl | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="openssl下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件">
+  <meta name="description" content="下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件。  ~/.s">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="openssl">
 <meta property="og:url" content="https://oceanoverflow.github.io/2017/12/07/openssl/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="openssl下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件">
+<meta property="og:description" content="下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件。  ~/.s">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-09T15:23:20.263Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:12.710Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="openssl">
-<meta name="twitter:description" content="openssl下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件">
+<meta name="twitter:description" content="下面我们来看一下如何使用 openssl 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。 生成公钥/私钥密钥对$ ssh-keygen -t ecdsa -C &amp;quot;foo@bar.cn&amp;quot; 如果想要使用其他签名方式如 RSA 进行签名，可以将上述命令中的ecdsa 替换成 rsa 。使用上述命令默认在 .ssh/ 目录下生成两个文件。  ~/.s">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h1><p>下面我们来看一下如何使用 <code>openssl</code> 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。</p>
+    <p>下面我们来看一下如何使用 <code>openssl</code> 这个命令行工具产生公钥/私钥密钥对，并且使用私钥对文件进行签名和使用公钥进行验证。</p>
 <h2 id="生成公钥-私钥密钥对"><a href="#生成公钥-私钥密钥对" class="headerlink" title="生成公钥/私钥密钥对"></a>生成公钥/私钥密钥对</h2><p><code>$ ssh-keygen -t ecdsa -C &quot;foo@bar.cn&quot;</code></p>
 <p>如果想要使用其他签名方式如 <code>RSA</code> 进行签名，可以将上述命令中的<code>ecdsa</code> 替换成 <code>rsa</code> 。使用上述命令默认在 <code>.ssh/</code> 目录下生成两个文件。</p>
 <ul>

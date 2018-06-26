@@ -5,18 +5,18 @@
   
   <title>Terminal UI | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Terminal UI之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话">
+  <meta name="description" content="之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话我也不知道，大概搜了一">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Terminal UI">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/14/TerminalUI/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Terminal UI之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话">
+<meta property="og:description" content="之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话我也不知道，大概搜了一">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:43:47.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:42.103Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Terminal UI">
-<meta name="twitter:description" content="Terminal UI之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话">
+<meta name="twitter:description" content="之前用命令行版本的网易云音乐来听歌（ musicbox ，在 github 上可以搜索到），觉得实在是太 geek 了，但它是用 python 写的，略微容易崩，所以决定试着用 golang 仿造一个，第一步肯定是模仿它的 UI 了，在浏览器中我们用三元老 HTML/CSS/JS 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 UI 应该怎么搞，其实说实话我也不知道，大概搜了一">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Terminal-UI"><a href="#Terminal-UI" class="headerlink" title="Terminal UI"></a>Terminal UI</h1><p>之前用命令行版本的网易云音乐来听歌（ <code>musicbox</code> ，在 <code>github</code> 上可以搜索到），觉得实在是太 <code>geek</code> 了，但它是用 <code>python</code> 写的，略微容易崩，所以决定试着用 <code>golang</code> 仿造一个，第一步肯定是模仿它的 <code>UI</code> 了，在浏览器中我们用三元老 <code>HTML/CSS/JS</code> 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 <code>UI</code> 应该怎么搞，其实说实话我也不知道，大概搜了一下，发现用 <code>termui</code> 这个库就可以比较轻松撸出一个与 <code>musicbox</code> 类似的界面了，下面我们来看一下如何用代码来实现吧。</p>
+    <p>之前用命令行版本的网易云音乐来听歌（ <code>musicbox</code> ，在 <code>github</code> 上可以搜索到），觉得实在是太 <code>geek</code> 了，但它是用 <code>python</code> 写的，略微容易崩，所以决定试着用 <code>golang</code> 仿造一个，第一步肯定是模仿它的 <code>UI</code> 了，在浏览器中我们用三元老 <code>HTML/CSS/JS</code> 可以很容易撸出一套能看的前端界面来，但估计没几个人知道命令行版本的 <code>UI</code> 应该怎么搞，其实说实话我也不知道，大概搜了一下，发现用 <code>termui</code> 这个库就可以比较轻松撸出一个与 <code>musicbox</code> 类似的界面了，下面我们来看一下如何用代码来实现吧。</p>
 <h2 id="termui-安装"><a href="#termui-安装" class="headerlink" title="termui 安装"></a>termui 安装</h2><p>一般来说我们可以使用 <code>go get</code> 来进行获取安装，但最好使用 <code>dep</code> 来帮助我们管理项目的相关依赖。</p>
 <p><code>go get -u github.com/gizak/termui</code></p>
 <p>然后在代码中 <code>import</code> 就可以了。</p>

@@ -5,19 +5,19 @@
   
   <title>WebSocket | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="WebSocket如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 HTTP 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 HTTP 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样">
+  <meta name="description" content="如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 HTTP 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 HTTP 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样的形式咨询，服务器">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="WebSocket">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/05/WebSocket/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="WebSocket如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 HTTP 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 HTTP 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样">
+<meta property="og:description" content="如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 HTTP 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 HTTP 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样的形式咨询，服务器">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://www.cuelogic.com/blog/wp-content/uploads/2013/11/websocketlifecycle_30624_l.png">
-<meta property="og:updated_time" content="2018-05-15T12:05:17.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:23.129Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="WebSocket">
-<meta name="twitter:description" content="WebSocket如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 HTTP 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 HTTP 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样">
+<meta name="twitter:description" content="如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 HTTP 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 HTTP 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样的形式咨询，服务器">
 <meta name="twitter:image" content="http://www.cuelogic.com/blog/wp-content/uploads/2013/11/websocketlifecycle_30624_l.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h1><p>如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 <code>HTTP</code> 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 <code>HTTP</code> 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样的形式咨询，服务器将会承受非常大的压力了。</p>
+    <p>如果服务器会定期地更新消息，但是具体的时间间隔并不确定，客户端为了能够及时拿取最新的消息，就得不断的发送 <code>HTTP</code> 请求来轮询服务器，也就是说为了能够及时获取最新资讯，由于 <code>HTTP</code> 本身的特点，服务请求的发起方只能是客户端，服务器本身并没有消息推送的功能，这样就导致了资源浪费的问题，很多客户端发送的请求都是无效的，当客户端和服务器一对一交流时倒还好，如果很多客户端向服务器以这样的形式咨询，服务器将会承受非常大的压力了。</p>
 <p>所以，为了避免资源浪费，我们来引入 <code>WebSocket</code> 解决上述问题，<code>WebSocket</code> 可以说是 <code>HTTP</code> 协议的一个升级，它同样基于 <code>TCP</code> 之上，但与传输层的 <code>socket</code> 不同，它的 <code>socket</code> 是应用层的概念。要想使用 <code>WebSocket</code> ，客户端和服务器必须同时支持才可以使用。</p>
 <p><code>WebSocket</code> 中比较重要的一个阶段就是握手阶段了，如下图所示，客户端向服务器发送一个协议升级的 <code>HTTP</code> 请求，并且附带上一些其他的元信息用于握手。</p>
 <p><img src="http://www.cuelogic.com/blog/wp-content/uploads/2013/11/websocketlifecycle_30624_l.png" alt="WebSocket"></p>

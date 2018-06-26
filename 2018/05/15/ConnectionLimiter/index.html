@@ -5,18 +5,18 @@
   
   <title>Connection Limiter | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Connection Limiter作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 HTTP 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。 一般来说，正常的客户端（人为操作）不会在短时间内对同一服务发">
+  <meta name="description" content="作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 HTTP 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。 一般来说，正常的客户端（人为操作）不会在短时间内对同一服务发送过多的请求，只有想要实施恶意攻击行">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Connection Limiter">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/15/ConnectionLimiter/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Connection Limiter作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 HTTP 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。 一般来说，正常的客户端（人为操作）不会在短时间内对同一服务发">
+<meta property="og:description" content="作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 HTTP 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。 一般来说，正常的客户端（人为操作）不会在短时间内对同一服务发送过多的请求，只有想要实施恶意攻击行">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:36:24.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:19.449Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Connection Limiter">
-<meta name="twitter:description" content="Connection Limiter作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 HTTP 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。 一般来说，正常的客户端（人为操作）不会在短时间内对同一服务发">
+<meta name="twitter:description" content="作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 HTTP 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。 一般来说，正常的客户端（人为操作）不会在短时间内对同一服务发送过多的请求，只有想要实施恶意攻击行">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Connection-Limiter"><a href="#Connection-Limiter" class="headerlink" title="Connection Limiter"></a>Connection Limiter</h1><p>作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 <code>HTTP</code> 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。</p>
+    <p>作为服务提供商，我们肯定是希望越多客户使用我们的服务越好，为此我们不惜花大价钱雇程序员来搞高并发服务器编程，砸很多的钱买最好的服务器，但是总有些无良用户想要和我们作对，搞很多 <code>HTTP</code> 连接请求恶意占用服务器的资源，导致其他用户的服务体验下降，从而最终导致客户的流失，这种情况我们肯定是希望极力避免的。</p>
 <p>一般来说，正常的客户端（人为操作）不会在短时间内对同一服务发送过多的请求，只有想要实施恶意攻击行为的客户端（例如爬虫）才会同时发送很多请求来占用服务器的资源。为了避免这种情况的发生，我们需要限制同一个 <code>IP</code> 地址的请求数量。</p>
 <p>实现连接限制的思路比较简单，我们通过一个 <code>map</code> 来记录来自同一个 <code>IP</code> 地址的 <code>HTTP</code> 请求的个数，如果在正常范围内，则给予该客户端正常的服务，如果超过上限，此时该客户端被怀疑正在进行爬虫之类的非善意行为，对此我们返回一个错误并拒绝服务该请求。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ConnLimiter <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.Mutex</span><br><span class="line">    connections      <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int64</span></span><br><span class="line">    maxConnections   <span class="keyword">int64</span></span><br><span class="line">    totalConnections <span class="keyword">int64</span></span><br><span class="line">    next             http.Handler</span><br><span class="line">    errHandler       ErrorHandler</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(next http.Handler, maxConnections <span class="keyword">int64</span>)</span> <span class="params">(*ConnLimiter, error)</span></span> &#123;</span><br><span class="line">    cl := &amp;ConnLimiter &#123;</span><br><span class="line">        maxConnections: maxConnections,</span><br><span class="line">        connections: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int64</span>),</span><br><span class="line">        next: next,</span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">if</span> cl.errHandler == <span class="literal">nil</span> &#123;</span><br><span class="line">        cl.errHandler = defaultErrHandler</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cl, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

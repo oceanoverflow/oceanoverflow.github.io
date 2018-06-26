@@ -5,19 +5,19 @@
   
   <title>Timing Wheel | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Timing Wheel 当我们自己编写服务端程序时候，可能需要新建大量的定时器，对每个 TCP 连接设置连接超时，面对成千上万的客户端连接，如果傻傻地为每一个连接分配一个计时器的话，那么 10k 个连接就对应 10k 的计时器，10w 个连接就对应 10w 个计时器，这种方法显然是比较消耗内存的。 对于需要大量定时器的情况，由于许多定时器是在相近的时间超时的，或者说在一个时间范围内到时的，如果对">
+  <meta name="description" content="当我们自己编写服务端程序时候，可能需要新建大量的定时器，对每个 TCP 连接设置连接超时，面对成千上万的客户端连接，如果傻傻地为每一个连接分配一个计时器的话，那么 10k 个连接就对应 10k 的计时器，10w 个连接就对应 10w 个计时器，这种方法显然是比较消耗内存的。 对于需要大量定时器的情况，由于许多定时器是在相近的时间超时的，或者说在一个时间范围内到时的，如果对时间精度没有那么近乎苛刻">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Timing Wheel">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/06/14/TimingWheel/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Timing Wheel 当我们自己编写服务端程序时候，可能需要新建大量的定时器，对每个 TCP 连接设置连接超时，面对成千上万的客户端连接，如果傻傻地为每一个连接分配一个计时器的话，那么 10k 个连接就对应 10k 的计时器，10w 个连接就对应 10w 个计时器，这种方法显然是比较消耗内存的。 对于需要大量定时器的情况，由于许多定时器是在相近的时间超时的，或者说在一个时间范围内到时的，如果对">
+<meta property="og:description" content="当我们自己编写服务端程序时候，可能需要新建大量的定时器，对每个 TCP 连接设置连接超时，面对成千上万的客户端连接，如果傻傻地为每一个连接分配一个计时器的话，那么 10k 个连接就对应 10k 的计时器，10w 个连接就对应 10w 个计时器，这种方法显然是比较消耗内存的。 对于需要大量定时器的情况，由于许多定时器是在相近的时间超时的，或者说在一个时间范围内到时的，如果对时间精度没有那么近乎苛刻">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://www.confluent.io/wp-content/uploads/2016/08/TimingWheels1.png">
-<meta property="og:updated_time" content="2018-06-14T01:47:52.623Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:39.796Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Timing Wheel">
-<meta name="twitter:description" content="Timing Wheel 当我们自己编写服务端程序时候，可能需要新建大量的定时器，对每个 TCP 连接设置连接超时，面对成千上万的客户端连接，如果傻傻地为每一个连接分配一个计时器的话，那么 10k 个连接就对应 10k 的计时器，10w 个连接就对应 10w 个计时器，这种方法显然是比较消耗内存的。 对于需要大量定时器的情况，由于许多定时器是在相近的时间超时的，或者说在一个时间范围内到时的，如果对">
+<meta name="twitter:description" content="当我们自己编写服务端程序时候，可能需要新建大量的定时器，对每个 TCP 连接设置连接超时，面对成千上万的客户端连接，如果傻傻地为每一个连接分配一个计时器的话，那么 10k 个连接就对应 10k 的计时器，10w 个连接就对应 10w 个计时器，这种方法显然是比较消耗内存的。 对于需要大量定时器的情况，由于许多定时器是在相近的时间超时的，或者说在一个时间范围内到时的，如果对时间精度没有那么近乎苛刻">
 <meta name="twitter:image" content="https://www.confluent.io/wp-content/uploads/2016/08/TimingWheels1.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Timing-Wheel"><a href="#Timing-Wheel" class="headerlink" title="Timing Wheel"></a>Timing Wheel</h1><p><img src="https://www.confluent.io/wp-content/uploads/2016/08/TimingWheels1.png" alt="timingwheel"></p>
+    <p><img src="https://www.confluent.io/wp-content/uploads/2016/08/TimingWheels1.png" alt="timingwheel"></p>
 <p>当我们自己编写服务端程序时候，可能需要新建大量的定时器，对每个 <code>TCP</code> 连接设置连接超时，面对成千上万的客户端连接，如果傻傻地为每一个连接分配一个计时器的话，那么 <code>10k</code> 个连接就对应 <code>10k</code> 的计时器，<code>10w</code> 个连接就对应 <code>10w</code> 个计时器，这种方法显然是比较消耗内存的。</p>
 <p>对于需要大量定时器的情况，由于许多定时器是在相近的时间超时的，或者说在一个时间范围内到时的，如果对时间精度没有那么近乎苛刻的要求的话，我们可以利用这个特性将多个同一时间段的计时器整合成一个来使用，这样的话就可以极大程度上降低内存的消耗，例如现在有 <code>3，4，5，6</code> 四个连接，它们均会在后面的3到4秒内超时，我们可以采用一种方法使它们共用一个计数器，并当时间点到来时，它们均可以被通知到。</p>
 <h2 id="closed-channel"><a href="#closed-channel" class="headerlink" title="closed channel"></a>closed channel</h2><p>也就是说，我们需要一个机制来重复利用某一个计时器，换句话说，当时间点到来时，我们需要一种广播的机制让等待该计时器的都能被通知到。</p>

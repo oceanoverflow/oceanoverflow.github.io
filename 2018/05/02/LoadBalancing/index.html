@@ -5,19 +5,19 @@
   
   <title>Load Balancing | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="使用 etcd 进行负载均衡当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，">
+  <meta name="description" content="当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，它通过向 Provider">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Load Balancing">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/LoadBalancing/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="使用 etcd 进行负载均衡当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，">
+<meta property="og:description" content="当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，它通过向 Provider">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png">
-<meta property="og:updated_time" content="2018-05-30T05:39:16.463Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Load Balancing">
-<meta name="twitter:description" content="使用 etcd 进行负载均衡当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，">
+<meta name="twitter:description" content="当服务提供者（Service Provider）将服务注册到 etcd 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。 下图中，Service Consumer 即服务的消费者，它通过向 Provider">
 <meta name="twitter:image" content="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="使用-etcd-进行负载均衡"><a href="#使用-etcd-进行负载均衡" class="headerlink" title="使用 etcd 进行负载均衡"></a>使用 etcd 进行负载均衡</h1><p>当服务提供者（Service Provider）将服务注册到 <code>etcd</code> 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。</p>
+    <p>当服务提供者（Service Provider）将服务注册到 <code>etcd</code> 之后，为了更加理想地分配任务·，我们就要考虑负载均衡问题了，负载均衡的核心就是把让任务合理地分摊到多个执行单元上执行，以期获得更高的吞吐量或者说是数据处理能力，通俗点讲就是大家都有肉吃，没有人会撑死也没人会饿死，大家都得到适合自己的那一份。</p>
 <p>下图中，<code>Service Consumer</code> 即服务的消费者，它通过向 <code>Provider</code> 源源不断地发送服务请求，负载均衡问题要解决的问题就是如何将请求合理地分配给不同的 <code>Service Provider</code> 处理，例如，我们下图中有三台服务提供者，假如服务提供者的服务都是比较消耗时间的（例如计算哈希值），为了增加整个系统的吞吐量，我们要考虑合适的任务分配策略，这就是负载均衡的核心所在，要是只将请求发送给其中一台 <code>Service Provider</code>，那么其它两台都会空闲着不执行任务，这样的话整个系统的吞吐量肯定就上不来了，毕竟没有充分的利用所有的资源，所以，我们要把任务平均地分配给每个执行单元去处理。</p>
 <p><img src="https://code.aliyun.com/middlewarerace2018/docs/raw/master/assets/system-architecture.png" alt="loadbalancing"></p>
 <p>下面我们来实现一个负载均衡的例子，实现的思路非常简单，定义一个 <code>LoadBalancingService</code> 结构体，其中的 <code>etcdClient</code> 用于与 <code>etcd</code> 进行沟通交流以获取相应的注册信息，<code>nodes</code>，<code>nodeMap</code>，<code>nodeCount</code> 用于记录已经注册在 <code>etcd</code> 的服务提供者的信息。</p>

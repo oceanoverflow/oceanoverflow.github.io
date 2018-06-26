@@ -5,18 +5,18 @@
   
   <title>Cryptography Basics | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="密码学基础安全基础当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。  当A想要向B发送消息时，可能存在第三方X来截获消息的内容，这种问题称为“interception”。 即使A本来要将消息发送给B，也存在X伪装成B来接收消息的可能性；同样的，也存在B相信接收到的">
+  <meta name="description" content="安全基础当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。  当A想要向B发送消息时，可能存在第三方X来截获消息的内容，这种问题称为“interception”。 即使A本来要将消息发送给B，也存在X伪装成B来接收消息的可能性；同样的，也存在B相信接收到的消息来自于">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cryptography Basics">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/02/05/CryptoBasic/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="密码学基础安全基础当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。  当A想要向B发送消息时，可能存在第三方X来截获消息的内容，这种问题称为“interception”。 即使A本来要将消息发送给B，也存在X伪装成B来接收消息的可能性；同样的，也存在B相信接收到的">
+<meta property="og:description" content="安全基础当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。  当A想要向B发送消息时，可能存在第三方X来截获消息的内容，这种问题称为“interception”。 即使A本来要将消息发送给B，也存在X伪装成B来接收消息的可能性；同样的，也存在B相信接收到的消息来自于">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-09T14:53:28.284Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:45.318Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Cryptography Basics">
-<meta name="twitter:description" content="密码学基础安全基础当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。  当A想要向B发送消息时，可能存在第三方X来截获消息的内容，这种问题称为“interception”。 即使A本来要将消息发送给B，也存在X伪装成B来接收消息的可能性；同样的，也存在B相信接收到的">
+<meta name="twitter:description" content="安全基础当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。  当A想要向B发送消息时，可能存在第三方X来截获消息的内容，这种问题称为“interception”。 即使A本来要将消息发送给B，也存在X伪装成B来接收消息的可能性；同样的，也存在B相信接收到的消息来自于">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="密码学基础"><a href="#密码学基础" class="headerlink" title="密码学基础"></a>密码学基础</h1><h2 id="安全基础"><a href="#安全基础" class="headerlink" title="安全基础"></a>安全基础</h2><p>当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。</p>
+    <h2 id="安全基础"><a href="#安全基础" class="headerlink" title="安全基础"></a>安全基础</h2><p>当在互联网上交换数据时，被传输的数据会经过各种各样的设备和网络后才能到达目的地，正是因为如此，安全技术在互联网时代才显得如此重要。在数据在网络上传输的过程中，存在着4个比较显著的问题。</p>
 <ol>
 <li>当A想要向B发送消息时，可能存在第三方X来截获消息的内容，这种问题称为“interception”。</li>
 <li>即使A本来要将消息发送给B，也存在X伪装成B来接收消息的可能性；同样的，也存在B相信接收到的消息来自于A，但实际上是X伪装成A来发送这条消息，这种问题被称为“spoofing”。</li>

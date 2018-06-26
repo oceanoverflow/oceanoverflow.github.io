@@ -5,18 +5,18 @@
   
   <title>Screenshot | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="使用Golang获取手机屏幕截图在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举">
+  <meta name="description" content="在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举），这种作弊方法在初期真是屡试不">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Screenshot">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/02/Screenshot/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="使用Golang获取手机屏幕截图在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举">
+<meta property="og:description" content="在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举），这种作弊方法在初期真是屡试不">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:47:33.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:48:04.370Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Screenshot">
-<meta name="twitter:description" content="使用Golang获取手机屏幕截图在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举">
+<meta name="twitter:description" content="在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举），这种作弊方法在初期真是屡试不">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="使用Golang获取手机屏幕截图"><a href="#使用Golang获取手机屏幕截图" class="headerlink" title="使用Golang获取手机屏幕截图"></a>使用Golang获取手机屏幕截图</h1><p>在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举），这种作弊方法在初期真是屡试不爽，所以今天就让我们来看一下整个作弊流程的关键环节——自动获取手机截屏的代码实现吧。</p>
+    <p>在今年年前的时候，像冲顶大会，芝士超人这样的答题赚钱类应用异常火爆，当然了，聪明的程序猿们也不是吃素的，为了提高答对题目的概率，就写了一些程序（脚本）来自动化答题过程，整个作弊的思路并不难，关键点就在于获取手机的当前截屏，然后通过文字识别来获取题目的信息，最后再调用浏览器搜索答案，在浏览器中出现最多的那个基本就可以锁定是答案了（当然还有其他的作弊方法，这里不一一列举），这种作弊方法在初期真是屡试不爽，所以今天就让我们来看一下整个作弊流程的关键环节——自动获取手机截屏的代码实现吧。</p>
 <p>因为手机分为 <code>Android</code> 阵营和 <code>iOS</code> 阵营，而且两者实现截屏的方法也稍有不同，所以我们先定义一个 <code>Screenshot</code> interface对两种平台进行抽象，之后会分别定义 <code>iOS</code> 和 <code>Android</code> 这两个结构体来实现这个接口（有没有慢慢开始体会到 <code>interface</code> 的好处呢），下面的代码中我们也利用了工厂模式来返回 <code>Screenshot</code> 实例。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Screenshot <span class="keyword">interface</span> &#123;</span><br><span class="line">    GetImage() (image.Image. error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewScreenshot</span><span class="params">(cfg *Config)</span> <span class="title">Screenshot</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> cfg.Device == <span class="string">"iOS"</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> NewIOS(cfg)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> NewAndroid(cfg)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Config &#123;</span><br><span class="line">    Device     <span class="keyword">string</span></span><br><span class="line">    WdaAddress <span class="keyword">string</span></span><br><span class="line">    .....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="Android-实现"><a href="#Android-实现" class="headerlink" title="Android 实现"></a>Android 实现</h2><p>我们先定义个 <code>Android</code> 结构体，这个结构体实现了 <code>GetImage</code> 方法，所以可以在上面的工厂方法中作为 <code>Screenshot</code> 接口返回。而在真正运行我们的代码之前，我们需要确保安卓机已经正确地连接至电脑，并且要确保电脑上已经安装过 <code>adb</code> 这个命令行工具。这里实现截屏主要靠调用 <code>adb</code> 的 <code>screencap</code> 和 <code>pull</code> 这两个子命令，<code>screencap</code> 对当前手机进行截屏并保存到手机本地，<code>pull</code> 命令将手机上的截图传到电脑本地（然后就可以接着一通骚操作了），我们通过 <code>exec.Command</code> 接口对 <code>adb</code> 进行调用，整体思路比较清晰，难点应该就在我们不熟悉 <code>adb</code> 命令的使用。</p>

@@ -5,19 +5,19 @@
   
   <title>TUN/TAP | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="TUNTAPTUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111">
+  <meta name="description" content="TUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111213141">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TUN&#x2F;TAP">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/27/TUNTAP/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="TUNTAPTUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111">
+<meta property="og:description" content="TUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111213141">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://1.bp.blogspot.com/-mnxh0kXQeKI/V10lx7q7H4I/AAAAAAAALYs/i427R0SfAQckApSz3piMDu7LiJnPzzu4gCLcB/s1600/tuntap.png">
-<meta property="og:updated_time" content="2018-05-27T06:07:19.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:47:26.177Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TUN&#x2F;TAP">
-<meta name="twitter:description" content="TUNTAPTUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111">
+<meta name="twitter:description" content="TUN/TAP 为我们在 macOS 下面提供了虚拟网络接口（ TUN/TAP ），其本质是字符设备（ character special file ）。因为在 Unix 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。  TUN 模拟网络层设备，它可以操作第3层数据包例如 IP 数据包。 TAP 模拟链路层设备，用于操作第2层数据包例如以太网帧。 12345678910111213141">
 <meta name="twitter:image" content="https://1.bp.blogspot.com/-mnxh0kXQeKI/V10lx7q7H4I/AAAAAAAALYs/i427R0SfAQckApSz3piMDu7LiJnPzzu4gCLcB/s1600/tuntap.png">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="TUNTAP"><a href="#TUNTAP" class="headerlink" title="TUNTAP"></a>TUNTAP</h1><p><a href="http://tuntaposx.sourceforge.net/" target="_blank" rel="noopener">TUN/TAP</a> 为我们在 <code>macOS</code> 下面提供了虚拟网络接口（ <code>TUN/TAP</code> ），其本质是字符设备（ <code>character special file</code> ）。因为在 <code>Unix</code> 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。</p>
+    <p><a href="http://tuntaposx.sourceforge.net/" target="_blank" rel="noopener">TUN/TAP</a> 为我们在 <code>macOS</code> 下面提供了虚拟网络接口（ <code>TUN/TAP</code> ），其本质是字符设备（ <code>character special file</code> ）。因为在 <code>Unix</code> 中一切皆文件，所以我们可以像操作文件一样操作这两种设备。</p>
 <p><img src="https://1.bp.blogspot.com/-mnxh0kXQeKI/V10lx7q7H4I/AAAAAAAALYs/i427R0SfAQckApSz3piMDu7LiJnPzzu4gCLcB/s1600/tuntap.png" alt="TUNTAP"></p>
 <p><code>TUN</code> 模拟网络层设备，它可以操作第3层数据包例如 <code>IP</code> 数据包。 <code>TAP</code> 模拟链路层设备，用于操作第2层数据包例如以太网帧。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> maxDevices = <span class="number">16</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    ErrBusy        = errors.New(<span class="string">"device is already in use"</span>)</span><br><span class="line">	  ErrNotReady    = errors.New(<span class="string">"device is not ready"</span>)</span><br><span class="line">	  ErrExhausted   = errors.New(<span class="string">"no devices are available"</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Interface <span class="keyword">interface</span> &#123;</span><br><span class="line">    Name() <span class="keyword">string</span></span><br><span class="line">    String() <span class="keyword">string</span></span><br><span class="line">    io.ReadWriteCloser</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Tun</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(Interface, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> newTUN(name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Tap</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(Interface, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> newTAP(name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

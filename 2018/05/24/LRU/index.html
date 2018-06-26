@@ -5,19 +5,19 @@
   
   <title>LRU | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Least Recently Used最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时">
+  <meta name="description" content="最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时LRU未满，放入7，此时淘汰顺序为7">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LRU">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/24/LRU/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Least Recently Used最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时">
+<meta property="og:description" content="最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时LRU未满，放入7，此时淘汰顺序为7">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://i.ytimg.com/vi/4wVp97-uqr0/maxresdefault.jpg">
-<meta property="og:updated_time" content="2018-05-23T16:29:58.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:42.796Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LRU">
-<meta name="twitter:description" content="Least Recently Used最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时">
+<meta name="twitter:description" content="最近最少使用（ Least Recently Used ）也就是 LRU 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。 例如我们有3个物理块，访问序列为 7，0，1，2，0，3，0  访问7时，LRU缺失，此时LRU未满，放入7，此时淘汰顺序为7">
 <meta name="twitter:image" content="https://i.ytimg.com/vi/4wVp97-uqr0/maxresdefault.jpg">
   
   
@@ -62,7 +62,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -98,7 +98,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Least-Recently-Used"><a href="#Least-Recently-Used" class="headerlink" title="Least Recently Used"></a>Least Recently Used</h1><p>最近最少使用（ <code>Least Recently Used</code> ）也就是 <code>LRU</code> 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。</p>
+    <p>最近最少使用（ <code>Least Recently Used</code> ）也就是 <code>LRU</code> 算法是内存页面置换算法的一种，使用该算法可以在有限的资源内提高内存访问的速度，它利用了著名的局部性原理，更具体的说是时间局部性，也就是说如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。</p>
 <p>例如我们有3个物理块，访问序列为 <code>7，0，1，2，0，3，0</code></p>
 <ul>
 <li>访问7时，LRU缺失，此时LRU未满，放入7，此时淘汰顺序为7</li>

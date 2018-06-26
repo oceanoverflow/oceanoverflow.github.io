@@ -5,20 +5,20 @@
   
   <title>Concurrent Prime Sieve | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Concurrent Prime Sieve本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 O(n^2) ，后来慢慢了解了神奇的埃氏筛法，只用 O(nlglgn) 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 sieve of Eratosthenes。">
+  <meta name="description" content="本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 O(n^2) ，后来慢慢了解了神奇的埃氏筛法，只用 O(nlglgn) 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 sieve of Eratosthenes。  一般的埃氏筛实现都是单线程的，并不能完全发">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Concurrent Prime Sieve">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/25/ConcurrentPrimeSieve/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Concurrent Prime Sieve本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 O(n^2) ，后来慢慢了解了神奇的埃氏筛法，只用 O(nlglgn) 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 sieve of Eratosthenes。">
+<meta property="og:description" content="本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 O(n^2) ，后来慢慢了解了神奇的埃氏筛法，只用 O(nlglgn) 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 sieve of Eratosthenes。  一般的埃氏筛实现都是单线程的，并不能完全发">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://empslocal.ex.ac.uk/people/staff/mrwatkin/bridge1.jpg">
 <meta property="og:image" content="https://talks.golang.org/2012/concurrency/images/gophereartrumpet.jpg">
-<meta property="og:updated_time" content="2018-06-24T15:03:09.148Z">
+<meta property="og:updated_time" content="2018-06-26T08:44:16.352Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Concurrent Prime Sieve">
-<meta name="twitter:description" content="Concurrent Prime Sieve本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 O(n^2) ，后来慢慢了解了神奇的埃氏筛法，只用 O(nlglgn) 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 sieve of Eratosthenes。">
+<meta name="twitter:description" content="本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 O(n^2) ，后来慢慢了解了神奇的埃氏筛法，只用 O(nlglgn) 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 sieve of Eratosthenes。  一般的埃氏筛实现都是单线程的，并不能完全发">
 <meta name="twitter:image" content="http://empslocal.ex.ac.uk/people/staff/mrwatkin/bridge1.jpg">
   
   
@@ -63,7 +63,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -99,7 +99,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Concurrent-Prime-Sieve"><a href="#Concurrent-Prime-Sieve" class="headerlink" title="Concurrent Prime Sieve"></a>Concurrent Prime Sieve</h1><p>本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 <code>O(n^2)</code> ，后来慢慢了解了神奇的埃氏筛法，只用 <code>O(nlglgn)</code> 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 <a href="http://empslocal.ex.ac.uk/people/staff/mrwatkin/sieve.htm" target="_blank" rel="noopener">sieve of Eratosthenes</a>。</p>
+    <p>本科刚学编程的时候经常遇到判断一个数是不是素数之类的编程题，当时基础比较差，用的方法也相当简单粗暴，直接采用枚举法判断，虽然简单但是效率很低，时间复杂度为 <code>O(n^2)</code> ，后来慢慢了解了神奇的埃氏筛法，只用 <code>O(nlglgn)</code> 的时间复杂度就可以完成，效率大幅度提高，如果对埃氏筛不了解的童鞋可以看看这篇文章 <a href="http://empslocal.ex.ac.uk/people/staff/mrwatkin/sieve.htm" target="_blank" rel="noopener">sieve of Eratosthenes</a>。</p>
 <p><img src="http://empslocal.ex.ac.uk/people/staff/mrwatkin/bridge1.jpg" alt="Sieve"></p>
 <p>一般的埃氏筛实现都是单线程的，并不能完全发挥现在多核 <code>CPU</code> 的全部性能，下面给出了 <code>Golang</code> 并发版本的埃氏筛实现。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">generate</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">2</span> ;; i++ &#123;</span><br><span class="line">        ch &lt;- i</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

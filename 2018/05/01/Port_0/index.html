@@ -5,18 +5,18 @@
   
   <title>port 0, WTF? | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="port 0, WTF?我们都知道 TCP 或者 UDP 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 TCP/IP 中也属于保留端口号，但它并不可以在一般的 TCP 或者 UDP 通信中使用。 但是，如果0号端口不能被使用的话，那它又有什么用呢，简单来讲，就是如果程序监听了0号端口，那么它就会触发操作系统自动去寻找在0到65535这个范">
+  <meta name="description" content="我们都知道 TCP 或者 UDP 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 TCP/IP 中也属于保留端口号，但它并不可以在一般的 TCP 或者 UDP 通信中使用。 但是，如果0号端口不能被使用的话，那它又有什么用呢，简单来讲，就是如果程序监听了0号端口，那么它就会触发操作系统自动去寻找在0到65535这个范围内可以使用的端口号（即">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="port 0, WTF?">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/05/01/Port_0/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="port 0, WTF?我们都知道 TCP 或者 UDP 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 TCP/IP 中也属于保留端口号，但它并不可以在一般的 TCP 或者 UDP 通信中使用。 但是，如果0号端口不能被使用的话，那它又有什么用呢，简单来讲，就是如果程序监听了0号端口，那么它就会触发操作系统自动去寻找在0到65535这个范">
+<meta property="og:description" content="我们都知道 TCP 或者 UDP 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 TCP/IP 中也属于保留端口号，但它并不可以在一般的 TCP 或者 UDP 通信中使用。 但是，如果0号端口不能被使用的话，那它又有什么用呢，简单来讲，就是如果程序监听了0号端口，那么它就会触发操作系统自动去寻找在0到65535这个范围内可以使用的端口号（即">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:54:23.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:48:25.730Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="port 0, WTF?">
-<meta name="twitter:description" content="port 0, WTF?我们都知道 TCP 或者 UDP 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 TCP/IP 中也属于保留端口号，但它并不可以在一般的 TCP 或者 UDP 通信中使用。 但是，如果0号端口不能被使用的话，那它又有什么用呢，简单来讲，就是如果程序监听了0号端口，那么它就会触发操作系统自动去寻找在0到65535这个范">
+<meta name="twitter:description" content="我们都知道 TCP 或者 UDP 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 TCP/IP 中也属于保留端口号，但它并不可以在一般的 TCP 或者 UDP 通信中使用。 但是，如果0号端口不能被使用的话，那它又有什么用呢，简单来讲，就是如果程序监听了0号端口，那么它就会触发操作系统自动去寻找在0到65535这个范围内可以使用的端口号（即">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="port-0-WTF"><a href="#port-0-WTF" class="headerlink" title="port 0, WTF?"></a>port 0, WTF?</h1><p>我们都知道 <code>TCP</code> 或者 <code>UDP</code> 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 <code>TCP/IP</code> 中也属于保留端口号，但它并不可以在一般的 <code>TCP</code> 或者 <code>UDP</code> 通信中使用。</p>
+    <p>我们都知道 <code>TCP</code> 或者 <code>UDP</code> 的端口号可以从0一直到65535，而0到1023端口则被称为熟知端口，是系统保留使用的端口号，0号端口在 <code>TCP/IP</code> 中也属于保留端口号，但它并不可以在一般的 <code>TCP</code> 或者 <code>UDP</code> 通信中使用。</p>
 <p>但是，如果0号端口不能被使用的话，那它又有什么用呢，简单来讲，就是如果程序监听了0号端口，那么它就会触发操作系统自动去寻找在0到65535这个范围内可以使用的端口号（即未被其他程序占用），这样就相当于动态分配一个端口号了，和 <code>DHCP</code> 协议有着异曲同工之妙，不过 <code>DHCP</code> 是用于动态分配IP地址，而0号端口则用于动态分配端口号，而且两者的工作原理也不同。</p>
 <p>所以，如果想要得到一个动态的端口号，我们只要让程序监听0号端口就可以了，即 <code>net.Listen(&quot;tcp&quot;, &quot;127.0.0.1:0&quot;)</code> ，下面给出一个获取动态端口号的示例代码。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"net"</span></span><br><span class="line">    <span class="string">"strconv"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetFreePort</span><span class="params">()</span> <span class="params">(port <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">    listener, err := net.Listen(<span class="string">"tcp"</span>, <span class="string">"127.0.0.1:0"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> listener.Close()</span><br><span class="line">     </span><br><span class="line">    addr := listener.Addr().String()</span><br><span class="line">    _, portString, err := net.SplitHostPort(addr)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> strconv.Atoi(portString)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    port, err := GetFreePort()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(port)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

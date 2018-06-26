@@ -5,18 +5,18 @@
   
   <title>Merkle Tree | Whyyy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Merkle TreeMerkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们">
+  <meta name="description" content="Merkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们来看一下如何实现一个">
 <meta name="keywords" content="programming,hack,golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Merkle Tree">
 <meta property="og:url" content="https://oceanoverflow.github.io/2018/04/27/MerkleTree/index.html">
 <meta property="og:site_name" content="Whyyy">
-<meta property="og:description" content="Merkle TreeMerkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们">
+<meta property="og:description" content="Merkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们来看一下如何实现一个">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-15T11:51:54.000Z">
+<meta property="og:updated_time" content="2018-06-26T08:46:59.699Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Merkle Tree">
-<meta name="twitter:description" content="Merkle TreeMerkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们">
+<meta name="twitter:description" content="Merkle Tree 在各个领域都有着广泛的应用，就拿我们熟悉的 bittorrent 来举例，在我们使用 bittorrent 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 Merkle proofs 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。Merkle proofs 可以用于验证某个数据子集是否从属于更大的集合。 那么下面我们来看一下如何实现一个">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +60,7 @@
         y
       </span>
     
-      <span class="b">
+      <span class="w">
         y
       </span>
     
@@ -96,7 +96,7 @@
   </header>
 
   <div class="article-entry" itemprop="articleBody">
-    <h1 id="Merkle-Tree"><a href="#Merkle-Tree" class="headerlink" title="Merkle Tree"></a>Merkle Tree</h1><p><code>Merkle Tree</code> 在各个领域都有着广泛的应用，就拿我们熟悉的 <code>bittorrent</code> 来举例，在我们使用 <code>bittorrent</code> 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 <code>Merkle proofs</code> 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。<code>Merkle proofs</code> 可以用于验证某个数据子集是否从属于更大的集合。</p>
+    <p><code>Merkle Tree</code> 在各个领域都有着广泛的应用，就拿我们熟悉的 <code>bittorrent</code> 来举例，在我们使用 <code>bittorrent</code> 下载的时候，客户端会向许多并不信任的节点去下载目标文件的某个片段，利用 <code>Merkle proofs</code> 我们就可以验证我们下载的部分片段是否属于整个文件的一部分。<code>Merkle proofs</code> 可以用于验证某个数据子集是否从属于更大的集合。</p>
 <p>那么下面我们来看一下如何实现一个 <code>Merkle Tree</code> 吧。与传统的二叉树类似，每个 <code>Merkle Tree</code> 中由许多节点组成，每个节点都指向它的左孩子节点，右孩子节点和父节点，同时，还有一个flag指明它是否为叶子结点等其他元信息。<code>Content</code> 是每个节点所存储的内容，只要实现了该接口 <code>Content</code> 的结构体都能被节点所存储。</p>
 <h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    Parent *Node</span><br><span class="line">    Left   *Node</span><br><span class="line">    Right  *Node</span><br><span class="line">    leaf   <span class="keyword">bool</span></span><br><span class="line">    dup    <span class="keyword">bool</span></span><br><span class="line">    Hash   []<span class="keyword">byte</span></span><br><span class="line">    C      Content</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Content <span class="keyword">interface</span> &#123;</span><br><span class="line">    CalculateHash() []<span class="keyword">byte</span></span><br><span class="line">    Equals(other Content) <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MerkleTree <span class="keyword">struct</span> &#123;</span><br><span class="line">    Root       *Node</span><br><span class="line">    merkleRoot []<span class="keyword">byte</span></span><br><span class="line">    Leafs      []*Node</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在 <code>Merkle Tree</code> 当中，有一个非常重要的特性就是获取节点的哈希值，我们来定义一个helper function 用于计算节点的哈希值。计算哈希分为两种情况，第一种就是如果当前被计算的节点为叶子结点，那么我们调用interface <code>Content</code> 中的 <code>CalculateHash</code> 方法来计算所存储内容的哈希值，如果不是叶子结点，则说明是中间层的节点，那么就计算左子节点和右子节点的哈希值的拼接值的哈希值，即 <code>H(P) = H( H(P.L) + H(P.R) )</code>。</p>
