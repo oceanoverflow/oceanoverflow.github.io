@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Graphviz | Whyyy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近看了许多比较酷炫的数据结构的实现，例如 Trie ， Skip List ，B-Tree 等，看代码的时候经常会想，要是有什么工具可以帮助我们将内存中的结构体绘制出来就好了，搜了一下 github ，发现早已经有大佬帮我们实现过了。 下面以二叉搜索树为例，来看一下如何使用 graphviz 绘制内存中的结构体。二叉树的定义非常简单，每个节点都有一个左节点和右节点，用于指向自己的左子树和右子树。">
+<meta name="keywords" content="programming,hack,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Graphviz">
+<meta property="og:url" content="https://oceanoverflow.github.io/2018/06/27/Graphviz/index.html">
+<meta property="og:site_name" content="Whyyy">
+<meta property="og:description" content="最近看了许多比较酷炫的数据结构的实现，例如 Trie ， Skip List ，B-Tree 等，看代码的时候经常会想，要是有什么工具可以帮助我们将内存中的结构体绘制出来就好了，搜了一下 github ，发现早已经有大佬帮我们实现过了。 下面以二叉搜索树为例，来看一下如何使用 graphviz 绘制内存中的结构体。二叉树的定义非常简单，每个节点都有一个左节点和右节点，用于指向自己的左子树和右子树。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://image.ibb.co/bPod9o/output.png">
+<meta property="og:updated_time" content="2018-06-27T13:45:10.019Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Graphviz">
+<meta name="twitter:description" content="最近看了许多比较酷炫的数据结构的实现，例如 Trie ， Skip List ，B-Tree 等，看代码的时候经常会想，要是有什么工具可以帮助我们将内存中的结构体绘制出来就好了，搜了一下 github ，发现早已经有大佬帮我们实现过了。 下面以二叉搜索树为例，来看一下如何使用 graphviz 绘制内存中的结构体。二叉树的定义非常简单，每个节点都有一个左节点和右节点，用于指向自己的左子树和右子树。">
+<meta name="twitter:image" content="https://image.ibb.co/bPod9o/output.png">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+	<!-- If needed, replace your own web font service -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="/icomoon/style.css">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <div class="site-wrapper">
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<script>document.getElementById("loading-bar").style.width="20%";</script>
+
+
+<header id="header" class="site-header clearfix">
+
+  <a class="logo square clearfix" href="/">
+    <!-- 
+      Replace with your own size name, for example:
+      <span class="b">A</span>
+      <span class="w">B</span>
+      <span class="b">C</span>
+     -->
+    
+      <span class="b">
+        W
+      </span>
+    
+      <span class="w">
+        h
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+      <span class="w">
+        y
+      </span>
+    
+      <span class="b">
+        y
+      </span>
+    
+  </a>
+  <a class="me square site-nav-switch clearfix">
+    <span class="b">
+    	<span class="icon icon-menu"></span>
+    </span>
+  </a>
+
+</header>
+
+    <script>document.getElementById("loading-bar").style.width="40%";</script>
+    <main id="main" class="clearfix">
+      <article id="post-Graphviz"
+  class="article white-box article-type-post"
+  itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    <h1 class="article-title" itemprop="name">
+      Graphviz
+    </h1>
+    <div class="article-meta">
+      Posted on 
+      <time class="article-time" datetime="2018-06-27T13:37:09.000Z" itemprop="datePublished">
+        Jun 27, 2018
+      </time>
+    </div>
+  </header>
+
+  <div class="article-entry" itemprop="articleBody">
+    <p>最近看了许多比较酷炫的数据结构的实现，例如 <code>Trie</code> ， <code>Skip List</code> ，<code>B-Tree</code> 等，看代码的时候经常会想，要是有什么工具可以帮助我们将内存中的结构体绘制出来就好了，搜了一下 <code>github</code> ，发现早已经有大佬帮我们实现过了。</p>
+<p>下面以二叉搜索树为例，来看一下如何使用 <code>graphviz</code> 绘制内存中的结构体。二叉树的定义非常简单，每个节点都有一个左节点和右节点，用于指向自己的左子树和右子树。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    val   <span class="keyword">int</span></span><br><span class="line">    left  *Node</span><br><span class="line">    right *Node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *Node)</span> <span class="title">Insert</span><span class="params">(val <span class="keyword">int</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> errors.New(<span class="string">"Cannot insert a value into a nil tree"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">switch</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> val == n.val:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">case</span> val &lt; n.val:</span><br><span class="line">        <span class="keyword">if</span> n.left == <span class="literal">nil</span> &#123;</span><br><span class="line">            n.left = &amp;Node&#123;val: val&#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> n.left.Insert(val)</span><br><span class="line">    <span class="keyword">case</span> val &gt; n.val:</span><br><span class="line">        <span class="keyword">if</span> n.right == <span class="literal">nil</span> &#123;</span><br><span class="line">            n.right = &amp;Node&#123;val: val&#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> n.right.Insert(val)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Tree <span class="keyword">struct</span> &#123;</span><br><span class="line">    Root  *Node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Tree)</span> <span class="title">Insert</span><span class="params">(val <span class="keyword">int</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> t.root == <span class="literal">nil</span> &#123;</span><br><span class="line">        t.Root = &amp;Node&#123;val: val&#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> t.Root.Insert(value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>main</code> 函数中我们构造一个二叉树，并向该树中随意插入一些值，最后我们使用 <code>memviz.Map(os.Stdout, &amp;tree)</code> 将该树对应的 <code>DOT</code> 形态输出到标准输出中。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/bradleyjkemp/memviz"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    tree := &amp;Tree&#123;&#125;</span><br><span class="line">    values := []<span class="keyword">int</span>&#123;<span class="number">4</span>, <span class="number">2</span>, <span class="number">6</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>&#125;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(values); i++ &#123;</span><br><span class="line">        err := tree.Insert(values[i])</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            log.Fatal(<span class="string">"Error inserting value '"</span>, values[i], <span class="string">"': "</span>, err)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    memviz.Map(os.Stdout, &amp;tree)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>利用 <code>unix pipe</code> 将 <code>go run main.go</code> 得到的结果输入到 <code>dot</code> 命令中。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go run main.go | dot -Tpng -o output.png | open output.png</span><br></pre></td></tr></table></figure>
+<p><img src="https://image.ibb.co/bPod9o/output.png" alt="graphviz"></p>
+<p> <code>dot</code> 命令相当于 <code>graphviz</code> 的一个子命令，它专门用于绘制有向图，除了 <code>dot</code> 之外，还有 <code>neato</code> ，<code>twopi</code> ，<code>circo</code> ，<code>fdp</code> ，<code>sfdp</code> ，<code>patchword</code> 和<code>osage</code> ，它们的用法与 <code>dot</code> 完全一致，只是它们的用处稍稍不同，例如 <code>neato</code> 比较适合用来绘制无向图。</p>
+<p>下面我们来看一下（ <code>memviz.Map(os.Stdout, &amp;tree)</code> ）的实现，该函数的实现主要依靠 <code>golang</code> 中的反射机制（ <code>reflect</code> ），利用 <code>reflect</code> 可以在运行时审查元素的类型，然后根据其类型，构造符合 <code>dot</code> 的语法的模版就行了。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Map</span><span class="params">(w io.Writer, is ...<span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> iVals []reflect.Value</span><br><span class="line">    <span class="keyword">for</span> _, i := <span class="keyword">range</span> is &#123;</span><br><span class="line">        iVal := reflect.ValueOf(i)</span><br><span class="line">        <span class="keyword">if</span> !iVal.CanAddr() &#123;</span><br><span class="line">            <span class="keyword">if</span> iVal.Kind() != reflect.Ptr &amp;&amp; iVal.Kind() != reflect.Interface &#123;</span><br><span class="line">                fmt.Fprint(w, <span class="string">"error: cannot map unaddressable value"</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">             &#125;</span><br><span class="line">             iVal = iVal.Elem()</span><br><span class="line">        &#125;</span><br><span class="line">        iVals = <span class="built_in">append</span>(iVals, iVal)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    m := &amp;mapper&#123;</span><br><span class="line">        w,</span><br><span class="line">        <span class="keyword">map</span>[nodeKey]nodeID&#123;nilKey: <span class="number">0</span>&#125;,</span><br><span class="line">        <span class="keyword">map</span>[nodeKey]<span class="keyword">string</span>&#123;nilKey: <span class="string">"nil"</span>&#125;,</span><br><span class="line">        <span class="number">2</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Fprintln(w, <span class="string">"digraph structs &#123;"</span>)</span><br><span class="line">    fmt.Fprintln(w, <span class="string">"  node [shape=Mrecord];"</span>)</span><br><span class="line">    <span class="keyword">for</span> _, iVal := <span class="keyword">range</span> iVals &#123;</span><br><span class="line">        m.mapValue(iVal, <span class="number">0</span>, <span class="literal">false</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Fprintln(w, <span class="string">"&#125;"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+  
+  <div class="article-tags">
+    
+  </div>
+    
+  
+
+</article>
+
+      <script>document.getElementById("loading-bar").style.width="60%";</script>
+    </main>
+    
+<footer id="footer" class="clearfix">
+	
+  <div>&copy; <a href="https://oceanoverflow.github.io">Whyyy</a> Theme by <a href="http://artifact.me/" target="_blank">Art Chen</a>.</div>
+  <div>Powered by <a href="https://hexo.io/" rel="external">Hexo</a>.</div>
+</footer>
+
+
+    <script>document.getElementById("loading-bar").style.width="80%";</script>
+    <div class="overlay"></div>
+  </div>
+  <div class="site-sidebar">
+
+	
+	
+	<div class="sidebar-switch clearfix "
+		style="display: none">
+		<a class="dark-btn active" data-toggle="toc">
+	    <span class="icon icon-list"></span>
+	    <span class="text">Index</span>
+	  </a>
+	  <a class="dark-btn" data-toggle="bio">
+	    <span class="icon icon-person"></span>
+	    <span class="text">Bio</span>
+	  </a>
+	</div>
+
+	<div class="site-toc "
+		style="display: none">
+		
+	    <div class="no-index">No Index</div>
+	  
+  </div>
+  
+	<div class="site-bio show"
+		style="display: block">
+		
+	  <!-- About Me -->
+	  <div class="about-me clearfix">
+	    <div class="avatar">
+	      <img src="/img/avatar.png" />
+	    </div>
+	    <div class="info">
+	      <a class="name dark-btn" href="/about">
+	        Yangyi, Yi
+	      </a>
+	    </div>
+	    <div class="info">
+	      <span class="item desc">
+	        Pieces of Valuable Programming Knowledges
+	      </span>
+	    </div>
+	  </div>
+	
+	  <!-- Social Icons -->
+	  <div class="social clearfix">
+	    
+	      
+	        <a href="/atom.xml" class="feed"
+	          target="_blank" rel="external">
+	          <span class="icon icon-feed"></span>
+	        </a>
+	      
+	        <a href="https://github.com/oceanoverflow" class="github"
+	          target="_blank" rel="external">
+	          <span class="icon icon-github"></span>
+	        </a>
+	      
+	    
+	  </div>
+	
+	  <!-- Home & Bottom -->
+	  <div class="shortcuts clearfix">
+	    <div class="bk">
+	      <a href="#header" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-up"></span>
+	        <span class="text">Back to Top</span>
+	      </a>
+	    </div>
+	    <div class="bk">
+	      <a href="#footer" class="dark-btn window-nav">
+	        <span class="icon icon-chevron-thin-down"></span>
+	        <span class="text">Go to Bottom</span>
+	      </a>
+	    </div>
+	  </div>
+
+	</div>
+
+</div>
+
+  <!-- Universal Search -->
+
+<script type="text/javascript">
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "hexo";
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+
+<script src="/js/search.js"></script>
+<script src="/js/app.js"></script>
+
+<!-- Disqus -->
+
+
+
+<!-- Swiftype -->
+<!-- Please replace with your own swiftype settings -->
+<!--
+<script type="text/javascript">
+  /* Swiftype */
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','FHMeAyBdVccJECstf-XJ','2.0.0');
+</script>
+-->
+
+  <script>document.getElementById("loading-bar").style.width="100%";</script>
+</body>
+</html>
